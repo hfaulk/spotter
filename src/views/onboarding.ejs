@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-dot"></span>
+      <h1>Spotter</h1>
+    </div>
+    <h2>One last thing</h2>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <p class="form-error"><%= error %></p>
+    <% } %>
+
+    <form action="/onboarding" method="POST" class="auth-form">
+      <div class="field-row">
+        <div class="field">
+          <label for="first_name">First name</label>
+          <input type="text" id="first_name" name="first_name"
+            value="<%= prefill.first_name %>" placeholder="John" required />
+        </div>
+        <div class="field">
+          <label for="last_name">Last name</label>
+          <input type="text" id="last_name" name="last_name"
+            value="<%= prefill.last_name %>" placeholder="Pork" required />
+        </div>
+      </div>
+      <div class="field">
+        <label for="username">Pick a username</label>
+        <input type="text" id="username" name="username"
+          placeholder="username" required />
+      </div>
+      <button type="submit" class="btn-primary">Let's go</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
