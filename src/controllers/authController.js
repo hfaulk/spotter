@@ -1,74 +1,74 @@
-import supabase from '../config/supabase.js'
+import supabase from "../config/supabase.js";
 
 // ===== SERVE VIEWS =====
-export const serveLogin = (req, res) => {
-  res.render('auth/login')
-}
-
-export const serveRegister = (req, res) => {
-  res.render('auth/register')
-}
+export const serveLogin = (req, res) => res.render("auth/login");
+export const serveRegister = (req, res) => res.render("auth/register");
 
 // ===== EMAIL AUTH =====
 export const registerUser = async (req, res) => {
-  const { first_name, last_name, username, email, password } = req.body
+  const { first_name, last_name, username, email, password } = req.body;
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { first_name, last_name, username }
-    }
-  })
+      data: { first_name, last_name, username },
+    },
+  });
 
-  if (error) return res.render('auth/register', { error: error.message })
+  if (error) return res.render("auth/register", { error: error.message });
 
-  const token = data.session?.access_token
-  if (token) res.cookie('access_token', token, { httpOnly: true })
+  const token = data.session?.access_token;
+  if (token)
+    res.cookie("access_token", token, { httpOnly: true, sameSite: "lax" });
 
-  res.redirect('/dashboard')
-}
+  res.redirect("/dashboard");
+};
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
-  })
+    password,
+  });
 
-  if (error) return res.render('auth/login', { error: error.message })
+  if (error) return res.render("auth/login", { error: error.message });
 
-  res.cookie('access_token', data.session.access_token, { httpOnly: true })
-  res.redirect('/dashboard')
-}
+  res.cookie("access_token", data.session.access_token, {
+    httpOnly: true,
+    sameSite: "lax",
+  });
+  res.redirect("/dashboard");
+};
 
 // ===== GOOGLE AUTH =====
 export const googleAuth = async (req, res) => {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
+    provider: "google",
     options: {
-      redirectTo: `${process.env.BASE_URL}/auth/callback`
-    }
-  })
+      redirectTo: `${process.env.BASE_URL}/auth/callback`,
+    },
+  });
 
-  if (error) return res.redirect('/login')
-  res.redirect(data.url)
-}
+  if (error) return res.redirect("/login");
+  res.redirect(data.url);
+};
 
-export const authCallback = async (req, res) => {
-  const { code } = req.query
+export const authCallback = (req, res) => {
+  res.render("auth/callback");
+};
 
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-
-  if (error) return res.redirect('/login')
-
-  res.cookie('access_token', data.session.access_token, { httpOnly: true })
-  res.redirect('/dashboard')
-}
+export const setSession = (req, res) => {
+  const { access_token } = req.body;
+  if (!access_token)
+    return res.status(400).json({ error: "No token provided" });
+  res.cookie("access_token", access_token, { httpOnly: true, sameSite: "lax" });
+  res.json({ success: true });
+};
 
 // ===== SIGN OUT =====
-export const signOut = async (req, res) => {
-  res.clearCookie('access_token')
-  res.redirect('/login')
-}
+export const signOut = (req, res) => {
+  res.clearCookie("access_token");
+  res.redirect("/login");
+};

@@ -1,0 +1,33 @@
+<%- include('../partials/header') %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-dot"></span>
+      <h1>Spotter</h1>
+    </div>
+    <p class="callback-msg">Signing you in...</p>
+  </div>
+</div>
+
+<script>
+  const hash = window.location.hash.substring(1)
+  const params = new URLSearchParams(hash)
+  const access_token = params.get('access_token')
+
+  if (access_token) {
+    fetch('/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token })
+    })
+      .then(res => res.json())
+      .then(() => window.location.href = '/dashboard')
+      .catch(() => window.location.href = '/login')
+  } else {
+    window.location.href = '/login'
+  }
+</script>
+
+</body>
+</html>
