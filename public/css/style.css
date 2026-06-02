@@ -1,19 +1,3 @@
-/* ===== VARIABLES ===== */
-:root {
-    --bg: #0c0c0c;
-    --surface: #161616;
-    --border: #2a2a2a;
-    --text: #e8e8e8;
-    --muted: #666;
-    --accent: #f0a500;
-    --accent-dim: #7a5200;
-    --error: #e05555;
-    --radius: 10px;
-    --font-head: "Bebas Neue", sans-serif;
-    --font-mono: "DM Mono", monospace;
-    --font-body: "DM Sans", sans-serif;
-}
-
 /* ===== RESET ===== */
 *,
 *::before,
@@ -23,24 +7,10 @@
     padding: 0;
 }
 
-html {
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-}
-
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
+    font-family: sans-serif;
+    background-color: #f4f4f4;
     min-height: 100dvh;
-}
-
-a {
-    color: var(--accent);
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
 }
 
 /* ===== AUTH PAGES ===== */
@@ -53,12 +23,12 @@ a:hover {
 }
 
 .auth-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 2rem 1.75rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
 }
 
 .auth-brand {
@@ -69,26 +39,23 @@ a:hover {
 }
 
 .auth-brand h1 {
-    font-family: var(--font-head);
-    font-size: 2rem;
-    letter-spacing: 0.05em;
-    color: var(--text);
-    line-height: 1;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: midnightblue;
 }
 
 .brand-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--accent);
+    background: midnightblue;
     flex-shrink: 0;
 }
 
 .auth-card h2 {
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--muted);
+    font-size: 1rem;
+    font-weight: normal;
+    color: grey;
     margin-bottom: 1.5rem;
 }
 
@@ -113,18 +80,18 @@ a:hover {
 
 label {
     font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--muted);
+    font-weight: bold;
+    color: #555;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
 }
 
 input {
-    background: var(--bg);
-    border: 1px solid var(--border);
+    background: #f4f4f4;
+    border: 1px solid #ddd;
     border-radius: 6px;
-    color: var(--text);
-    font-family: var(--font-body);
+    color: #111;
+    font-family: sans-serif;
     font-size: 0.95rem;
     padding: 0.65rem 0.85rem;
     width: 100%;
@@ -132,19 +99,15 @@ input {
     transition: border-color 0.15s;
 }
 
-input::placeholder {
-    color: var(--muted);
-}
-
 input:focus {
-    border-color: var(--accent);
+    border-color: midnightblue;
 }
 
 .form-error {
-    background: rgba(224, 85, 85, 0.1);
-    border: 1px solid var(--error);
+    background: #fff0f0;
+    border: 1px solid darkred;
     border-radius: 6px;
-    color: var(--error);
+    color: darkred;
     font-size: 0.875rem;
     padding: 0.65rem 0.85rem;
     margin-bottom: 0.5rem;
@@ -152,14 +115,14 @@ input:focus {
 
 /* ===== BUTTONS ===== */
 .btn-primary {
-    background: var(--accent);
+    background: midnightblue;
     border: none;
     border-radius: 6px;
-    color: #0c0c0c;
+    color: white;
     cursor: pointer;
-    font-family: var(--font-body);
+    font-family: sans-serif;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: bold;
     padding: 0.75rem;
     width: 100%;
     margin-top: 0.25rem;
@@ -175,20 +138,20 @@ input:focus {
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
+    background: white;
+    border: 1px solid #ddd;
     border-radius: 6px;
-    color: var(--text);
+    color: #111;
     font-size: 0.95rem;
     font-weight: 500;
     padding: 0.7rem;
     width: 100%;
     transition: border-color 0.15s;
+    text-decoration: none;
 }
 
 .btn-google:hover {
-    border-color: var(--muted);
-    text-decoration: none;
+    border-color: #aaa;
 }
 
 /* ===== DIVIDER ===== */
@@ -196,7 +159,7 @@ input:focus {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: var(--muted);
+    color: grey;
     font-size: 0.8rem;
     margin: 1rem 0;
 }
@@ -206,27 +169,39 @@ input:focus {
     content: "";
     flex: 1;
     height: 1px;
-    background: var(--border);
+    background: #ddd;
 }
 
 /* ===== AUTH LINK ===== */
 .auth-link {
-    color: var(--muted);
+    color: grey;
     font-size: 0.875rem;
     text-align: center;
     margin-top: 1.25rem;
 }
 
+.auth-link a {
+    color: midnightblue;
+}
+
 /* ===== CALLBACK ===== */
 .callback-msg {
-    color: var(--muted);
-    font-family: var(--font-mono);
+    color: grey;
     font-size: 0.9rem;
     text-align: center;
     padding: 1rem 0;
 }
 
 /* ===== DASHBOARD ===== */
-.dashboard {
-    padding: 1.5rem;
+.page-panel {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+@media (max-width: 480px) {
+    .field-row {
+        grid-template-columns: 1fr;
+    }
 }

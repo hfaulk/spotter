@@ -16,24 +16,49 @@ export const registerUser = async (req, res) => {
     },
   });
 
-  if (error) return res.render("auth/register", { error: error.message });
+  if (error) {
+    return res.render("auth/register", {
+      error: error.message,
+      fields: { first_name, last_name, username, email },
+    });
+  }
 
-  const token = data.session?.access_token;
-  if (token)
-    res.cookie("access_token", token, { httpOnly: true, sameSite: "lax" });
+  // No session means email already exists
+  if (!data.session) {
+    return res.render("auth/register", {
+      error:
+        "An account with this email already exists. Try signing in with Google instead.",
+      fields: { first_name, last_name, username, email },
+    });
+  }
 
+  res.cookie("access_token", data.session.access_token, {
+    httpOnly: true,
+    sameSite: "lax",
+  });
   res.redirect("/dashboard");
 };
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
+
+  // Look up email from username
+  const { data: userData, error: lookupError } = await supabase
+    .from("user")
+    .select("user_email")
+    .eq("username", username)
+    .single();
+
+  if (lookupError || !userData) {
+    return res.render("auth/login", { error: "Username not found" });
+  }
 
   const { data, error } = await supabase.auth.signInWithPassword({
-    email,
+    email: userData.user_email,
     password,
   });
 
-  if (error) return res.render("auth/login", { error: error.message });
+  if (error) return res.render("auth/login", { error: "Invalid password" });
 
   res.cookie("access_token", data.session.access_token, {
     httpOnly: true,

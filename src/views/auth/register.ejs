@@ -16,20 +16,28 @@
       <div class="field-row">
         <div class="field">
           <label for="first_name">First name</label>
-          <input type="text" id="first_name" name="first_name" placeholder="John" required />
+          <input type="text" id="first_name" name="first_name"
+            value="<%= typeof fields !== 'undefined' ? fields.first_name : '' %>"
+            placeholder="John" required />
         </div>
         <div class="field">
           <label for="last_name">Last name</label>
-          <input type="text" id="last_name" name="last_name" placeholder="Pork" required />
+          <input type="text" id="last_name" name="last_name"
+            value="<%= typeof fields !== 'undefined' ? fields.last_name : '' %>"
+            placeholder="Pork" required />
         </div>
       </div>
       <div class="field">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="jpork" required />
+        <input type="text" id="username" name="username"
+          value="<%= typeof fields !== 'undefined' ? fields.username : '' %>"
+          placeholder="jpork" required />
       </div>
       <div class="field">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+        <input type="email" id="email" name="email"
+          value="<%= typeof fields !== 'undefined' ? fields.email : '' %>"
+          placeholder="you@example.com" required />
       </div>
       <div class="field">
         <label for="password">Password</label>
