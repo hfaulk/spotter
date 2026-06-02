@@ -12,6 +12,10 @@ import {
   authCallback,
   setSession,
   signOut,
+  serveForgotPassword,
+  submitForgotPassword,
+  serveResetPassword,
+  submitResetPassword,
 } from "./src/controllers/authController.js";
 
 import {
@@ -43,6 +47,10 @@ app.get("/auth/google", googleAuth);
 app.get("/auth/callback", authCallback);
 app.post("/auth/session", setSession);
 app.get("/signout", signOut);
+app.get("/forgot-password", serveForgotPassword);
+app.post("/forgot-password", submitForgotPassword);
+app.get("/auth/reset-password", serveResetPassword);
+app.post("/auth/reset-password", submitResetPassword);
 
 // ===== ONBOARDING =====
 app.get("/onboarding", requireAuth, serveOnboarding);

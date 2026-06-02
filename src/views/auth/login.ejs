@@ -8,17 +8,24 @@
     </div>
     <h2>Welcome back</h2>
 
-    <% if (typeof error !== 'undefined') { %>
+    <% if (typeof error !== 'undefined' && error) { %>
       <p class="form-error"><%= error %></p>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <p class="form-success"><%= success %></p>
     <% } %>
 
     <form action="/login" method="POST" class="auth-form">
       <div class="field">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="username" required />
+        <input type="text" id="username" name="username" placeholder="hfaulk" required />
       </div>
       <div class="field">
-        <label for="password">Password</label>
+        <div class="field-label-row">
+          <label for="password">Password</label>
+          <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+        </div>
         <input type="password" id="password" name="password" placeholder="••••••••" required />
       </div>
       <button type="submit" class="btn-primary">Log in</button>

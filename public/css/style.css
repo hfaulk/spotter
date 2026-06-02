@@ -213,6 +213,27 @@ input:focus {
     margin-top: 0.15rem;
 }
 
+.form-success {
+    background: #f0fff4;
+    border: 1px solid green;
+    border-radius: 6px;
+    color: green;
+    font-size: 0.875rem;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.field-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-link {
+    font-size: 0.78rem;
+    color: midnightblue;
+}
+
 @media (max-width: 480px) {
     .field-row {
         grid-template-columns: 1fr;

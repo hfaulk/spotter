@@ -20,7 +20,13 @@ const setSessionCookies = (res, session) => {
 };
 
 // ===== SERVE VIEWS =====
-export const serveLogin = (req, res) => res.render("auth/login");
+export const serveLogin = (req, res) => {
+  const success =
+    req.query.reset === "success"
+      ? "Password reset successfully. Please log in."
+      : undefined;
+  res.render("auth/login", { success, error: undefined });
+};
 export const serveRegister = (req, res) => res.render("auth/register");
 
 // ===== EMAIL AUTH =====
@@ -131,4 +137,93 @@ export const signOut = (req, res) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
   res.redirect("/login");
+};
+
+// ===== PASSWORD RESET =====
+export const serveForgotPassword = (req, res) => {
+  res.render("auth/forgot-password", { sent: false, error: undefined });
+};
+
+export const submitForgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  // Look up user in our table to get their ID
+  const { data: userData } = await supabase
+    .from("user")
+    .select("user_id")
+    .eq("user_email", email)
+    .single();
+
+  if (userData) {
+    // Check their auth providers
+    const {
+      data: { user },
+    } = await supabase.auth.admin.getUserById(userData.user_id);
+    const providers = user?.app_metadata?.providers || [];
+
+    if (providers.includes("google") && !providers.includes("email")) {
+      return res.render("auth/forgot-password", {
+        sent: false,
+        error:
+          "This account uses Google sign-in. Please log in with Google instead.",
+      });
+    }
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.BASE_URL}/auth/reset-password`,
+  });
+
+  if (error) {
+    return res.render("auth/forgot-password", {
+      sent: false,
+      error: error.message,
+    });
+  }
+
+  res.render("auth/forgot-password", { sent: true, error: undefined });
+};
+
+export const serveResetPassword = (req, res) => {
+  res.render("auth/reset-password", { error: undefined });
+};
+
+export const submitResetPassword = async (req, res) => {
+  const { password, access_token } = req.body;
+
+  if (!password || password.length < 8) {
+    return res.render("auth/reset-password", {
+      error: "Password must be at least 8 characters",
+    });
+  }
+
+  if (!access_token) {
+    return res.render("auth/reset-password", {
+      error: "Invalid or expired reset link",
+    });
+  }
+
+  // Get user from recovery token
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser(access_token);
+
+  if (userError || !user) {
+    return res.render("auth/reset-password", {
+      error: "Invalid or expired reset link",
+    });
+  }
+
+  const { error } = await supabase.auth.admin.updateUserById(user.id, {
+    password,
+  });
+
+  if (error) {
+    return res.render("auth/reset-password", { error: error.message });
+  }
+
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+  res.redirect("/login?reset=success");
 };
