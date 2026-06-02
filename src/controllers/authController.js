@@ -1,5 +1,24 @@
 import supabase from "../config/supabase.js";
 
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 60 * 60 * 1000, // 1 hour
+};
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
+};
+
+const setSessionCookies = (res, session) => {
+  res.cookie("access_token", session.access_token, cookieOptions);
+  res.cookie("refresh_token", session.refresh_token, refreshCookieOptions);
+};
+
 // ===== SERVE VIEWS =====
 export const serveLogin = (req, res) => res.render("auth/login");
 export const serveRegister = (req, res) => res.render("auth/register");
@@ -8,12 +27,24 @@ export const serveRegister = (req, res) => res.render("auth/register");
 export const registerUser = async (req, res) => {
   const { first_name, last_name, username, email, password } = req.body;
 
+  // Check username is not taken
+  const { data: existing } = await supabase
+    .from("user")
+    .select("user_id")
+    .eq("username", username)
+    .single();
+
+  if (existing) {
+    return res.render("auth/register", {
+      error: "That username is already taken",
+      fields: { first_name, last_name, username, email },
+    });
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: { first_name, last_name, username },
-    },
+    options: { data: { first_name, last_name, username } },
   });
 
   if (error) {
@@ -23,7 +54,6 @@ export const registerUser = async (req, res) => {
     });
   }
 
-  // No session means email already exists
   if (!data.session) {
     return res.render("auth/register", {
       error:
@@ -32,17 +62,22 @@ export const registerUser = async (req, res) => {
     });
   }
 
-  res.cookie("access_token", data.session.access_token, {
-    httpOnly: true,
-    sameSite: "lax",
+  // Write full profile to user table — trigger only saves user_id and user_email
+  await supabase.from("user").upsert({
+    user_id: data.user.id,
+    user_email: email,
+    username,
+    first_name,
+    last_name,
   });
+
+  setSessionCookies(res, data.session);
   res.redirect("/dashboard");
 };
 
 export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
-  // Look up email from username
   const { data: userData, error: lookupError } = await supabase
     .from("user")
     .select("user_email")
@@ -60,10 +95,7 @@ export const loginUser = async (req, res) => {
 
   if (error) return res.render("auth/login", { error: "Invalid password" });
 
-  res.cookie("access_token", data.session.access_token, {
-    httpOnly: true,
-    sameSite: "lax",
-  });
+  setSessionCookies(res, data.session);
   res.redirect("/dashboard");
 };
 
@@ -85,15 +117,18 @@ export const authCallback = (req, res) => {
 };
 
 export const setSession = (req, res) => {
-  const { access_token } = req.body;
+  const { access_token, refresh_token } = req.body;
   if (!access_token)
     return res.status(400).json({ error: "No token provided" });
-  res.cookie("access_token", access_token, { httpOnly: true, sameSite: "lax" });
+  res.cookie("access_token", access_token, cookieOptions);
+  if (refresh_token)
+    res.cookie("refresh_token", refresh_token, refreshCookieOptions);
   res.json({ success: true });
 };
 
 // ===== SIGN OUT =====
 export const signOut = (req, res) => {
   res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
   res.redirect("/login");
 };
