@@ -4,28 +4,33 @@ let map, marker;
 const latInput = document.getElementById("spot_latitude");
 const lonInput = document.getElementById("spot_longitude");
 
-const initMap = (lat = 52.5, lon = -1.5, zoom = 6) => {
-  map = L.map("location-map").setView([lat, lon], zoom);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
+const initMap = (lat = 52.5, lon = -1.5, zoom = 5) => {
+  map = new maplibregl.Map({
+    container: "location-map",
+    style: "https://tiles.openfreemap.org/styles/liberty",
+    center: [lon, lat],
+    zoom: zoom,
+  });
 
   map.on("click", (e) => {
-    placeMarker(e.latlng.lat, e.latlng.lng);
+    placeMarker(e.lngLat.lat, e.lngLat.lng);
   });
 };
 
 const placeMarker = (lat, lon) => {
   if (marker) marker.remove();
-  marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+
+  marker = new maplibregl.Marker({ draggable: true })
+    .setLngLat([lon, lat])
+    .addTo(map);
+
   latInput.value = lat;
   lonInput.value = lon;
 
-  marker.on("dragend", (e) => {
-    const pos = e.target.getLatLng();
-    latInput.value = pos.lat;
-    lonInput.value = pos.lng;
+  marker.on("dragend", () => {
+    const lngLat = marker.getLngLat();
+    latInput.value = lngLat.lat;
+    lonInput.value = lngLat.lng;
   });
 };
 
@@ -36,7 +41,7 @@ const clearLocation = () => {
   }
   latInput.value = "";
   lonInput.value = "";
-  map.setView([52.5, -1.5], 6);
+  map.flyTo({ center: [-1.5, 52.5], zoom: 5 });
   document.getElementById("location-status").textContent = "";
 };
 
@@ -73,7 +78,6 @@ photoInput?.addEventListener("change", async (e) => {
 
     if (!exif) return;
 
-    // Camera info
     const camera = exif.Model;
     const shutter = exif.ExposureTime
       ? formatShutterSpeed(exif.ExposureTime)
@@ -93,7 +97,6 @@ photoInput?.addEventListener("change", async (e) => {
       document.getElementById("exif-panel").style.display = "block";
     }
 
-    // Date — set the datetime input from EXIF timestamp
     if (exif.DateTimeOriginal) {
       const dt = document.getElementById("spot_timestamp");
       const d = new Date(exif.DateTimeOriginal);
@@ -101,15 +104,14 @@ photoInput?.addEventListener("change", async (e) => {
       dt.value = d.toISOString().slice(0, 16);
     }
 
-    // GPS
     if (exif.latitude && exif.longitude) {
       placeMarker(exif.latitude, exif.longitude);
-      map.setView([exif.latitude, exif.longitude], 15);
+      map.flyTo({ center: [exif.longitude, exif.latitude], zoom: 15 });
       document.getElementById("location-status").textContent =
         "Location detected from photo";
     }
-  } catch (err) {
-    console.error("EXIF error:", err);
+  } catch {
+    // No EXIF — continue silently
   }
 });
 
@@ -124,15 +126,15 @@ const createUnitRow = () => {
     <div class="unit-fields">
       <div class="field">
         <label>Unit number</label>
-        <input type="text" name="unit_number[]" placeholder="47805" required />
+        <input type="text" name="unit_number" placeholder="47805" required />
       </div>
       <div class="field">
         <label>Class <span class="optional">(optional)</span></label>
-        <input type="text" name="unit_class[]" placeholder="Class 47" />
+        <input type="text" name="unit_class" placeholder="Class 47" />
       </div>
       <div class="field">
         <label>Operator <span class="optional">(optional)</span></label>
-        <input type="text" name="unit_operator[]" placeholder="LNER" />
+        <input type="text" name="unit_operator" placeholder="LNER" />
       </div>
     </div>
     <button type="button" class="btn-remove-unit" aria-label="Remove unit">✕</button>
@@ -151,7 +153,6 @@ addUnitBtn?.addEventListener("click", () => {
   unitsContainer.appendChild(createUnitRow());
 });
 
-// ===== CLEAR LOCATION BUTTON =====
 document
   .getElementById("clear-location")
   ?.addEventListener("click", clearLocation);
@@ -160,7 +161,6 @@ document
 unitsContainer?.appendChild(createUnitRow());
 initMap();
 
-// Set datetime to now
 const dt = document.getElementById("spot_timestamp");
 if (dt) {
   const now = new Date();

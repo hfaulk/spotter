@@ -1,0 +1,95 @@
+<%- include('../partials/header') %>
+
+<div class="show-page">
+
+  <div class="spot-image-full" id="unit-hero">
+    <a href="/profile" class="spot-back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back
+    </a>
+    <div class="unit-hero-placeholder" id="unit-hero-placeholder"></div>
+    <img id="unit-hero-img" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover;" />
+  </div>
+
+  <div class="show-right">
+    <div class="spot-title-block">
+      <h1 class="unit-hero-number"><%= unit.unit_number %></h1>
+      <div class="unit-hero-meta">
+        <% if (unit.unit_class) { %><span class="unit-badge"><%= unit.unit_class %></span><% } %>
+        <% if (unit.unit_operator) { %><span class="unit-badge"><%= unit.unit_operator %></span><% } %>
+      </div>
+      <p class="unit-spotted-count"><%= spots.length %> time<%= spots.length !== 1 ? 's' : '' %> spotted</p>
+    </div>
+
+    <div class="spot-content">
+
+      <div class="spot-card" id="wiki-card" style="display:none;">
+        <h2>About this class</h2>
+        <div id="wiki-content">
+          <p class="section-hint">Loading...</p>
+        </div>
+      </div>
+
+      <% if (spots.length > 0) { %>
+        <p style="font-size:0.75rem; font-weight:bold; color:grey; text-transform:uppercase; letter-spacing:0.08em;">Your spots</p>
+        <% spots.forEach(spot => { %>
+          <a href="/spots/<%= spot.spot_id %>" class="spot-item" style="border-radius:8px; border:1px solid #eee;">
+            <div class="spot-item-photo <%= !spot.imageUrl ? 'spot-item-no-photo' : '' %>">
+              <% if (spot.imageUrl) { %>
+                <img src="<%= spot.imageUrl %>" alt="<%= spot.spot_title %>" />
+              <% } else { %>
+                <span>No photo</span>
+              <% } %>
+            </div>
+            <div class="spot-item-info">
+              <p class="spot-item-title"><%= spot.spot_title %></p>
+              <p class="spot-item-time"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB') %></p>
+            </div>
+          </a>
+        <% }) %>
+      <% } %>
+
+    </div>
+  </div>
+
+  <%- include('../partials/bottomnav', { activePage }) %>
+</div>
+
+<script>
+  const unitClass = '<%= unit.unit_class || "" %>'
+
+  if (unitClass) {
+    const classNum = unitClass.replace(/[^0-9]/g, '')
+    const wikiTitle = classNum ? `British_Rail_Class_${classNum}` : null
+
+    if (wikiTitle) {
+      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`)
+        .then(res => res.json())
+        .then(data => {
+          const imgSrc = data.originalimage?.source || data.thumbnail?.source
+          if (imgSrc) {
+            const heroImg = document.getElementById('unit-hero-img')
+            const placeholder = document.getElementById('unit-hero-placeholder')
+            heroImg.src = imgSrc
+            heroImg.style.display = 'block'
+            placeholder.style.display = 'none'
+          }
+
+          if (data.extract) {
+            document.getElementById('wiki-card').style.display = 'flex'
+            document.getElementById('wiki-content').innerHTML = `
+              <p style="font-size:0.9rem; color:#333; line-height:1.6;">${data.extract}</p>
+              <a href="${data.content_urls?.desktop?.page}" target="_blank" rel="noopener"
+                style="font-size:0.8rem; color:midnightblue;">Read more on Wikipedia →</a>
+            `
+          }
+        })
+        .catch(() => {})
+    }
+  }
+</script>
+
+</body>
+</html>

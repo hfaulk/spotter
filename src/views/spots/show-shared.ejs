@@ -1,22 +1,24 @@
 <%- include('../partials/header') %>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
 
-<div class="page-panel">
+<div class="show-page">
 
-  <div class="page-header">
-    <h1><%= spot.spot_title %></h1>
-  </div>
+    <header class="topbar">
+      <div class="topbar-left"></div>
+      <span class="topbar-logo">Spotter</span>
+      <div class="topbar-right"></div>
+    </header>
 
-  <!-- PHOTO -->
   <% if (imageUrl) { %>
-    <div class="spot-photo">
+    <div class="spot-image-full">
       <img src="<%= imageUrl %>" alt="<%= spot.spot_title %>" />
     </div>
   <% } %>
 
-  <div class="spot-body">
+  <div class="spot-content">
 
-    <div class="spot-card">
+    <div class="spot-title-block">
+      <h1 class="spot-title"><%= spot.spot_title %></h1>
       <% if (spot.spot_description) { %>
         <p class="spot-description"><%= spot.spot_description %></p>
       <% } %>
@@ -30,12 +32,8 @@
           <% units.forEach(unit => { %>
             <div class="unit-chip">
               <span class="unit-number"><%= unit.unit_number %></span>
-              <% if (unit.unit_class) { %>
-                <span class="unit-meta"><%= unit.unit_class %></span>
-              <% } %>
-              <% if (unit.unit_operator) { %>
-                <span class="unit-meta"><%= unit.unit_operator %></span>
-              <% } %>
+              <% if (unit.unit_class) { %><span class="unit-meta"><%= unit.unit_class %></span><% } %>
+              <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator %></span><% } %>
             </div>
           <% }) %>
         </div>
@@ -60,18 +58,21 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 <script>
   const mapEl = document.getElementById('spot-map')
   if (mapEl) {
     const lat = parseFloat(mapEl.dataset.lat)
     const lon = parseFloat(mapEl.dataset.lon)
-    const map = L.map('spot-map', { zoomControl: true, dragging: false, scrollWheelZoom: false })
-      .setView([lat, lon], 14)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map)
-    L.marker([lat, lon]).addTo(map)
+    const map = new maplibregl.Map({
+      container: 'spot-map',
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+      center: [lon, lat],
+      zoom: 14
+    })
+    map.on('load', () => {
+      new maplibregl.Marker().setLngLat([lon, lat]).addTo(map)
+    })
   }
 </script>
 

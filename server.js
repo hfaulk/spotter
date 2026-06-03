@@ -31,10 +31,14 @@ import {
   upload,
 } from "./src/controllers/spotController.js";
 
+import { showUnit } from "./src/controllers/unitController.js";
+
+import { serveProfile } from "./src/controllers/profileController.js";
+import {
+  serveSettings,
+  updateProfile,
+} from "./src/controllers/settingsController.js";
 import { requireAuth, requireOnboarding } from "./src/middleware/auth.js";
-import { getSpotsByUser } from "./src/models/spotModel.js";
-import { getUnitsBySpot } from "./src/models/unitModel.js";
-import supabase from "./src/config/supabase.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +56,7 @@ app.use(cookieParser());
 // ===== ROOT =====
 app.get("/", (req, res) => res.redirect("/login"));
 
-// ===== AUTH ROUTES =====
+// ===== AUTH =====
 app.get("/login", serveLogin);
 app.get("/register", serveRegister);
 app.post("/login", loginUser);
@@ -70,31 +74,19 @@ app.post("/auth/reset-password", submitResetPassword);
 app.get("/onboarding", requireAuth, serveOnboarding);
 app.post("/onboarding", requireAuth, submitOnboarding);
 
-// ===== DASHBOARD =====
-app.get("/dashboard", requireAuth, requireOnboarding, async (req, res) => {
-  const { data: spots } = await getSpotsByUser(req.user.id);
+// ===== PROFILE =====
+app.get("/profile", requireAuth, requireOnboarding, serveProfile);
 
-  const spotsWithData = await Promise.all(
-    (spots || []).map(async (spot) => {
-      const { data: unitData } = await getUnitsBySpot(spot.spot_id);
-      const units = unitData?.map((row) => row.unit) || [];
-
-      let imageUrl = null;
-      if (spot.image_path) {
-        const { data } = supabase.storage
-          .from("spot-images")
-          .getPublicUrl(spot.image_path);
-        imageUrl = data.publicUrl;
-      }
-
-      return { ...spot, units, imageUrl };
-    }),
-  );
-
-  res.render("dashboard", { user: req.user, spots: spotsWithData });
+// ===== MAP =====
+app.get("/map", requireAuth, requireOnboarding, (req, res) => {
+  res.render("map", { activePage: "map" });
 });
 
-// ===== SPOT ROUTES =====
+// ===== SETTINGS =====
+app.get("/settings", requireAuth, requireOnboarding, serveSettings);
+app.post("/settings/profile", requireAuth, requireOnboarding, updateProfile);
+
+// ===== SPOTS =====
 app.get("/spots/new", requireAuth, requireOnboarding, serveNewSpot);
 app.post(
   "/spots",
@@ -105,8 +97,14 @@ app.post(
 );
 app.get("/spots/:spotId", requireAuth, requireOnboarding, showSpot);
 
-// ===== PUBLIC ROUTES =====
+// ===== UNITS =====
+app.get("/units/:unitId", requireAuth, requireOnboarding, showUnit);
+
+// ===== PUBLIC =====
 app.get("/s/:token", showSharedSpot);
+
+// ===== REDIRECT LEGACY DASHBOARD =====
+app.get("/dashboard", (req, res) => res.redirect("/profile"));
 
 // ===== START =====
 const PORT = process.env.PORT || 3000;

@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+
+<div class="app-page">
+  <%- include('partials/topbar') %>
+
+  <main class="app-content app-content-map">
+    <div id="main-map"></div>
+  </main>
+
+  <%- include('partials/bottomnav', { activePage }) %>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+<script>
+  const map = new maplibregl.Map({
+    container: 'main-map',
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+    center: [-1.5, 52.5],
+    zoom: 6
+  })
+</script>
+
+</body>
+</html>

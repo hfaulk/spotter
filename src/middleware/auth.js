@@ -1,17 +1,18 @@
 import supabase from "../config/supabase.js";
+import { getUserById } from "../models/userModel.js";
 
 const cookieOptions = {
   httpOnly: true,
   sameSite: "lax",
   secure: process.env.NODE_ENV === "production",
-  maxAge: 60 * 60 * 1000, // 1 hour
+  maxAge: 60 * 60 * 1000,
 };
 
 const refreshCookieOptions = {
   httpOnly: true,
   sameSite: "lax",
   secure: process.env.NODE_ENV === "production",
-  maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
+  maxAge: 60 * 60 * 24 * 30 * 1000,
 };
 
 export const requireAuth = async (req, res, next) => {
@@ -20,7 +21,6 @@ export const requireAuth = async (req, res, next) => {
 
   if (!token && !refreshToken) return res.redirect("/login");
 
-  // Try access token first
   const {
     data: { user },
     error,
@@ -28,10 +28,12 @@ export const requireAuth = async (req, res, next) => {
 
   if (!error && user) {
     req.user = user;
+    const { data: profile } = await getUserById(user.id);
+    res.locals.currentUser = profile;
+    res.locals.authUser = user;
     return next();
   }
 
-  // Access token failed — try refreshing
   if (!refreshToken) {
     res.clearCookie("access_token");
     return res.redirect("/login");
@@ -48,7 +50,6 @@ export const requireAuth = async (req, res, next) => {
     return res.redirect("/login");
   }
 
-  // Set new cookies with refreshed tokens
   res.cookie("access_token", refreshData.session.access_token, cookieOptions);
   res.cookie(
     "refresh_token",
@@ -57,6 +58,9 @@ export const requireAuth = async (req, res, next) => {
   );
 
   req.user = refreshData.user;
+  const { data: profile } = await getUserById(refreshData.user.id);
+  res.locals.currentUser = profile;
+  res.locals.authUser = refreshData.user;
   next();
 };
 

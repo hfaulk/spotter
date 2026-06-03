@@ -1,0 +1,111 @@
+<%- include('partials/header') %>
+
+<div class="app-page">
+  <%- include('partials/topbar') %>
+
+  <main class="app-content">
+
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <%= profile?.first_name?.[0]?.toUpperCase() || '?' %><%= profile?.last_name?.[0]?.toUpperCase() || '' %>
+      </div>
+      <div class="profile-info">
+        <p class="profile-name"><%= profile?.first_name || '' %> <%= profile?.last_name || '' %></p>
+        <p class="profile-username">@<%= profile?.username || '' %></p>
+        <div class="profile-stats">
+          <div class="stat">
+            <span class="stat-value"><%= spots.length %></span>
+            <span class="stat-label">Spots</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value"><%= collection.length %></span>
+            <span class="stat-label">Units</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" data-tab="spots">Spots</button>
+      <button class="tab" data-tab="units">Units</button>
+    </div>
+
+    <!-- SPOTS TAB -->
+    <div class="tab-content" id="tab-spots">
+      <% if (spots.length === 0) { %>
+        <div class="empty-state">
+          <p>No spots yet.</p>
+          <p class="empty-hint">Hit the + button to log your first spot.</p>
+        </div>
+      <% } else { %>
+        <div class="spots-list">
+          <% spots.forEach(spot => { %>
+            <a href="/spots/<%= spot.spot_id %>" class="spot-item">
+              <div class="spot-item-photo <%= !spot.imageUrl ? 'spot-item-no-photo' : '' %>">
+                <% if (spot.imageUrl) { %>
+                  <img src="<%= spot.imageUrl %>" alt="<%= spot.spot_title %>" />
+                <% } else { %>
+                  <span>No photo</span>
+                <% } %>
+              </div>
+              <div class="spot-item-info">
+                <p class="spot-item-title"><%= spot.spot_title %></p>
+                <% if (spot.units.length > 0) { %>
+                  <p class="spot-item-units"><%= spot.units.map(u => u.unit_number).join(', ') %></p>
+                <% } %>
+                <p class="spot-item-time"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB') %></p>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- UNITS TAB -->
+    <div class="tab-content hidden" id="tab-units">
+      <% if (collection.length === 0) { %>
+        <div class="empty-state">
+          <p>No units in your collection yet.</p>
+          <p class="empty-hint">Units appear here when you log a spot.</p>
+        </div>
+      <% } else { %>
+          <div class="collection-list">
+            <% collection.forEach(unit => { %>
+              <a href="/units/<%= unit.unit_id %>" class="collection-item">
+                <div class="collection-item-info">
+                  <span class="unit-number"><%= unit.unit_number %></span>
+                  <div class="collection-item-meta">
+                    <% if (unit.unit_class) { %><span class="unit-meta"><%= unit.unit_class %></span><% } %>
+                    <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator %></span><% } %>
+                  </div>
+                </div>
+                <div class="collection-item-count">
+                  <span class="times-spotted"><%= unit.times_spotted %></span>
+                  <span class="times-spotted-label">spotted</span>
+                </div>
+              </a>
+            <% }) %>
+          </div>
+      <% } %>
+    </div>
+
+  </main>
+
+  <%- include('partials/bottomnav', { activePage }) %>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'))
+      tab.classList.add('active')
+      document.getElementById(`tab-${tab.dataset.tab}`).classList.remove('hidden')
+    })
+  })
+</script>
+
+</body>
+</html>

@@ -5,7 +5,6 @@ export const findOrCreateUnit = async ({
   unit_class,
   unit_operator,
 }) => {
-  // Check if unit already exists
   const { data: existing } = await supabase
     .from("unit")
     .select("*")
@@ -14,7 +13,6 @@ export const findOrCreateUnit = async ({
 
   if (existing) return { data: existing, error: null };
 
-  // Create new unit
   const { data, error } = await supabase
     .from("unit")
     .insert({
@@ -41,6 +39,52 @@ export const getUnitsBySpot = async (spotId) => {
     .from("spot_unit")
     .select("unit(*)")
     .eq("spot_id", spotId);
+
+  return { data, error };
+};
+
+export const getUserCollection = async (userId) => {
+  // Get all spot_units joined through the user's spots
+  const { data, error } = await supabase
+    .from("spot_unit")
+    .select("unit(*), spot!inner(user_id)")
+    .eq("spot.user_id", userId);
+
+  if (error) return { data: null, error };
+
+  // Aggregate unit counts
+  const unitMap = {};
+  data?.forEach((row) => {
+    const unit = row.unit;
+    if (!unitMap[unit.unit_id]) {
+      unitMap[unit.unit_id] = { ...unit, times_spotted: 0 };
+    }
+    unitMap[unit.unit_id].times_spotted++;
+  });
+
+  const collection = Object.values(unitMap).sort(
+    (a, b) => b.times_spotted - a.times_spotted,
+  );
+
+  return { data: collection, error: null };
+};
+
+export const getUnitById = async (unitId) => {
+  const { data, error } = await supabase
+    .from("unit")
+    .select("*")
+    .eq("unit_id", unitId)
+    .single();
+
+  return { data, error };
+};
+
+export const getSpotsByUnit = async (unitId, userId) => {
+  const { data, error } = await supabase
+    .from("spot_unit")
+    .select("spot(*)")
+    .eq("unit_id", unitId)
+    .eq("spot.user_id", userId);
 
   return { data, error };
 };
