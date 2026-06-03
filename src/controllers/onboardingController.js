@@ -17,11 +17,12 @@ export const submitOnboarding = async (req, res) => {
   const { username, first_name, last_name } = req.body;
   const userId = req.user.id;
 
-  // Check username is not taken
+  // Check username not taken by someone ELSE
   const { data: existing } = await supabase
     .from("user")
     .select("user_id")
     .eq("username", username)
+    .neq("user_id", userId)
     .single();
 
   if (existing) {
@@ -43,5 +44,5 @@ export const submitOnboarding = async (req, res) => {
     });
   }
 
-  res.redirect("/dashboard");
+  res.redirect("/profile");
 };

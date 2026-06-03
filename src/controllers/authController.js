@@ -33,7 +33,6 @@ export const serveRegister = (req, res) => res.render("auth/register");
 export const registerUser = async (req, res) => {
   const { first_name, last_name, username, email, password } = req.body;
 
-  // Check username is not taken
   const { data: existing } = await supabase
     .from("user")
     .select("user_id")
@@ -60,25 +59,27 @@ export const registerUser = async (req, res) => {
     });
   }
 
-  if (!data.session) {
-    return res.render("auth/register", {
-      error:
-        "An account with this email already exists. Try signing in with Google instead.",
-      fields: { first_name, last_name, username, email },
+  // Always upsert user table regardless of session state
+  if (data.user) {
+    await supabase.from("user").upsert({
+      user_id: data.user.id,
+      user_email: email,
+      username,
+      first_name,
+      last_name,
     });
   }
 
-  // Write full profile to user table — trigger only saves user_id and user_email
-  await supabase.from("user").upsert({
-    user_id: data.user.id,
-    user_email: email,
-    username,
-    first_name,
-    last_name,
-  });
+  // No session = email confirmation required
+  if (!data.session) {
+    return res.render("auth/register", {
+      success: "Check your email to confirm your account before logging in.",
+      fields: {},
+    });
+  }
 
   setSessionCookies(res, data.session);
-  res.redirect("/dashboard");
+  res.redirect("/profile");
 };
 
 export const loginUser = async (req, res) => {
@@ -102,7 +103,7 @@ export const loginUser = async (req, res) => {
   if (error) return res.render("auth/login", { error: "Invalid password" });
 
   setSessionCookies(res, data.session);
-  res.redirect("/dashboard");
+  res.redirect("/profile");
 };
 
 // ===== GOOGLE AUTH =====
