@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import supabase from "../config/supabase.js";
 import crypto from "crypto";
 
@@ -16,7 +15,7 @@ export const createSpot = async ({
   image_focal_length,
   image_camera,
 }) => {
-  const spot_share_token = crypto.randomBytes(5).toString("hex"); // 10 char hex string
+  const spot_share_token = crypto.randomBytes(5).toString("hex");
 
   const { data, error } = await supabase
     .from("spot")
@@ -78,4 +77,35 @@ export const deleteStorageImage = async (imagePath) => {
     .remove([imagePath]);
 
   return { error };
+};
+
+export const deleteSpot = async (spotId, userId) => {
+  // Verify ownership
+  const { data: spot, error: fetchError } = await supabase
+    .from("spot")
+    .select("spot_id, image_path")
+    .eq("spot_id", spotId)
+    .eq("user_id", userId)
+    .single();
+
+  if (fetchError || !spot) return { error: "Spot not found" };
+
+  // Delete spot_unit records first
+  await supabase.from("spot_unit").delete().eq("spot_id", spotId);
+
+  // Delete spot record
+  const { error: deleteError } = await supabase
+    .from("spot")
+    .delete()
+    .eq("spot_id", spotId)
+    .eq("user_id", userId);
+
+  if (deleteError) return { error: deleteError };
+
+  // Delete photo from storage if exists
+  if (spot.image_path) {
+    await supabase.storage.from("spot-images").remove([spot.image_path]);
+  }
+
+  return { error: null };
 };

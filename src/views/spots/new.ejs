@@ -17,7 +17,13 @@
         <div class="photo-upload">
           <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/heic,image/heif" />
           <label for="photo" class="photo-label">
-            <span id="photo-label-text">Tap to add a photo</span>
+            <div class="photo-label-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span id="photo-label-text">Add a photo</span>
+            </div>
           </label>
           <img id="photo-preview" src="" alt="" style="display:none;" />
         </div>

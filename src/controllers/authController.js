@@ -59,18 +59,6 @@ export const registerUser = async (req, res) => {
     });
   }
 
-  // Always upsert user table regardless of session state
-  if (data.user) {
-    await supabase.from("user").upsert({
-      user_id: data.user.id,
-      user_email: email,
-      username,
-      first_name,
-      last_name,
-    });
-  }
-
-  // No session = email confirmation required
   if (!data.session) {
     return res.render("auth/register", {
       success: "Check your email to confirm your account before logging in.",

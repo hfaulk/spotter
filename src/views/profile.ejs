@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
 <div class="app-page">
-  <%- include('partials/topbar') %>
+  <%- include('partials/topbar', { showSettings: true }) %>
 
   <main class="app-content">
 
@@ -55,7 +55,7 @@
                 <% if (spot.units.length > 0) { %>
                   <p class="spot-item-units"><%= spot.units.map(u => u.unit_number).join(', ') %></p>
                 <% } %>
-                <p class="spot-item-time"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB') %></p>
+                <p class="spot-item-time"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
               </div>
             </a>
           <% }) %>

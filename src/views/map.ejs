@@ -2,13 +2,20 @@
 <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
 
 <div class="app-page">
-  <%- include('partials/topbar') %>
+  <header class="topbar topbar-map">
+    <span class="topbar-logo">
+      <svg width="7" height="7" viewBox="0 0 7 7">
+        <circle cx="3.5" cy="3.5" r="3.5" fill="white"/>
+      </svg>
+      Spotter
+    </span>
+  </header>
 
   <main class="app-content app-content-map">
     <div id="main-map"></div>
   </main>
 
-  <%- include('partials/bottomnav', { activePage }) %>
+  <%- include('partials/bottomnav', { activePage: 'map' }) %>
 </div>
 
 <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>

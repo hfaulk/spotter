@@ -7,6 +7,7 @@ import {
   getSpotById,
   getSpotByShareToken,
   deleteStorageImage,
+  deleteSpot,
 } from "../models/spotModel.js";
 import {
   findOrCreateUnit,
@@ -35,7 +36,7 @@ const fileFilter = (req, file, cb) => {
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 // ===== SERVE VIEWS =====
@@ -57,7 +58,6 @@ export const createSpotController = async (req, res) => {
       spot_timestamp,
     } = req.body;
 
-    // ===== VALIDATION =====
     if (!spot_title?.trim()) {
       return res.render("spots/new", { error: "A title is required" });
     }
@@ -70,7 +70,6 @@ export const createSpotController = async (req, res) => {
     }
 
     // ===== EXIF EXTRACTION =====
-    // Read EXIF from original buffer before any conversion
     let exifData = {};
     if (req.file) {
       try {
@@ -96,7 +95,7 @@ export const createSpotController = async (req, res) => {
       }
     }
 
-    // ===== CONVERT HEIC TO JPEG IF NEEDED =====
+    // ===== CONVERT HEIC =====
     let fileBuffer = req.file?.buffer;
     let fileMimeType = req.file?.mimetype;
 
@@ -130,6 +129,7 @@ export const createSpotController = async (req, res) => {
         });
 
       if (uploadError) {
+        console.error("Storage upload error:", uploadError);
         return res.render("spots/new", {
           error: "Photo upload failed, please try again",
         });
@@ -154,7 +154,6 @@ export const createSpotController = async (req, res) => {
     });
 
     if (spotError) {
-      console.error("Spot insert error:", spotError);
       if (imagePath) await deleteStorageImage(imagePath);
       return res.render("spots/new", {
         error: "Failed to save spot, please try again",
@@ -184,10 +183,7 @@ export const showSpot = async (req, res) => {
   const userId = req.user.id;
 
   const { data: spot, error } = await getSpotById(spotId, userId);
-
-  if (error || !spot) {
-    return res.redirect("/dashboard");
-  }
+  if (error || !spot) return res.redirect("/profile");
 
   const { data: unitData } = await getUnitsBySpot(spotId);
   const units = unitData?.map((row) => row.unit) || [];
@@ -203,15 +199,12 @@ export const showSpot = async (req, res) => {
   res.render("spots/show", { spot, units, imageUrl });
 };
 
-// ===== SHOW SHARED SPOT (public, no auth) =====
+// ===== SHOW SHARED SPOT =====
 export const showSharedSpot = async (req, res) => {
   const { token } = req.params;
 
   const { data: spot, error } = await getSpotByShareToken(token);
-
-  if (error || !spot) {
-    return res.redirect("/");
-  }
+  if (error || !spot) return res.redirect("/");
 
   const { data: unitData } = await getUnitsBySpot(spot.spot_id);
   const units = unitData?.map((row) => row.unit) || [];
@@ -225,6 +218,21 @@ export const showSharedSpot = async (req, res) => {
   }
 
   res.render("spots/show-shared", { spot, units, imageUrl });
+};
+
+// ===== DELETE SPOT =====
+export const deleteSpotController = async (req, res) => {
+  const { spotId } = req.params;
+  const userId = req.user.id;
+
+  const { error } = await deleteSpot(spotId, userId);
+
+  if (error) {
+    console.error("Delete spot error:", error);
+    return res.redirect(`/spots/${spotId}`);
+  }
+
+  res.redirect("/profile");
 };
 
 // ===== HELPERS =====

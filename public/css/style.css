@@ -8,9 +8,15 @@
 }
 
 body {
-    font-family: sans-serif;
-    background-color: #f4f4f4;
+    font-family: "Inter", sans-serif;
+    background-color: #f9fafb;
     min-height: 100dvh;
+}
+
+input,
+textarea,
+button {
+    font-family: "Inter", sans-serif;
 }
 
 a {
@@ -32,8 +38,8 @@ a:hover {
 
 .auth-card {
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
     padding: 2rem 1.75rem;
     width: 100%;
     max-width: 420px;
@@ -63,7 +69,7 @@ a:hover {
 .auth-card h2 {
     font-size: 1rem;
     font-weight: normal;
-    color: grey;
+    color: #888;
     margin-bottom: 1.5rem;
 }
 
@@ -87,17 +93,17 @@ a:hover {
 }
 
 label {
-    font-size: 0.8rem;
-    font-weight: bold;
+    font-size: 0.78rem;
+    font-weight: 600;
     color: #555;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 input {
-    background: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    background: #f5f7fa;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     color: #111;
     font-family: sans-serif;
     font-size: 0.95rem;
@@ -117,9 +123,9 @@ input:disabled {
 }
 
 textarea {
-    background: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    background: #f5f7fa;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     color: #111;
     font-family: sans-serif;
     font-size: 0.95rem;
@@ -135,9 +141,9 @@ textarea:focus {
 }
 
 input[type="datetime-local"] {
-    background: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    background: #f5f7fa;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     color: #111;
     font-family: sans-serif;
     font-size: 0.95rem;
@@ -148,8 +154,8 @@ input[type="datetime-local"] {
 
 .form-error {
     background: #fff0f0;
-    border: 1px solid darkred;
-    border-radius: 6px;
+    border: 1px solid #ffb3b3;
+    border-radius: 8px;
     color: darkred;
     font-size: 0.875rem;
     padding: 0.65rem 0.85rem;
@@ -158,9 +164,9 @@ input[type="datetime-local"] {
 
 .form-success {
     background: #f0fff4;
-    border: 1px solid green;
-    border-radius: 6px;
-    color: green;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    color: #166534;
     font-size: 0.875rem;
     padding: 0.65rem 0.85rem;
     margin-bottom: 0.5rem;
@@ -170,12 +176,12 @@ input[type="datetime-local"] {
 .btn-primary {
     background: midnightblue;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     color: white;
     cursor: pointer;
     font-family: sans-serif;
     font-size: 0.95rem;
-    font-weight: bold;
+    font-weight: 600;
     padding: 0.75rem;
     width: 100%;
     margin-top: 0.25rem;
@@ -193,8 +199,8 @@ input[type="datetime-local"] {
 
 .btn-secondary {
     background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     color: midnightblue;
     cursor: pointer;
     font-family: sans-serif;
@@ -212,8 +218,8 @@ input[type="datetime-local"] {
 
 .btn-danger {
     background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     color: darkred;
     cursor: pointer;
     font-family: sans-serif;
@@ -238,8 +244,8 @@ input[type="datetime-local"] {
     justify-content: center;
     gap: 0.6rem;
     background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     color: #111;
     font-size: 0.95rem;
     font-weight: 500;
@@ -258,7 +264,7 @@ input[type="datetime-local"] {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: grey;
+    color: #aaa;
     font-size: 0.8rem;
     margin: 1rem 0;
 }
@@ -268,12 +274,12 @@ input[type="datetime-local"] {
     content: "";
     flex: 1;
     height: 1px;
-    background: #ddd;
+    background: #e4e8f0;
 }
 
 /* ===== AUTH MISC ===== */
 .auth-link {
-    color: grey;
+    color: #888;
     font-size: 0.875rem;
     text-align: center;
     margin-top: 1.25rem;
@@ -296,19 +302,19 @@ input[type="datetime-local"] {
 
 .optional {
     font-weight: normal;
-    color: grey;
+    color: #aaa;
     text-transform: none;
     letter-spacing: 0;
 }
 
 .field-hint {
     font-size: 0.78rem;
-    color: grey;
+    color: #aaa;
     margin-top: 0.15rem;
 }
 
 .callback-msg {
-    color: grey;
+    color: #888;
     font-size: 0.9rem;
     text-align: center;
     padding: 1rem 0;
@@ -329,7 +335,7 @@ input[type="datetime-local"] {
     overflow-y: auto;
     padding-top: 56px;
     padding-bottom: 64px;
-    background: #f4f4f4;
+    background: #f5f7fa;
 }
 
 .app-content-map {
@@ -347,35 +353,26 @@ input[type="datetime-local"] {
     max-width: 480px;
     height: 56px;
     background: white;
-    border-bottom: 1px solid #eee;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.07);
+    display: flex;
     align-items: center;
-    padding: 0 0.5rem;
+    justify-content: space-between;
+    padding: 0 1rem;
     z-index: 100;
 }
 
 .topbar-logo {
-    font-size: 1.4rem;
-    font-weight: bold;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: midnightblue;
-    text-align: center;
-}
-
-.topbar-left {
+    letter-spacing: -0.02em;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    gap: 0.4rem;
 }
 
 .topbar-icon {
-    color: #555;
+    color: #888;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -386,8 +383,9 @@ input[type="datetime-local"] {
 }
 
 .topbar-icon:hover {
-    background: #f4f4f4;
+    background: #f5f7fa;
     text-decoration: none;
+    color: midnightblue;
 }
 
 /* ===== BOTTOM NAV ===== */
@@ -400,7 +398,7 @@ input[type="datetime-local"] {
     max-width: 480px;
     height: 64px;
     background: white;
-    border-top: 1px solid #eee;
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -412,9 +410,7 @@ input[type="datetime-local"] {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.2rem;
-    color: #aaa;
-    font-size: 0.65rem;
+    color: #999;
     text-decoration: none;
     flex: 1;
     height: 100%;
@@ -437,8 +433,7 @@ input[type="datetime-local"] {
     min-width: 48px;
     border-radius: 50%;
     flex: 0 0 48px;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 2px 8px rgba(25, 25, 112, 0.3);
+    box-shadow: 0 2px 8px rgba(25, 25, 112, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -451,6 +446,29 @@ input[type="datetime-local"] {
 }
 .nav-item-new.active {
     color: white;
+}
+
+.nav-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: midnightblue;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.nav-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.nav-avatar-active {
+    border-color: midnightblue;
 }
 
 /* ===== PAGE HEADER ===== */
@@ -475,10 +493,9 @@ input[type="datetime-local"] {
 .back-link:hover {
     text-decoration: underline;
 }
-
 .section-hint {
     font-size: 0.8rem;
-    color: grey;
+    color: #aaa;
     margin: 0;
 }
 
@@ -489,7 +506,7 @@ input[type="datetime-local"] {
     display: flex;
     gap: 1rem;
     align-items: center;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f2f8;
 }
 
 .profile-avatar {
@@ -512,7 +529,6 @@ input[type="datetime-local"] {
     gap: 0.2rem;
     min-width: 0;
 }
-
 .profile-name {
     font-weight: bold;
     font-size: 1rem;
@@ -521,7 +537,7 @@ input[type="datetime-local"] {
 }
 .profile-username {
     font-size: 0.85rem;
-    color: grey;
+    color: #aaa;
     margin: 0;
 }
 
@@ -537,7 +553,6 @@ input[type="datetime-local"] {
     align-items: center;
     gap: 0.1rem;
 }
-
 .stat-value {
     font-weight: bold;
     font-size: 1.1rem;
@@ -546,7 +561,7 @@ input[type="datetime-local"] {
 
 .stat-label {
     font-size: 0.7rem;
-    color: grey;
+    color: #aaa;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -555,7 +570,7 @@ input[type="datetime-local"] {
 .tabs {
     display: flex;
     background: white;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f2f8;
 }
 
 .tab {
@@ -568,7 +583,7 @@ input[type="datetime-local"] {
     font-family: sans-serif;
     font-size: 0.9rem;
     font-weight: 500;
-    color: grey;
+    color: #aaa;
     transition:
         color 0.15s,
         border-color 0.15s;
@@ -594,21 +609,21 @@ input[type="datetime-local"] {
     align-items: center;
     padding: 0.85rem 1rem;
     background: white;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f2f8;
     text-decoration: none;
     color: inherit;
     transition: background 0.1s;
 }
 
 .spot-item:hover {
-    background: #f9f9f9;
+    background: #fafbfd;
     text-decoration: none;
 }
 
 .spot-item-photo {
     width: 60px;
     height: 60px;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -620,7 +635,7 @@ input[type="datetime-local"] {
 }
 
 .spot-item-no-photo {
-    background: #f4f4f4;
+    background: #f0f2f8;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -628,7 +643,7 @@ input[type="datetime-local"] {
 
 .spot-item-no-photo span {
     font-size: 0.65rem;
-    color: grey;
+    color: #aaa;
 }
 
 .spot-item-info {
@@ -639,7 +654,7 @@ input[type="datetime-local"] {
 }
 
 .spot-item-title {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.95rem;
     color: #111;
     margin: 0;
@@ -659,7 +674,7 @@ input[type="datetime-local"] {
 
 .spot-item-time {
     font-size: 0.75rem;
-    color: grey;
+    color: #aaa;
     margin: 0;
 }
 
@@ -675,7 +690,7 @@ input[type="datetime-local"] {
     justify-content: space-between;
     padding: 0.85rem 1rem;
     background: white;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f2f8;
 }
 
 a.collection-item {
@@ -685,7 +700,7 @@ a.collection-item {
 }
 
 a.collection-item:hover {
-    background: #f9f9f9;
+    background: #fafbfd;
 }
 
 .collection-item-info {
@@ -713,7 +728,7 @@ a.collection-item:hover {
 
 .times-spotted-label {
     font-size: 0.65rem;
-    color: grey;
+    color: #aaa;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -722,7 +737,7 @@ a.collection-item:hover {
 .empty-state {
     text-align: center;
     padding: 3rem 1rem;
-    color: grey;
+    color: #aaa;
 }
 .empty-hint {
     font-size: 0.85rem;
@@ -738,9 +753,9 @@ a.collection-item:hover {
 }
 
 .settings-heading {
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: grey;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #aaa;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-top: 0.5rem;
@@ -753,7 +768,7 @@ a.collection-item:hover {
 }
 .settings-divider {
     height: 1px;
-    background: #eee;
+    background: #f0f2f8;
     margin: 0.5rem 0;
 }
 
@@ -761,7 +776,7 @@ a.collection-item:hover {
 #main-map {
     position: absolute;
     inset: 0;
-    top: 56px;
+    top: 0;
     bottom: 64px;
 }
 
@@ -775,8 +790,8 @@ a.collection-item:hover {
 
 .form-section {
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
@@ -784,8 +799,8 @@ a.collection-item:hover {
 }
 
 .form-section h2 {
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: midnightblue;
     margin: 0;
 }
@@ -798,10 +813,10 @@ a.collection-item:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f4f4f4;
-    border: 2px dashed #ddd;
-    border-radius: 8px;
-    color: grey;
+    background: #f5f7fa;
+    border: 2px dashed #e4e8f0;
+    border-radius: 10px;
+    color: #aaa;
     cursor: pointer;
     font-size: 0.9rem;
     min-height: 100px;
@@ -811,6 +826,7 @@ a.collection-item:hover {
 
 .photo-label:hover {
     border-color: midnightblue;
+    color: midnightblue;
 }
 
 .photo-upload input[type="file"] {
@@ -822,7 +838,7 @@ a.collection-item:hover {
 
 #photo-preview {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-top: 0.75rem;
     max-height: 300px;
     object-fit: cover;
@@ -830,9 +846,9 @@ a.collection-item:hover {
 
 #location-map {
     height: 280px;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    border: 1px solid #ddd;
+    border: 1px solid #e4e8f0;
 }
 
 .location-status {
@@ -845,7 +861,7 @@ a.collection-item:hover {
     gap: 0.5rem;
     align-items: flex-start;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f2f8;
     margin-bottom: 0.5rem;
 }
 
@@ -859,7 +875,7 @@ a.collection-item:hover {
 .btn-remove-unit {
     background: none;
     border: none;
-    color: grey;
+    color: #ccc;
     cursor: pointer;
     font-size: 1rem;
     padding: 0.25rem;
@@ -903,6 +919,7 @@ a.collection-item:hover {
     width: 100%;
     height: 200px;
     background: midnightblue;
+    opacity: 0.15;
 }
 
 .spot-back-btn {
@@ -913,7 +930,7 @@ a.collection-item:hover {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(6px);
     color: midnightblue;
     font-size: 0.875rem;
@@ -921,13 +938,18 @@ a.collection-item:hover {
     padding: 0.4rem 0.85rem 0.4rem 0.6rem;
     border-radius: 20px;
     text-decoration: none;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    border: none;
+    cursor: pointer;
 }
 
 .spot-back-btn:hover {
     text-decoration: none;
     background: white;
     color: midnightblue;
+}
+button.spot-back-btn {
+    cursor: pointer;
 }
 
 .spot-title-block {
@@ -948,16 +970,15 @@ a.collection-item:hover {
     color: #111;
     line-height: 1.2;
 }
-
 .spot-description {
     font-size: 0.95rem;
-    color: #333;
+    color: #555;
     line-height: 1.5;
     margin: 0;
 }
 .spot-timestamp {
     font-size: 0.8rem;
-    color: grey;
+    color: #aaa;
     margin: 0;
 }
 
@@ -970,9 +991,9 @@ a.collection-item:hover {
 }
 
 .spot-card {
-    background: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    background: #f9fafc;
+    border-radius: 10px;
+    border: 1px solid #f0f2f8;
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
@@ -980,8 +1001,8 @@ a.collection-item:hover {
 }
 
 .spot-card h2 {
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: midnightblue;
     margin: 0;
 }
@@ -994,8 +1015,8 @@ a.collection-item:hover {
 
 .unit-chip {
     background: white;
-    border: 1px solid #eee;
-    border-radius: 6px;
+    border: 1px solid #e8eaf5;
+    border-radius: 8px;
     padding: 0.6rem 0.85rem;
     display: flex;
     gap: 0.5rem;
@@ -1003,14 +1024,22 @@ a.collection-item:hover {
     flex-wrap: wrap;
 }
 
+a.unit-chip {
+    text-decoration: none;
+    transition: background 0.1s;
+}
+a.unit-chip:hover {
+    background: #f5f6ff;
+}
+
 .unit-number {
-    font-weight: bold;
+    font-weight: 700;
     color: midnightblue;
     font-size: 0.95rem;
 }
 .unit-meta {
     font-size: 0.8rem;
-    color: grey;
+    color: #aaa;
 }
 
 .exif-grid {
@@ -1025,10 +1054,10 @@ a.collection-item:hover {
 }
 
 .exif-label {
-    font-size: 0.75rem;
-    color: grey;
+    font-size: 0.72rem;
+    color: #aaa;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
 }
 
 .exif-value {
@@ -1041,7 +1070,7 @@ a.collection-item:hover {
     height: 220px;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #ddd;
+    border: 1px solid #e4e8f0;
 }
 
 .share-row {
@@ -1053,10 +1082,10 @@ a.collection-item:hover {
 .share-url {
     flex: 1;
     font-size: 0.8rem;
-    color: grey;
+    color: #aaa;
     background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
     padding: 0.65rem 0.85rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1071,64 +1100,14 @@ a.collection-item:hover {
 }
 .shared-cta p {
     font-size: 0.9rem;
-    color: grey;
+    color: #aaa;
 }
 
 /* ===== UNIT SHOW ===== */
-.unit-hero {
-    background: white;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1.25rem;
-}
-
-.unit-hero-content {
-    padding: 0.5rem 1rem 0;
-}
-
-.unit-hero-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: midnightblue;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-}
-
-.unit-hero-meta {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
-}
-
-.unit-badge {
-    background: #f0f0f8;
-    color: midnightblue;
-    font-size: 0.8rem;
-    font-weight: 500;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
-}
-
-.unit-spotted-count {
-    font-size: 0.85rem;
-    color: grey;
-}
-
-/* ===== MAPLIBRE OVERRIDES ===== */
-.maplibregl-ctrl-attrib {
-    font-size: 0.65rem !important;
-    background: rgba(255, 255, 255, 0.7) !important;
-}
-
-.maplibregl-ctrl-attrib a {
-    color: #666 !important;
-}
-
 .unit-hero-placeholder {
     width: 100%;
     height: 300px;
-    background: midnightblue;
-    opacity: 0.85;
+    background: #e8eaf5;
 }
 
 .unit-hero-number {
@@ -1146,37 +1125,64 @@ a.collection-item:hover {
     margin-bottom: 0.25rem;
 }
 
+.unit-badge {
+    background: #eef0fb;
+    color: midnightblue;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+}
+
 .unit-spotted-count {
     font-size: 0.85rem;
-    color: grey;
+    color: #aaa;
 }
 
-.nav-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: midnightblue;
-    color: white;
-    font-size: 0.65rem;
-    font-weight: bold;
+/* ===== MAPLIBRE OVERRIDES ===== */
+.maplibregl-ctrl-attrib {
+    font-size: 0.65rem !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.maplibregl-ctrl-attrib a {
+    color: #666 !important;
+}
+
+.photo-label-inner {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border: 2px solid transparent;
-    transition: border-color 0.15s;
+    gap: 0.5rem;
+    color: #aaa;
 }
 
-.nav-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.photo-label-inner svg {
+    color: #ccc;
 }
 
-.nav-avatar-active {
-    border-color: midnightblue;
+label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: none;
+    letter-spacing: normal;
 }
 
+.topbar-map {
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.35) 0%,
+        transparent 100%
+    );
+    box-shadow: none;
+}
+
+.topbar-map .topbar-logo {
+    color: white;
+}
+
+/* ===== DESKTOP ===== */
 @media (min-width: 768px) {
     .show-page {
         max-width: 1000px;
@@ -1219,13 +1225,11 @@ a.collection-item:hover {
     .spot-title-block {
         margin-top: 0;
         border-radius: 0;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #f0f2f8;
     }
-
     .spot-content {
         padding: 1rem;
     }
-
     .show-page .bottomnav {
         display: none;
     }

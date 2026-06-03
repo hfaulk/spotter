@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import rateLimit from "express-rate-limit";
 
 import {
   serveLogin,
@@ -28,17 +29,20 @@ import {
   createSpotController,
   showSpot,
   showSharedSpot,
+  deleteSpotController,
   upload,
 } from "./src/controllers/spotController.js";
-
-import { showUnit } from "./src/controllers/unitController.js";
 
 import { serveProfile } from "./src/controllers/profileController.js";
 import {
   serveSettings,
   updateProfile,
 } from "./src/controllers/settingsController.js";
+import { showUnit } from "./src/controllers/unitController.js";
 import { requireAuth, requireOnboarding } from "./src/middleware/auth.js";
+import { getSpotsByUser } from "./src/models/spotModel.js";
+import { getUnitsBySpot } from "./src/models/unitModel.js";
+import supabase from "./src/config/supabase.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,20 +57,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// ===== RATE LIMITING =====
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many attempts, please try again in 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // ===== ROOT =====
 app.get("/", (req, res) => res.redirect("/login"));
 
 // ===== AUTH =====
 app.get("/login", serveLogin);
 app.get("/register", serveRegister);
-app.post("/login", loginUser);
-app.post("/register", registerUser);
+app.post("/login", authLimiter, loginUser);
+app.post("/register", authLimiter, registerUser);
 app.get("/auth/google", googleAuth);
 app.get("/auth/callback", authCallback);
 app.post("/auth/session", setSession);
 app.get("/signout", signOut);
 app.get("/forgot-password", serveForgotPassword);
-app.post("/forgot-password", submitForgotPassword);
+app.post("/forgot-password", authLimiter, submitForgotPassword);
 app.get("/auth/reset-password", serveResetPassword);
 app.post("/auth/reset-password", submitResetPassword);
 
@@ -96,6 +109,12 @@ app.post(
   createSpotController,
 );
 app.get("/spots/:spotId", requireAuth, requireOnboarding, showSpot);
+app.delete(
+  "/spots/:spotId",
+  requireAuth,
+  requireOnboarding,
+  deleteSpotController,
+);
 
 // ===== UNITS =====
 app.get("/units/:unitId", requireAuth, requireOnboarding, showUnit);
@@ -103,7 +122,7 @@ app.get("/units/:unitId", requireAuth, requireOnboarding, showUnit);
 // ===== PUBLIC =====
 app.get("/s/:token", showSharedSpot);
 
-// ===== REDIRECT LEGACY DASHBOARD =====
+// ===== REDIRECT LEGACY =====
 app.get("/dashboard", (req, res) => res.redirect("/profile"));
 
 // ===== START =====

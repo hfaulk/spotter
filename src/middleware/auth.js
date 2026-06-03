@@ -64,14 +64,8 @@ export const requireAuth = async (req, res, next) => {
   next();
 };
 
-export const requireOnboarding = async (req, res, next) => {
-  const { data, error } = await supabase
-    .from("user")
-    .select("username")
-    .eq("user_id", req.user.id)
-    .single();
-
-  if (error || !data?.username) return res.redirect("/onboarding");
-
+export const requireOnboarding = (req, res, next) => {
+  const profile = res.locals.currentUser;
+  if (!profile?.username) return res.redirect("/onboarding");
   next();
 };
