@@ -1,0 +1,101 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div class="page-panel">
+  <div class="page-header">
+    <a href="/dashboard" class="back-link">← Back</a>
+    <h1>Log a spot</h1>
+  </div>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <p class="form-error" style="margin: 0 1rem 0.5rem;"><%= error %></p>
+  <% } %>
+
+  <form action="/spots" method="POST" enctype="multipart/form-data" class="spot-form">
+
+    <!-- PHOTO -->
+    <div class="form-section">
+      <h2>Photo <span class="optional">(optional)</span></h2>
+      <div class="photo-upload">
+        <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/heic,image/heif" />
+        <label for="photo" class="photo-label">
+          <span id="photo-label-text">Tap to add a photo</span>
+        </label>
+        <img id="photo-preview" src="" alt="" style="display:none;" />
+      </div>
+
+      <div id="exif-panel" style="display:none;">
+        <div class="exif-grid">
+          <div class="exif-item">
+            <span class="exif-label">Camera</span>
+            <span class="exif-value" id="exif-camera">—</span>
+          </div>
+          <div class="exif-item">
+            <span class="exif-label">Shutter</span>
+            <span class="exif-value" id="exif-shutter">—</span>
+          </div>
+          <div class="exif-item">
+            <span class="exif-label">Aperture</span>
+            <span class="exif-value" id="exif-aperture">—</span>
+          </div>
+          <div class="exif-item">
+            <span class="exif-label">ISO</span>
+            <span class="exif-value" id="exif-iso">—</span>
+          </div>
+          <div class="exif-item">
+            <span class="exif-label">Focal length</span>
+            <span class="exif-value" id="exif-focal">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="form-section">
+      <h2>Details</h2>
+      <div class="field">
+        <label for="spot_title">Title</label>
+        <input type="text" id="spot_title" name="spot_title"
+          placeholder="444032 at Fratton" required />
+      </div>
+      <div class="field">
+        <label for="spot_description">Description <span class="optional">(optional)</span></label>
+        <textarea id="spot_description" name="spot_description"
+          placeholder="Caught heading into Portsmouth Harbour..." rows="3"></textarea>
+      </div>
+      <div class="field">
+        <label for="spot_timestamp">Date & time</label>
+        <input type="datetime-local" id="spot_timestamp" name="spot_timestamp" />
+      </div>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="form-section">
+      <h2>Location <span class="optional">(optional)</span></h2>
+      <p class="section-hint">Tap the map to drop a pin. Auto-fills if your photo has GPS data.</p>
+      <span id="location-status" class="location-status"></span>
+      <div id="location-map"></div>
+      <button type="button" id="clear-location" class="btn-secondary">Clear location</button>
+      <input type="hidden" id="spot_latitude" name="spot_latitude" />
+      <input type="hidden" id="spot_longitude" name="spot_longitude" />
+    </div>
+
+    <!-- UNITS -->
+    <div class="form-section">
+      <h2>Units</h2>
+      <p class="section-hint">Add every unit you spotted.</p>
+      <div id="units-container"></div>
+      <button type="button" id="add-unit" class="btn-secondary">+ Add another unit</button>
+    </div>
+
+    <button type="submit" class="btn-primary">Save spot</button>
+
+  </form>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/exifr@7.1.3/dist/full.umd.cjs"></script>
+<script src="/js/spot-form.js"></script>
+
+</body>
+</html>

@@ -1,9 +1,48 @@
 <%- include('partials/header') %>
 
-<div class="dashboard">
-  <h1>Dashboard</h1>
-  <p>Logged in as <%= user.email %></p>
-  <a href="/signout">Sign out</a>
+<div class="page-panel">
+
+  <div class="dashboard-header">
+    <h1>Spotter</h1>
+    <a href="/signout" class="signout-link">Sign out</a>
+  </div>
+
+  <% if (spots.length === 0) { %>
+    <div class="empty-state">
+      <p>No spots logged yet.</p>
+      <p class="empty-hint">Hit the button below to log your first spot.</p>
+    </div>
+  <% } else { %>
+    <div class="spots-list">
+      <% spots.forEach(spot => { %>
+        <a href="/spots/<%= spot.spot_id %>" class="spot-item">
+          <% if (spot.imageUrl) { %>
+            <div class="spot-item-photo">
+              <img src="<%= spot.imageUrl %>" alt="<%= spot.spot_title %>" />
+            </div>
+          <% } else { %>
+            <div class="spot-item-photo spot-item-no-photo">
+              <span>No photo</span>
+            </div>
+          <% } %>
+          <div class="spot-item-info">
+            <p class="spot-item-title"><%= spot.spot_title %></p>
+            <% if (spot.units.length > 0) { %>
+              <p class="spot-item-units">
+                <%= spot.units.map(u => u.unit_number).join(', ') %>
+              </p>
+            <% } %>
+            <p class="spot-item-time">
+              <%= new Date(spot.spot_timestamp).toLocaleString('en-GB') %>
+            </p>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <a href="/spots/new" class="fab">+ Log a spot</a>
+
 </div>
 
 </body>

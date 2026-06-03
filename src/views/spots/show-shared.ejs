@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div class="page-panel">
+
+  <div class="page-header">
+    <h1><%= spot.spot_title %></h1>
+  </div>
+
+  <!-- PHOTO -->
+  <% if (imageUrl) { %>
+    <div class="spot-photo">
+      <img src="<%= imageUrl %>" alt="<%= spot.spot_title %>" />
+    </div>
+  <% } %>
+
+  <div class="spot-body">
+
+    <div class="spot-card">
+      <% if (spot.spot_description) { %>
+        <p class="spot-description"><%= spot.spot_description %></p>
+      <% } %>
+      <p class="spot-timestamp"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB') %></p>
+    </div>
+
+    <% if (units.length > 0) { %>
+      <div class="spot-card">
+        <h2>Units</h2>
+        <div class="units-list">
+          <% units.forEach(unit => { %>
+            <div class="unit-chip">
+              <span class="unit-number"><%= unit.unit_number %></span>
+              <% if (unit.unit_class) { %>
+                <span class="unit-meta"><%= unit.unit_class %></span>
+              <% } %>
+              <% if (unit.unit_operator) { %>
+                <span class="unit-meta"><%= unit.unit_operator %></span>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (spot.spot_latitude && spot.spot_longitude) { %>
+      <div class="spot-card">
+        <h2>Location</h2>
+        <div id="spot-map"
+          data-lat="<%= spot.spot_latitude %>"
+          data-lon="<%= spot.spot_longitude %>">
+        </div>
+      </div>
+    <% } %>
+
+    <div class="spot-card shared-cta">
+      <p>Logged with <strong>Spotter</strong></p>
+      <a href="/register" class="btn-primary">Start spotting</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const mapEl = document.getElementById('spot-map')
+  if (mapEl) {
+    const lat = parseFloat(mapEl.dataset.lat)
+    const lon = parseFloat(mapEl.dataset.lon)
+    const map = L.map('spot-map', { zoomControl: true, dragging: false, scrollWheelZoom: false })
+      .setView([lat, lon], 14)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map)
+    L.marker([lat, lon]).addTo(map)
+  }
+</script>
+
+</body>
+</html>
