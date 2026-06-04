@@ -169,22 +169,49 @@ map.on("load", async () => {
     });
   } catch (err) {
     console.error("Failed to load map data:", err);
+    toast.error("Failed to load map data. Please refresh the page.");
   }
 });
 
 document.getElementById("near-me-btn").addEventListener("click", () => {
-  if (!navigator.geolocation) return;
+  if (!navigator.geolocation) {
+    console.warn("Geolocation not supported");
+    toast.error("Geolocation is not supported by your browser.");
+    return;
+  }
   const btn = document.getElementById("near-me-btn");
   btn.classList.add("loading");
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      map.flyTo({
-        center: [pos.coords.longitude, pos.coords.latitude],
-        zoom: 12,
-        duration: 1500,
-      });
+      try {
+        map.flyTo({
+          center: [pos.coords.longitude, pos.coords.latitude],
+          zoom: 12,
+          duration: 1500,
+        });
+        toast.success("Found your location!");
+      } catch (err) {
+        console.error("Error flying to location:", err);
+        toast.error("Error flying to your location. Please try again.");
+      } finally {
+        btn.classList.remove("loading");
+      }
+    },
+    (error) => {
+      console.error("Geolocation error:", error);
+      let message = "Unable to access your location. ";
+      if (error.code === error.PERMISSION_DENIED) {
+        message +=
+          "Please enable location permissions in your browser settings.";
+      } else if (error.code === error.POSITION_UNAVAILABLE) {
+        message +=
+          "Location data is unavailable. Make sure location services are enabled.";
+      } else if (error.code === error.TIMEOUT) {
+        message += "Location request timed out. Please try again.";
+      }
+      toast.error(message);
       btn.classList.remove("loading");
     },
-    () => btn.classList.remove("loading"),
+    { timeout: 10000, enableHighAccuracy: false },
   );
 });
