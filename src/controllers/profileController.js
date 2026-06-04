@@ -5,6 +5,7 @@ import { getUnitsBySpot, getUserCollection } from "../models/unitModel.js";
 
 export const serveProfile = async (req, res) => {
   const userId = req.user.id;
+  console.log("Profile userId:", userId);
 
   const [{ data: profile }, { data: spots }, { data: collection }] =
     await Promise.all([
@@ -12,6 +13,9 @@ export const serveProfile = async (req, res) => {
       getSpotsByUser(userId),
       getUserCollection(userId),
     ]);
+
+  console.log("Spots found:", spots?.length);
+  console.log("Profile found:", profile?.username);
 
   // Attach image URLs and units to each spot
   const spotsWithData = await Promise.all(

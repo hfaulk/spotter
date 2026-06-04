@@ -39,10 +39,8 @@ import {
   updateProfile,
 } from "./src/controllers/settingsController.js";
 import { showUnit } from "./src/controllers/unitController.js";
+import { serveMap, getMapData } from "./src/controllers/mapController.js";
 import { requireAuth, requireOnboarding } from "./src/middleware/auth.js";
-import { getSpotsByUser } from "./src/models/spotModel.js";
-import { getUnitsBySpot } from "./src/models/unitModel.js";
-import supabase from "./src/config/supabase.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,9 +89,8 @@ app.post("/onboarding", requireAuth, submitOnboarding);
 app.get("/profile", requireAuth, requireOnboarding, serveProfile);
 
 // ===== MAP =====
-app.get("/map", requireAuth, requireOnboarding, (req, res) => {
-  res.render("map", { activePage: "map" });
-});
+app.get("/map", serveMap);
+app.get("/api/map", getMapData);
 
 // ===== SETTINGS =====
 app.get("/settings", requireAuth, requireOnboarding, serveSettings);
@@ -122,7 +119,7 @@ app.get("/units/:unitId", requireAuth, requireOnboarding, showUnit);
 // ===== PUBLIC =====
 app.get("/s/:token", showSharedSpot);
 
-// ===== REDIRECT LEGACY =====
+// ===== LEGACY REDIRECT =====
 app.get("/dashboard", (req, res) => res.redirect("/profile"));
 
 // ===== START =====
