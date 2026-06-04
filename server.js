@@ -65,7 +65,12 @@ const authLimiter = rateLimit({
 });
 
 // ===== ROOT =====
-app.get("/", (req, res) => res.redirect("/map"));
+app.get("/", (req, res) => {
+  const hasSession = !!(
+    req.cookies?.access_token || req.cookies?.refresh_token
+  );
+  res.redirect(hasSession ? "/map" : "/login");
+});
 
 // ===== AUTH =====
 app.get("/login", serveLogin);

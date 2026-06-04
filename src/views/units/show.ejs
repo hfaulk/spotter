@@ -14,46 +14,54 @@
       </button>
     </div>
 
-  <div class="show-right">
-    <div class="spot-title-block">
-      <h1 class="unit-hero-number"><%= unit.unit_number %></h1>
-      <div class="unit-hero-meta">
-        <% if (unit.unit_class) { %><span class="unit-badge"><%= unit.unit_class %></span><% } %>
-        <% if (unit.unit_operator) { %><span class="unit-badge"><%= unit.unit_operator %></span><% } %>
-      </div>
-      <p class="unit-spotted-count"><%= spots.length %> time<%= spots.length !== 1 ? 's' : '' %> spotted</p>
-    </div>
+    <div class="show-right">
+        <div class="spot-title-block">
+          <h1 class="unit-hero-number"><%= unit.unit_number %></h1>
+          <div class="unit-hero-meta">
+            <% if (unit.unit_class) { %><span class="unit-badge"><%= unit.unit_class %></span><% } %>
+            <% if (unit.unit_operator) { %><span class="unit-badge"><%= unit.unit_operator %></span><% } %>
+          </div>
+          <p class="unit-spotted-count"><%= spots.length %> time<%= spots.length !== 1 ? 's' : '' %> spotted</p>
+        </div>
 
-    <div class="spot-content">
+        <div class="unit-content">
 
-      <div class="spot-card" id="wiki-card" style="display:none;">
-        <h2>About this class</h2>
-        <div id="wiki-content">
-          <p class="section-hint">Loading...</p>
+          <div class="spot-card unit-wiki-card" id="wiki-card" style="display:none;">
+            <h2>About this class</h2>
+            <div id="wiki-content">
+              <p class="section-hint">Loading...</p>
+            </div>
+          </div>
+
+          <div class="unit-spots-card">
+            <h2 class="unit-spots-heading">Your spots</h2>
+            <% if (spots.length === 0) { %>
+              <div class="empty-state">
+                <p>No spots logged for this unit yet.</p>
+              </div>
+            <% } else { %>
+              <div class="spots-list">
+                <% spots.forEach(spot => { %>
+                  <a href="/spots/<%= spot.spot_id %>" class="spot-item">
+                    <div class="spot-item-photo <%= !spot.imageUrl ? 'spot-item-no-photo' : '' %>">
+                      <% if (spot.imageUrl) { %>
+                        <img src="<%= spot.imageUrl %>" alt="<%= spot.spot_title %>" />
+                      <% } else { %>
+                        <span>No photo</span>
+                      <% } %>
+                    </div>
+                    <div class="spot-item-info">
+                      <p class="spot-item-title"><%= spot.spot_title %></p>
+                      <p class="spot-item-time"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+
         </div>
       </div>
-
-      <% if (spots.length > 0) { %>
-        <p style="font-size:0.75rem; font-weight:bold; color:grey; text-transform:uppercase; letter-spacing:0.08em;">Your spots</p>
-        <% spots.forEach(spot => { %>
-          <a href="/spots/<%= spot.spot_id %>" class="spot-item" style="border-radius:8px; border:1px solid #eee;">
-            <div class="spot-item-photo <%= !spot.imageUrl ? 'spot-item-no-photo' : '' %>">
-              <% if (spot.imageUrl) { %>
-                <img src="<%= spot.imageUrl %>" alt="<%= spot.spot_title %>" />
-              <% } else { %>
-                <span>No photo</span>
-              <% } %>
-            </div>
-            <div class="spot-item-info">
-              <p class="spot-item-title"><%= spot.spot_title %></p>
-              <p class="spot-item-time"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
-            </div>
-          </a>
-        <% }) %>
-      <% } %>
-
-    </div>
-  </div>
 
   <%- include('../partials/bottomnav', { activePage }) %>
 </div>

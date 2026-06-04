@@ -1555,6 +1555,16 @@ a.unit-chip:hover {
     margin-top: 0.5rem;
 }
 
+/* ===== UNIT CONTENT (mobile) ===== */
+.unit-content {
+    padding: 0 0 2rem;
+    display: flex;
+    flex-direction: column;
+}
+.unit-spots-heading {
+    display: none;
+}
+
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
     body {
@@ -1772,12 +1782,13 @@ a.unit-chip:hover {
         bottom: 0;
     }
 
-    /* ===== SHOW PAGES — banner photo, 3-col content ===== */
+    /* ===== SHOW PAGES ===== */
     .sidenav ~ .show-page {
         margin-left: 220px;
         width: calc(100vw - 220px);
         max-width: none;
-        display: block;
+        display: flex;
+        flex-direction: column;
         height: 100vh;
         overflow: hidden;
         padding: 0;
@@ -1790,6 +1801,7 @@ a.unit-chip:hover {
         position: relative;
         background: #1a1a2e;
         overflow: hidden;
+        flex-shrink: 0;
     }
 
     .sidenav ~ .show-page .spot-image-full img,
@@ -1817,63 +1829,57 @@ a.unit-chip:hover {
         width: 100%;
     }
 
+    /* Flex column — title block + scrollable content */
     .sidenav ~ .show-page .show-right {
-        display: block;
-        height: calc(100vh - 260px);
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
     }
 
+    /* Fixed: no negative margin (was clipping top padding via overflow:hidden) */
     .sidenav ~ .show-page .spot-title-block {
-        margin-top: -16px;
-        border-radius: 12px 12px 0 0;
+        flex-shrink: 0;
+        margin-top: 0;
+        border-radius: 0;
         padding: 1rem 1.5rem;
         background: white;
-        position: relative;
-        z-index: 5;
         border-bottom: 1px solid #f0f2f8;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: start;
-        gap: 0 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
     }
 
     .sidenav ~ .show-page .spot-title {
         font-size: 1.2rem;
     }
-    .sidenav ~ .show-page .spot-timestamp {
-        grid-column: 1;
-    }
-    .sidenav ~ .show-page .spot-description {
-        grid-column: 1 / -1;
-    }
 
-    /* 3-column card grid — units | camera | location */
+    /* Spot show: 3-col grid */
     .sidenav ~ .show-page .spot-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: 1fr auto;
         gap: 0.75rem;
-        padding: 0.75rem 1.5rem;
-        background: transparent;
-        height: calc(100% - 80px); /* remaining after title block */
-        box-sizing: border-box;
+        padding: 1rem 1.5rem;
+        background: #f9fafb;
+        align-content: start;
     }
 
-    /* Location card sits in column 3, spanning both rows */
     .sidenav ~ .show-page .spot-content .card-location {
         grid-column: 3;
         grid-row: 1 / 3;
     }
 
-    /* Share goes full width below the first row */
     .sidenav ~ .show-page .spot-content .card-full {
         grid-column: 1 / 3;
         grid-row: 2;
     }
 
-    /* Compact map height in the location column */
     .sidenav ~ .show-page #spot-map {
-        height: calc(100% - 2.5rem) !important;
+        height: 220px !important;
         min-height: 100px;
     }
 
@@ -1881,17 +1887,56 @@ a.unit-chip:hover {
         overflow: hidden;
     }
 
+    /* Unit show: 2-col flex (wiki left, spots right) */
+    .sidenav ~ .show-page .unit-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: row;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: #f9fafb;
+        align-items: flex-start;
+    }
+
+    .sidenav ~ .show-page .unit-wiki-card {
+        flex: 0 0 300px;
+    }
+
+    .sidenav ~ .show-page .unit-spots-card {
+        flex: 1;
+        background: #f9fafc;
+        border: 1px solid #f0f2f8;
+        border-radius: 10px;
+        padding: 1.25rem;
+        overflow: hidden;
+    }
+
+    .sidenav ~ .show-page .unit-spots-card .spots-list {
+        margin: 0.5rem -1.25rem -1.25rem;
+    }
+
+    .unit-spots-heading {
+        display: block;
+    }
+
     .sidenav ~ .show-page .bottomnav {
         display: none;
     }
 
-    /* Adjust fixed buttons for desktop with sidebar */
     .sidenav ~ .show-page .spot-back-btn {
         left: calc(220px + 1rem);
     }
 
     .sidenav ~ .show-page .spot-menu {
         right: 1rem;
+    }
+
+    .sidenav ~ .show-page .spot-card,
+    .sidenav ~ .show-page .unit-spots-card {
+        background: white;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     }
 }
 
