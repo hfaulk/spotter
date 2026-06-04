@@ -15,18 +15,26 @@ const refreshCookieOptions = {
   maxAge: 60 * 60 * 24 * 30 * 1000,
 };
 
+const getUser = async (token) => {
+  const result = await supabase.auth.getUser(token);
+  if (!result.error && result.data.user) return result.data.user;
+
+  // Brief pause then retry once — handles race condition on fresh tokens
+  await new Promise((r) => setTimeout(r, 150));
+  const retry = await supabase.auth.getUser(token);
+  if (!retry.error && retry.data.user) return retry.data.user;
+  return null;
+};
+
 export const requireAuth = async (req, res, next) => {
   const token = req.cookies?.access_token;
   const refreshToken = req.cookies?.refresh_token;
 
   if (!token && !refreshToken) return res.redirect("/login");
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser(token);
+  const user = await getUser(token);
 
-  if (!error && user) {
+  if (user) {
     req.user = user;
     const { data: profile } = await getUserById(user.id);
     res.locals.currentUser = profile;
@@ -65,7 +73,6 @@ export const requireAuth = async (req, res, next) => {
 };
 
 export const requireOnboarding = (req, res, next) => {
-  const profile = res.locals.currentUser;
-  if (!profile?.username) return res.redirect("/onboarding");
+  if (!res.locals.currentUser?.username) return res.redirect("/onboarding");
   next();
 };

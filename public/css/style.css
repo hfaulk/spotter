@@ -1479,7 +1479,6 @@ a.unit-chip:hover {
         overflow-x: hidden;
     }
 
-    /* Hide mobile chrome */
     .topbar {
         display: none;
     }
@@ -1600,38 +1599,45 @@ a.unit-chip:hover {
 
     /* ===== APP PAGES ===== */
     .sidenav ~ .app-page {
-        margin: 0 0 0 220px;
+        margin-left: 220px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 0;
         max-width: none;
         width: calc(100vw - 220px);
         min-height: 100vh;
         background: #f9fafb;
     }
 
+    /* Content fills full width — no max-width constraint */
     .sidenav ~ .app-page .app-content {
-        padding: 2rem;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        max-width: 820px;
+        padding: 0;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 
-    /* Profile header and tabs extend full width of content area */
-    .sidenav ~ .app-page .profile-header,
-    .sidenav ~ .app-page .tabs {
-        max-width: 820px;
+    /* Settings form gets a sensible max-width */
+    .sidenav ~ .app-page .settings-page {
+        max-width: 600px;
+        padding: 2rem;
     }
 
     /* ===== MAP PAGE ===== */
     .sidenav ~ .app-page.map-app-page {
+        position: relative;
         height: 100vh;
         overflow: hidden;
-        position: relative;
         background: transparent;
+        width: calc(100vw - 220px);
+        margin-left: 220px;
     }
 
     .sidenav ~ .app-page.map-app-page .topbar-map {
         display: flex;
-        left: 0;
-        width: 100%;
+        position: fixed;
+        left: 220px;
+        top: 0;
+        width: calc(100vw - 220px);
         max-width: none;
         transform: none;
     }
@@ -1642,10 +1648,11 @@ a.unit-chip:hover {
 
     .sidenav ~ .app-page.map-app-page .map-btn {
         bottom: 1.5rem;
+        left: auto;
         right: 1.5rem;
     }
 
-    /* Desktop map panel — slides in from right */
+    /* Desktop map panel */
     .map-sheet {
         left: auto;
         right: 0;
@@ -1663,7 +1670,6 @@ a.unit-chip:hover {
     .map-sheet.open {
         transform: translateX(0);
     }
-
     .map-sheet-handle {
         display: none;
     }
@@ -1687,7 +1693,10 @@ a.unit-chip:hover {
 
     /* ===== SHOW PAGES ===== */
     .sidenav ~ .show-page {
-        margin: 0 0 0 220px;
+        margin-left: 220px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 0;
         width: calc(100vw - 220px);
         max-width: none;
         display: grid;
