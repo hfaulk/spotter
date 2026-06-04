@@ -1244,7 +1244,7 @@ a.collection-item:hover {
 }
 
 .spot-back-btn {
-    position: absolute;
+    position: fixed;
     top: 1rem;
     left: 1rem;
     z-index: 10;
@@ -1477,7 +1477,7 @@ a.unit-chip:hover {
 
 /* ===== THREE DOTS MENU (mobile + desktop) ===== */
 .spot-menu {
-    position: absolute;
+    position: fixed;
     top: 1rem;
     right: 1rem;
     z-index: 10;
@@ -1883,6 +1883,16 @@ a.unit-chip:hover {
 
     .sidenav ~ .show-page .bottomnav {
         display: none;
+    }
+
+    /* Adjust fixed buttons for desktop with sidebar */
+    .sidenav ~ .show-page .spot-back-btn {
+        left: calc(220px + 1rem);
+    }
+
+    .sidenav ~ .show-page .spot-menu {
+        right: auto;
+        left: calc(220px + 1rem + 40px + 0.5rem);
     }
 }
 

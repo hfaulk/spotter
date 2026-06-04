@@ -167,3 +167,56 @@ if (dt) {
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   dt.value = now.toISOString().slice(0, 16);
 }
+
+// ===== CLEAR FORM AFTER SUCCESSFUL SUBMISSION =====
+const resetFormState = () => {
+  // Reset form inputs
+  const form = document.querySelector(".spot-form");
+  if (form) form.reset();
+
+  // Reset units
+  unitsContainer.innerHTML = "";
+  unitsContainer.appendChild(createUnitRow());
+
+  // Reset location
+  clearLocation();
+
+  // Reset photo
+  const photoPreview = document.getElementById("photo-preview");
+  if (photoPreview) photoPreview.style.display = "none";
+  const photoLabel = document.getElementById("photo-label-text");
+  if (photoLabel) photoLabel.textContent = "Add a photo";
+
+  // Reset EXIF panel
+  const exifPanel = document.getElementById("exif-panel");
+  if (exifPanel) exifPanel.style.display = "none";
+  document.getElementById("exif-camera").textContent = "—";
+  document.getElementById("exif-shutter").textContent = "—";
+  document.getElementById("exif-aperture").textContent = "—";
+  document.getElementById("exif-iso").textContent = "—";
+  document.getElementById("exif-focal").textContent = "—";
+
+  // Reset timestamp to current
+  if (dt) {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    dt.value = now.toISOString().slice(0, 16);
+  }
+};
+
+// Check if form should be reset (user came back from successful submission)
+if (sessionStorage.getItem("spotFormSubmitted")) {
+  sessionStorage.removeItem("spotFormSubmitted");
+  resetFormState();
+}
+
+// Listen for form submission
+const form = document.querySelector(".spot-form");
+if (form) {
+  form.addEventListener("submit", (e) => {
+    // Only mark as submitted if form is valid (will be submitted)
+    if (form.checkValidity()) {
+      sessionStorage.setItem("spotFormSubmitted", "true");
+    }
+  });
+}
