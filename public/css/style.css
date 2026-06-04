@@ -1891,8 +1891,7 @@ a.unit-chip:hover {
     }
 
     .sidenav ~ .show-page .spot-menu {
-        right: auto;
-        left: calc(220px + 1rem + 40px + 0.5rem);
+        right: 1rem;
     }
 }
 
