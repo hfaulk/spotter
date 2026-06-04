@@ -1,7 +1,8 @@
 import multer from "multer";
 import exifr from "exifr";
 import heicConvert from "heic-convert";
-import supabase from "../config/supabase.js";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import r2 from "../config/r2.js";
 import {
   createSpot,
   getSpotById,
@@ -122,42 +123,16 @@ export const createSpotController = async (req, res) => {
       imagePath = `${userId}/${Date.now()}.${ext}`;
 
       try {
-        // Generate a signed URL for uploading (valid for 1 hour)
-        const { data: signedUrlData, error: signError } = await supabase.storage
-          .from("spot-images")
-          .createSignedUploadUrl(imagePath, {
-            upsert: false,
-          });
-
-        if (signError) {
-          console.error("Signed URL generation error:", signError);
-          return res.render("spots/new", {
-            error: "Photo upload failed, please try again",
-          });
-        }
-
-        // Upload using the signed URL
-        const uploadResponse = await fetch(signedUrlData.signedUrl, {
-          method: "PUT",
-          body: fileBuffer,
-          headers: {
-            "Content-Type": fileMimeType,
-          },
-        });
-
-        if (!uploadResponse.ok) {
-          const errorText = await uploadResponse.text();
-          console.error(
-            "Storage upload error:",
-            uploadResponse.status,
-            errorText,
-          );
-          return res.render("spots/new", {
-            error: "Photo upload failed, please try again",
-          });
-        }
-      } catch (uploadException) {
-        console.error("Upload exception:", uploadException);
+        await r2.send(
+          new PutObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME,
+            Key: imagePath,
+            Body: fileBuffer,
+            ContentType: fileMimeType,
+          }),
+        );
+      } catch (uploadError) {
+        console.error("R2 upload error:", uploadError);
         return res.render("spots/new", {
           error: "Photo upload failed, please try again",
         });
@@ -216,13 +191,9 @@ export const showSpot = async (req, res) => {
   const { data: unitData } = await getUnitsBySpot(spotId);
   const units = unitData?.map((row) => row.unit) || [];
 
-  let imageUrl = null;
-  if (spot.image_path) {
-    const { data } = supabase.storage
-      .from("spot-images")
-      .getPublicUrl(spot.image_path);
-    imageUrl = data.publicUrl;
-  }
+  const imageUrl = spot.image_path
+    ? `${process.env.R2_PUBLIC_URL}/${spot.image_path}`
+    : null;
 
   res.render("spots/show", { spot, units, imageUrl });
 };
@@ -237,13 +208,9 @@ export const showSharedSpot = async (req, res) => {
   const { data: unitData } = await getUnitsBySpot(spot.spot_id);
   const units = unitData?.map((row) => row.unit) || [];
 
-  let imageUrl = null;
-  if (spot.image_path) {
-    const { data } = supabase.storage
-      .from("spot-images")
-      .getPublicUrl(spot.image_path);
-    imageUrl = data.publicUrl;
-  }
+  const imageUrl = spot.image_path
+    ? `${process.env.R2_PUBLIC_URL}/${spot.image_path}`
+    : null;
 
   res.render("spots/show-shared", { spot, units, imageUrl });
 };

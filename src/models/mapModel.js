@@ -47,10 +47,7 @@ export const getHotspots = async () => {
       // Preview image
       let previewImage = null;
       if (mostRecent.image_path) {
-        const { data } = supabase.storage
-          .from("spot-images")
-          .getPublicUrl(mostRecent.image_path);
-        previewImage = data.publicUrl;
+        previewImage = `${process.env.R2_PUBLIC_URL}/${mostRecent.image_path}`;
       }
 
       // Best time of day

@@ -1,7 +1,6 @@
 import { getUserById } from "../models/userModel.js";
 import { getSpotsByUser } from "../models/spotModel.js";
 import { getUnitsBySpot, getUserCollection } from "../models/unitModel.js";
-import supabase from "../config/supabase.js";
 
 export const serveProfile = async (req, res) => {
   const userId = req.user.id;
@@ -19,14 +18,10 @@ export const serveProfile = async (req, res) => {
       let spotData = { ...spot };
 
       // Add image URL
-      if (spot.image_path) {
-        const { data } = supabase.storage
-          .from("spot-images")
-          .getPublicUrl(spot.image_path);
-        spotData.imageUrl = data.publicUrl;
-      } else {
-        spotData.imageUrl = null;
-      }
+      const imageUrl = spot.image_path
+        ? `${process.env.R2_PUBLIC_URL}/${spot.image_path}`
+        : null;
+      spotData.imageUrl = imageUrl;
 
       // Fetch and attach units for this spot
       const { data: unitData } = await getUnitsBySpot(spot.spot_id);

@@ -1,5 +1,7 @@
 import supabase from "../config/supabase.js";
 import crypto from "crypto";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import r2 from "../config/r2.js";
 
 export const createSpot = async ({
   user_id,
@@ -72,11 +74,18 @@ export const getSpotsByUser = async (userId) => {
 };
 
 export const deleteStorageImage = async (imagePath) => {
-  const { error } = await supabase.storage
-    .from("spot-images")
-    .remove([imagePath]);
-
-  return { error };
+  try {
+    await r2.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: imagePath,
+      }),
+    );
+    return { error: null };
+  } catch (error) {
+    console.error("R2 delete error:", error);
+    return { error };
+  }
 };
 
 export const deleteSpot = async (spotId, userId) => {
@@ -104,7 +113,7 @@ export const deleteSpot = async (spotId, userId) => {
 
   // Delete photo from storage if exists
   if (spot.image_path) {
-    await supabase.storage.from("spot-images").remove([spot.image_path]);
+    await deleteStorageImage(spot.image_path);
   }
 
   return { error: null };

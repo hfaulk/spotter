@@ -1,4 +1,3 @@
-import supabase from "../config/supabase.js";
 import { getUnitById, getSpotsByUnit } from "../models/unitModel.js";
 
 export const showUnit = async (req, res) => {
@@ -16,13 +15,9 @@ export const showUnit = async (req, res) => {
       .filter((row) => row.spot)
       .map(async (row) => {
         const spot = row.spot;
-        let imageUrl = null;
-        if (spot.image_path) {
-          const { data } = supabase.storage
-            .from("spot-images")
-            .getPublicUrl(spot.image_path);
-          imageUrl = data.publicUrl;
-        }
+        const imageUrl = spot.image_path
+          ? `${process.env.R2_PUBLIC_URL}/${spot.image_path}`
+          : null;
         return { ...spot, imageUrl };
       }),
   );
