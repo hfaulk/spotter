@@ -36,10 +36,7 @@ export const serveProfile = async (req, res) => {
     }),
   );
 
-  const collectionWithCounts = (collection || []).map((item) => ({
-    ...item.unit,
-    times_spotted: item.times_spotted,
-  }));
+  const collectionWithCounts = collection || [];
 
   res.render("profile", {
     profile,

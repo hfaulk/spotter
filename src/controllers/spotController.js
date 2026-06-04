@@ -121,15 +121,43 @@ export const createSpotController = async (req, res) => {
       const ext = fileMimeType === "image/png" ? "png" : "jpg";
       imagePath = `${userId}/${Date.now()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("spot-images")
-        .upload(imagePath, fileBuffer, {
-          contentType: fileMimeType,
-          upsert: false,
+      try {
+        // Generate a signed URL for uploading (valid for 1 hour)
+        const { data: signedUrlData, error: signError } = await supabase.storage
+          .from("spot-images")
+          .createSignedUploadUrl(imagePath, {
+            upsert: false,
+          });
+
+        if (signError) {
+          console.error("Signed URL generation error:", signError);
+          return res.render("spots/new", {
+            error: "Photo upload failed, please try again",
+          });
+        }
+
+        // Upload using the signed URL
+        const uploadResponse = await fetch(signedUrlData.signedUrl, {
+          method: "PUT",
+          body: fileBuffer,
+          headers: {
+            "Content-Type": fileMimeType,
+          },
         });
 
-      if (uploadError) {
-        console.error("Storage upload error:", uploadError);
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
+          console.error(
+            "Storage upload error:",
+            uploadResponse.status,
+            errorText,
+          );
+          return res.render("spots/new", {
+            error: "Photo upload failed, please try again",
+          });
+        }
+      } catch (uploadException) {
+        console.error("Upload exception:", uploadException);
         return res.render("spots/new", {
           error: "Photo upload failed, please try again",
         });

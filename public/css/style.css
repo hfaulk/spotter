@@ -1472,6 +1472,86 @@ a.unit-chip:hover {
     display: none;
 }
 
+/* ===== THREE DOTS MENU (mobile + desktop) ===== */
+.spot-menu {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.spot-menu-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    color: midnightblue;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.spot-menu-trigger:hover {
+    background: white;
+}
+
+.spot-menu-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+    overflow: hidden;
+    border: 1px solid #f0f2f8;
+}
+
+.spot-menu-dropdown.open {
+    display: block;
+}
+
+.spot-menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.spot-menu-item:hover {
+    background: #f5f7fa;
+}
+.spot-menu-item-danger {
+    color: darkred;
+}
+.spot-menu-item-danger:hover {
+    background: #fff0f0;
+}
+
+/* ===== SETTINGS CARD ===== */
+.settings-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f0f2f8;
+}
+
+.settings-card-danger {
+    margin-top: 0.5rem;
+}
+
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
     body {
@@ -1556,7 +1636,6 @@ a.unit-chip:hover {
         color: white;
         margin-bottom: 0.5rem;
     }
-
     .sidenav-item-new:hover {
         background: midnightblue;
         color: white;
@@ -1609,17 +1688,19 @@ a.unit-chip:hover {
         background: #f9fafb;
     }
 
-    /* Content fills full width — no max-width constraint */
     .sidenav ~ .app-page .app-content {
         padding: 0;
-        padding-top: 0;
-        padding-bottom: 0;
     }
 
-    /* Settings form gets a sensible max-width */
+    /* Settings gets a centred card layout */
     .sidenav ~ .app-page .settings-page {
-        max-width: 600px;
+        max-width: 640px;
         padding: 2rem;
+    }
+
+    /* Hide sign out on desktop — it's in the sidebar */
+    .settings-signout {
+        display: none;
     }
 
     /* ===== MAP PAGE ===== */
@@ -1652,7 +1733,6 @@ a.unit-chip:hover {
         right: 1.5rem;
     }
 
-    /* Desktop map panel */
     .map-sheet {
         left: auto;
         right: 0;
@@ -1673,13 +1753,11 @@ a.unit-chip:hover {
     .map-sheet-handle {
         display: none;
     }
-
     .map-sheet-content {
         padding: 0;
         overflow-y: auto;
         height: 100%;
     }
-
     .sheet-hero {
         height: 220px;
         border-radius: 0;
@@ -1691,77 +1769,115 @@ a.unit-chip:hover {
         bottom: 0;
     }
 
-    /* ===== SHOW PAGES ===== */
+    /* ===== SHOW PAGES — banner photo, 3-col content ===== */
     .sidenav ~ .show-page {
         margin-left: 220px;
-        margin-top: 0;
-        margin-right: 0;
-        margin-bottom: 0;
         width: calc(100vw - 220px);
         max-width: none;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: block;
         height: 100vh;
         overflow: hidden;
         padding: 0;
-    }
-
-    .spot-image-bg {
-        display: block;
-        position: absolute;
-        inset: -30px;
-        background-size: cover;
-        background-position: center;
-        filter: blur(30px);
-        opacity: 0.4;
-        z-index: 0;
+        background: white;
     }
 
     .sidenav ~ .show-page .spot-image-full {
-        height: 100vh;
-        background: #1a1a2e;
-        grid-column: 1;
-        grid-row: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
+        height: 260px;
+        width: 100%;
         position: relative;
+        background: #1a1a2e;
+        overflow: hidden;
     }
 
     .sidenav ~ .show-page .spot-image-full img,
     .sidenav ~ .show-page #unit-hero-img {
+        width: 100%;
+        height: 260px;
+        object-fit: cover;
         position: relative;
         z-index: 1;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+    }
+
+    .sidenav ~ .show-page .spot-image-bg {
+        display: block;
+        position: absolute;
+        inset: -20px;
+        background-size: cover;
+        background-position: center;
+        filter: blur(20px);
+        opacity: 0.3;
+        z-index: 0;
     }
 
     .sidenav ~ .show-page .unit-hero-placeholder {
-        height: 100vh;
+        height: 260px;
         width: 100%;
-        z-index: 1;
-        position: relative;
     }
 
     .sidenav ~ .show-page .show-right {
-        grid-column: 2;
-        grid-row: 1;
-        overflow-y: auto;
-        height: 100vh;
-        background: white;
+        display: block;
+        height: calc(100vh - 260px);
+        overflow: hidden;
     }
 
     .sidenav ~ .show-page .spot-title-block {
-        margin-top: 0;
-        border-radius: 0;
+        margin-top: -16px;
+        border-radius: 12px 12px 0 0;
+        padding: 1rem 1.5rem;
+        background: white;
+        position: relative;
+        z-index: 5;
         border-bottom: 1px solid #f0f2f8;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: start;
+        gap: 0 1rem;
     }
 
-    .sidenav ~ .show-page .spot-content {
-        padding: 1rem;
+    .sidenav ~ .show-page .spot-title {
+        font-size: 1.2rem;
     }
+    .sidenav ~ .show-page .spot-timestamp {
+        grid-column: 1;
+    }
+    .sidenav ~ .show-page .spot-description {
+        grid-column: 1 / -1;
+    }
+
+    /* 3-column card grid — units | camera | location */
+    .sidenav ~ .show-page .spot-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr auto;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        height: calc(100% - 80px); /* remaining after title block */
+        box-sizing: border-box;
+    }
+
+    /* Location card sits in column 3, spanning both rows */
+    .sidenav ~ .show-page .spot-content .card-location {
+        grid-column: 3;
+        grid-row: 1 / 3;
+    }
+
+    /* Share goes full width below the first row */
+    .sidenav ~ .show-page .spot-content .card-full {
+        grid-column: 1 / 3;
+        grid-row: 2;
+    }
+
+    /* Compact map height in the location column */
+    .sidenav ~ .show-page #spot-map {
+        height: calc(100% - 2.5rem) !important;
+        min-height: 100px;
+    }
+
+    .sidenav ~ .show-page .spot-card {
+        overflow: hidden;
+    }
+
     .sidenav ~ .show-page .bottomnav {
         display: none;
     }

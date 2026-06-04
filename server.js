@@ -65,7 +65,7 @@ const authLimiter = rateLimit({
 });
 
 // ===== ROOT =====
-app.get("/", (req, res) => res.redirect("/login"));
+app.get("/", (req, res) => res.redirect("/map"));
 
 // ===== AUTH =====
 app.get("/login", serveLogin);
