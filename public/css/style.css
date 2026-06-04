@@ -386,6 +386,26 @@ input[type="datetime-local"] {
     color: white;
 }
 
+.topbar-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+}
+
+.topbar-grid .topbar-logo {
+    text-align: center;
+}
+
+.topbar-grid .topbar-left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.topbar-grid .topbar-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
 /* ===== BOTTOM NAV ===== */
 .bottomnav {
     position: fixed;
@@ -1436,39 +1456,287 @@ a.unit-chip:hover {
     color: #666 !important;
 }
 
+/* ===== SIDEBAR (hidden on mobile) ===== */
+.sidenav {
+    display: none;
+}
+.spot-image-bg {
+    display: none;
+}
+
+/* ===== SIDEBAR (hidden on mobile) ===== */
+.sidenav {
+    display: none;
+}
+.spot-image-bg {
+    display: none;
+}
+
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
-    .show-page {
-        max-width: 1000px;
+    body {
+        background: #f9fafb;
+        overflow-x: hidden;
+    }
+
+    /* Hide mobile chrome */
+    .topbar {
+        display: none;
+    }
+    .bottomnav {
+        display: none;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidenav {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        background: white;
+        border-right: 1px solid #f0f2f8;
+        padding: 1.5rem 0.85rem;
+        z-index: 500;
+    }
+
+    .sidenav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: midnightblue;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+        padding: 0.5rem 0.65rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .sidenav-brand:hover {
+        text-decoration: none;
+    }
+
+    .sidenav-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+    }
+
+    .sidenav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.75rem;
+        border-radius: 8px;
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition:
+            background 0.15s,
+            color 0.15s;
+    }
+
+    .sidenav-item:hover {
+        background: #f5f7fa;
+        color: midnightblue;
+        text-decoration: none;
+    }
+    .sidenav-item.active {
+        background: #eef0fb;
+        color: midnightblue;
+        font-weight: 600;
+    }
+
+    .sidenav-item-new {
+        background: midnightblue;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .sidenav-item-new:hover {
+        background: midnightblue;
+        color: white;
+        opacity: 0.88;
+    }
+    .sidenav-item-new.active {
+        background: midnightblue;
+        color: white;
+    }
+
+    .sidenav-item-signout {
+        color: #aaa;
+    }
+    .sidenav-item-signout:hover {
+        color: darkred;
+        background: #fff0f0;
+    }
+
+    .sidenav-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f2f8;
+    }
+
+    .sidenav-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: midnightblue;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* ===== APP PAGES ===== */
+    .sidenav ~ .app-page {
+        margin: 0 0 0 220px;
+        max-width: none;
+        width: calc(100vw - 220px);
+        min-height: 100vh;
+        background: #f9fafb;
+    }
+
+    .sidenav ~ .app-page .app-content {
+        padding: 2rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 820px;
+    }
+
+    /* Profile header and tabs extend full width of content area */
+    .sidenav ~ .app-page .profile-header,
+    .sidenav ~ .app-page .tabs {
+        max-width: 820px;
+    }
+
+    /* ===== MAP PAGE ===== */
+    .sidenav ~ .app-page.map-app-page {
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+        background: transparent;
+    }
+
+    .sidenav ~ .app-page.map-app-page .topbar-map {
+        display: flex;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        transform: none;
+    }
+
+    .sidenav ~ .app-page.map-app-page #main-map {
+        bottom: 0;
+    }
+
+    .sidenav ~ .app-page.map-app-page .map-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+
+    /* Desktop map panel — slides in from right */
+    .map-sheet {
+        left: auto;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 380px;
+        max-width: 380px;
+        max-height: none;
+        border-radius: 0;
+        border-left: 1px solid #f0f2f8;
+        transform: translateX(100%);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .map-sheet.open {
+        transform: translateX(0);
+    }
+
+    .map-sheet-handle {
+        display: none;
+    }
+
+    .map-sheet-content {
+        padding: 0;
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    .sheet-hero {
+        height: 220px;
+        border-radius: 0;
+    }
+
+    .map-sheet-backdrop {
+        left: 220px;
+        width: calc(100vw - 220px);
+        bottom: 0;
+    }
+
+    /* ===== SHOW PAGES ===== */
+    .sidenav ~ .show-page {
+        margin: 0 0 0 220px;
+        width: calc(100vw - 220px);
+        max-width: none;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: 100vh;
         height: 100vh;
         overflow: hidden;
         padding: 0;
     }
 
-    .spot-image-full {
+    .spot-image-bg {
+        display: block;
+        position: absolute;
+        inset: -30px;
+        background-size: cover;
+        background-position: center;
+        filter: blur(30px);
+        opacity: 0.4;
+        z-index: 0;
+    }
+
+    .sidenav ~ .show-page .spot-image-full {
         height: 100vh;
-        position: sticky;
-        top: 0;
+        background: #1a1a2e;
         grid-column: 1;
         grid-row: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
     }
 
-    .spot-image-full img,
-    #unit-hero-img {
+    .sidenav ~ .show-page .spot-image-full img,
+    .sidenav ~ .show-page #unit-hero-img {
+        position: relative;
+        z-index: 1;
         width: 100%;
         height: 100%;
-        max-height: none;
-        object-fit: cover;
+        object-fit: contain;
     }
 
-    .unit-hero-placeholder {
+    .sidenav ~ .show-page .unit-hero-placeholder {
         height: 100vh;
+        width: 100%;
+        z-index: 1;
+        position: relative;
     }
 
-    .show-right {
+    .sidenav ~ .show-page .show-right {
         grid-column: 2;
         grid-row: 1;
         overflow-y: auto;
@@ -1476,15 +1744,16 @@ a.unit-chip:hover {
         background: white;
     }
 
-    .spot-title-block {
+    .sidenav ~ .show-page .spot-title-block {
         margin-top: 0;
         border-radius: 0;
         border-bottom: 1px solid #f0f2f8;
     }
-    .spot-content {
+
+    .sidenav ~ .show-page .spot-content {
         padding: 1rem;
     }
-    .show-page .bottomnav {
+    .sidenav ~ .show-page .bottomnav {
         display: none;
     }
 }

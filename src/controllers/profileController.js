@@ -1,44 +1,50 @@
-import supabase from "../config/supabase.js";
 import { getUserById } from "../models/userModel.js";
 import { getSpotsByUser } from "../models/spotModel.js";
 import { getUnitsBySpot, getUserCollection } from "../models/unitModel.js";
+import supabase from "../config/supabase.js";
 
 export const serveProfile = async (req, res) => {
   const userId = req.user.id;
   console.log("Profile userId:", userId);
 
-  const [{ data: profile }, { data: spots }, { data: collection }] =
-    await Promise.all([
-      getUserById(userId),
-      getSpotsByUser(userId),
-      getUserCollection(userId),
-    ]);
+  const { data: profile } = await getUserById(userId);
+  const { data: spots } = await getSpotsByUser(userId);
+  const { data: collection } = await getUserCollection(userId);
 
   console.log("Spots found:", spots?.length);
   console.log("Profile found:", profile?.username);
 
-  // Attach image URLs and units to each spot
-  const spotsWithData = await Promise.all(
+  const spotsWithImages = await Promise.all(
     (spots || []).map(async (spot) => {
-      const { data: unitData } = await getUnitsBySpot(spot.spot_id);
-      const units = unitData?.map((row) => row.unit) || [];
+      let spotData = { ...spot };
 
-      let imageUrl = null;
+      // Add image URL
       if (spot.image_path) {
         const { data } = supabase.storage
           .from("spot-images")
           .getPublicUrl(spot.image_path);
-        imageUrl = data.publicUrl;
+        spotData.imageUrl = data.publicUrl;
+      } else {
+        spotData.imageUrl = null;
       }
 
-      return { ...spot, units, imageUrl };
+      // Fetch and attach units for this spot
+      const { data: unitData } = await getUnitsBySpot(spot.spot_id);
+      spotData.units = unitData?.map((row) => row.unit) || [];
+
+      return spotData;
     }),
   );
 
+  const collectionWithCounts = (collection || []).map((item) => ({
+    ...item.unit,
+    times_spotted: item.times_spotted,
+  }));
+
   res.render("profile", {
     profile,
-    spots: spotsWithData,
-    collection: collection || [],
+    spots: spotsWithImages,
+    collection: collectionWithCounts,
     activePage: "profile",
   });
 };
