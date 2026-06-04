@@ -90,6 +90,51 @@ const closeSheet = () => {
   backdrop.classList.remove("visible");
 };
 
+// ===== SWIPE GESTURE HANDLING =====
+let touchStartY = 0;
+let touchStartX = 0;
+
+sheet.addEventListener(
+  "touchstart",
+  (e) => {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  },
+  false,
+);
+
+sheet.addEventListener(
+  "touchmove",
+  (e) => {
+    // Only allow default scroll if we're scrolling within content (not at the top)
+    const isAtTop = sheet.scrollTop === 0;
+    const touchCurrentY = e.touches[0].clientY;
+    const diffY = touchCurrentY - touchStartY;
+
+    // If at the top and swiping down, prevent default to allow custom handling
+    if (isAtTop && diffY > 0) {
+      e.preventDefault();
+    }
+  },
+  { passive: false },
+);
+
+sheet.addEventListener(
+  "touchend",
+  (e) => {
+    const touchEndY = e.changedTouches[0].clientY;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diffY = touchEndY - touchStartY;
+    const diffX = Math.abs(touchEndX - touchStartX);
+
+    // Swipe down more than horizontal movement, and more than 80px
+    if (diffY > 80 && diffY > diffX) {
+      closeSheet();
+    }
+  },
+  false,
+);
+
 document
   .getElementById("map-sheet-handle")
   .addEventListener("click", closeSheet);

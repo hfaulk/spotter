@@ -326,6 +326,7 @@ input[type="datetime-local"] {
 .app-content-map {
     padding: 0;
     position: relative;
+    overflow: hidden;
 }
 
 /* ===== TOPBAR ===== */
@@ -871,6 +872,8 @@ a.collection-item:hover {
         visibility 0s linear 0.35s;
     max-height: 80vh;
     overflow-y: auto;
+    overflow-x: hidden;
+    touch-action: none;
 }
 
 .map-sheet.open {
