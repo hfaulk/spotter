@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+<script src="/js/toast.js"></script>
 
 <div class="app-page">
   <%- include('partials/topbar', { showBack: true }) %>
@@ -51,6 +52,31 @@
 
   <%- include('partials/bottomnav', { activePage }) %>
 </div>
+
+<script>
+  // Convert server-side messages to toasts
+  document.addEventListener('DOMContentLoaded', function() {
+    const errorEl = document.querySelector('.form-error');
+    if (errorEl) {
+      toast.error(errorEl.textContent);
+      errorEl.remove();
+    }
+
+    const successEl = document.querySelector('.form-success');
+    if (successEl) {
+      toast.success(successEl.textContent);
+      successEl.remove();
+    }
+
+    // Add form submission listeners
+    const forms = document.querySelectorAll('.settings-form');
+    forms.forEach(form => {
+      form.addEventListener('submit', function() {
+        toast.info('Saving...');
+      });
+    });
+  });
+</script>
 
 </body>
 </html>

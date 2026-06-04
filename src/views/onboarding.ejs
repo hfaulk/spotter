@@ -35,5 +35,23 @@
   </div>
 </div>
 
+<script src="/js/toast.js"></script>
+<script>
+  // Convert any server-side error/success messages to toasts
+  const errorEl = document.querySelector('.form-error');
+  if (errorEl) {
+    const message = errorEl.textContent.trim();
+    if (message) toast.error(message);
+    errorEl.remove();
+  }
+
+  const successEl = document.querySelector('.form-success');
+  if (successEl) {
+    const message = successEl.textContent.trim();
+    if (message) toast.success(message);
+    successEl.remove();
+  }
+</script>
+
 </body>
 </html>

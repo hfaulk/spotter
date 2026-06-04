@@ -168,8 +168,17 @@ if (dt) {
   dt.value = now.toISOString().slice(0, 16);
 }
 
+// Check if there's an error message displayed and show as toast
+const formError = document.querySelector(".form-error");
+if (formError && formError.textContent.trim()) {
+  toast.error(formError.textContent.trim());
+}
+
 // ===== CLEAR FORM AFTER SUCCESSFUL SUBMISSION =====
 const resetFormState = () => {
+  // Show success toast
+  toast.success("Spot created successfully!");
+
   // Reset form inputs
   const form = document.querySelector(".spot-form");
   if (form) form.reset();
@@ -214,7 +223,33 @@ if (sessionStorage.getItem("spotFormSubmitted")) {
 const form = document.querySelector(".spot-form");
 if (form) {
   form.addEventListener("submit", (e) => {
-    // Only mark as submitted if form is valid (will be submitted)
+    // Validate required fields
+    const titleInput = document.getElementById("spot_title");
+    const timestampInput = document.getElementById("spot_timestamp");
+    const unitsInputs = document.querySelectorAll("input[name='unit_number']");
+
+    if (!titleInput || !titleInput.value.trim()) {
+      toast.warning("Please enter a spot title");
+      return;
+    }
+
+    if (!timestampInput || !timestampInput.value) {
+      toast.warning("Please select a date and time");
+      return;
+    }
+
+    if (
+      unitsInputs.length === 0 ||
+      !Array.from(unitsInputs).some((u) => u.value.trim())
+    ) {
+      toast.warning("Please add at least one unit number");
+      return;
+    }
+
+    // Show submission progress
+    toast.info("Submitting...");
+
+    // Mark as submitted if form is valid
     if (form.checkValidity()) {
       sessionStorage.setItem("spotFormSubmitted", "true");
     }
