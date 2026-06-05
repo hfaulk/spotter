@@ -1,5 +1,30 @@
 // ===== MAP SETUP =====
 let map, marker;
+let isSatellite = false;
+
+// MapLibre Styles
+const streetStyle = "https://tiles.openfreemap.org/styles/liberty";
+const satelliteStyle = {
+  version: 8,
+  sources: {
+    "esri-satellite": {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+      attribution: "Tiles © Esri",
+      maxzoom: 19, // Moved here to prevent zoom voids
+    },
+  },
+  layers: [
+    {
+      id: "satellite-layer",
+      type: "raster",
+      source: "esri-satellite",
+    },
+  ],
+};
 
 const latInput = document.getElementById("spot_latitude");
 const lonInput = document.getElementById("spot_longitude");
@@ -7,13 +32,29 @@ const lonInput = document.getElementById("spot_longitude");
 const initMap = (lat = 52.5, lon = -1.5, zoom = 5) => {
   map = new maplibregl.Map({
     container: "location-map",
-    style: "https://tiles.openfreemap.org/styles/liberty",
+    style: streetStyle,
     center: [lon, lat],
     zoom: zoom,
+    maxZoom: 19, // Caps physical zoom
   });
 
   map.on("click", (e) => {
     placeMarker(e.lngLat.lat, e.lngLat.lng);
+  });
+
+  // Setup Satellite Toggle
+  const toggleBtn = document.getElementById("map-toggle-btn");
+  toggleBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    isSatellite = !isSatellite;
+
+    if (isSatellite) {
+      map.setStyle(satelliteStyle);
+      toggleBtn.classList.add("active");
+    } else {
+      map.setStyle(streetStyle);
+      toggleBtn.classList.remove("active");
+    }
   });
 };
 
@@ -60,13 +101,17 @@ photoInput?.addEventListener("change", async (e) => {
 
   const preview = document.getElementById("photo-preview");
   const labelText = document.getElementById("photo-label-text");
+  const photoLabelUI = document.querySelector(".photo-label");
+
+  // Instant UX Feedback before heavy parsing
+  labelText.textContent = "Extracting camera data...";
+  if (photoLabelUI) photoLabelUI.style.borderColor = "midnightblue";
 
   const isHeic = file.type === "image/heic" || file.type === "image/heif";
   if (!isHeic) {
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
   }
-  labelText.textContent = file.name;
 
   try {
     const exif = await exifr.parse(file, {
@@ -75,6 +120,8 @@ photoInput?.addEventListener("change", async (e) => {
       gps: true,
       ifd0: true,
     });
+
+    labelText.textContent = file.name; // Reset to filename when done
 
     if (!exif) return;
 
@@ -112,6 +159,7 @@ photoInput?.addEventListener("change", async (e) => {
     }
   } catch {
     // No EXIF — continue silently
+    labelText.textContent = file.name;
   }
 });
 
@@ -126,11 +174,11 @@ const createUnitRow = () => {
     <div class="unit-fields">
       <div class="field">
         <label>Unit number</label>
-        <input type="text" name="unit_number" placeholder="47805" required />
+        <input type="text" name="unit_number" placeholder="47805" required inputmode="numeric" pattern="[0-9]*" />
       </div>
       <div class="field">
         <label>Class <span class="optional">(optional)</span></label>
-        <input type="text" name="unit_class" placeholder="Class 47" />
+        <input type="text" name="unit_class" placeholder="CLASS 47" autocapitalize="characters" autocorrect="off" />
       </div>
       <div class="field">
         <label>Operator <span class="optional">(optional)</span></label>
@@ -168,7 +216,6 @@ if (dt) {
   dt.value = now.toISOString().slice(0, 16);
 }
 
-// Check if there's an error message displayed and show as toast
 const formError = document.querySelector(".form-error");
 if (formError && formError.textContent.trim()) {
   toast.error(formError.textContent.trim());
@@ -176,27 +223,22 @@ if (formError && formError.textContent.trim()) {
 
 // ===== CLEAR FORM AFTER SUCCESSFUL SUBMISSION =====
 const resetFormState = () => {
-  // Show success toast
   toast.success("Spot created successfully!");
 
-  // Reset form inputs
   const form = document.querySelector(".spot-form");
   if (form) form.reset();
 
-  // Reset units
   unitsContainer.innerHTML = "";
   unitsContainer.appendChild(createUnitRow());
-
-  // Reset location
   clearLocation();
 
-  // Reset photo
   const photoPreview = document.getElementById("photo-preview");
   if (photoPreview) photoPreview.style.display = "none";
   const photoLabel = document.getElementById("photo-label-text");
   if (photoLabel) photoLabel.textContent = "Add a photo";
+  const photoLabelUI = document.querySelector(".photo-label");
+  if (photoLabelUI) photoLabelUI.style.borderColor = "#e4e8f0";
 
-  // Reset EXIF panel
   const exifPanel = document.getElementById("exif-panel");
   if (exifPanel) exifPanel.style.display = "none";
   document.getElementById("exif-camera").textContent = "—";
@@ -205,7 +247,6 @@ const resetFormState = () => {
   document.getElementById("exif-iso").textContent = "—";
   document.getElementById("exif-focal").textContent = "—";
 
-  // Reset timestamp to current
   if (dt) {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -213,17 +254,15 @@ const resetFormState = () => {
   }
 };
 
-// Check if form should be reset (user came back from successful submission)
 if (sessionStorage.getItem("spotFormSubmitted")) {
   sessionStorage.removeItem("spotFormSubmitted");
   resetFormState();
 }
 
-// Listen for form submission
+// ===== SUBMIT LISTENER =====
 const form = document.querySelector(".spot-form");
 if (form) {
   form.addEventListener("submit", (e) => {
-    // Validate required fields
     const titleInput = document.getElementById("spot_title");
     const timestampInput = document.getElementById("spot_timestamp");
     const unitsInputs = document.querySelectorAll("input[name='unit_number']");
@@ -246,12 +285,23 @@ if (form) {
       return;
     }
 
-    // Show submission progress
     toast.info("Submitting...");
 
-    // Mark as submitted if form is valid
+    // UI Lockout & Spinner
     if (form.checkValidity()) {
       sessionStorage.setItem("spotFormSubmitted", "true");
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.7";
+        submitBtn.innerHTML = `
+          <svg class="spinner" viewBox="0 0 50 50" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; animation: rotate 2s linear infinite;">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="1, 200" stroke-dashoffset="0" style="animation: dash 1.5s ease-in-out infinite;"></circle>
+          </svg>
+          Uploading Spot...
+        `;
+      }
     }
   });
 }

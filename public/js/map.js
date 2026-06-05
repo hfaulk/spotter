@@ -1,10 +1,52 @@
 const isLoggedIn = window.SPOTTER_CONFIG?.isLoggedIn || false;
 
+// MapLibre Styles
+const streetStyle = "https://tiles.openfreemap.org/styles/liberty";
+const satelliteStyle = {
+  version: 8,
+  sources: {
+    "esri-satellite": {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+      attribution: "Tiles © Esri",
+      maxzoom: 19, // <-- MOVED HERE: Stops fetching new tiles past 19, but allows stretching
+    },
+  },
+  layers: [
+    {
+      id: "satellite-layer",
+      type: "raster",
+      source: "esri-satellite",
+      // <-- REMOVED maxzoom from here so the layer never turns off
+    },
+  ],
+};
+
 const map = new maplibregl.Map({
   container: "main-map",
-  style: "https://tiles.openfreemap.org/styles/liberty",
+  style: streetStyle,
   center: [-1.5, 52.5],
   zoom: 6,
+});
+
+// ===== MAP TOGGLE LOGIC =====
+let isSatellite = false;
+const toggleBtn = document.getElementById("map-toggle-btn");
+
+toggleBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  isSatellite = !isSatellite;
+
+  if (isSatellite) {
+    map.setStyle(satelliteStyle);
+    toggleBtn.classList.add("active");
+  } else {
+    map.setStyle(streetStyle);
+    toggleBtn.classList.remove("active");
+  }
 });
 
 const sheet = document.getElementById("map-sheet");

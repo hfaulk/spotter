@@ -16,6 +16,7 @@
         <h2>Photo <span class="optional">(optional)</span></h2>
         <div class="photo-upload">
           <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/heic,image/heif" />
+
           <label for="photo" class="photo-label">
             <div class="photo-label-inner">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -27,6 +28,7 @@
           </label>
           <img id="photo-preview" src="" alt="" style="display:none;" />
         </div>
+
         <div id="exif-panel" style="display:none;">
           <div class="exif-grid">
             <div class="exif-item">
@@ -57,13 +59,11 @@
         <h2>Details</h2>
         <div class="field">
           <label for="spot_title">Title</label>
-          <input type="text" id="spot_title" name="spot_title"
-            placeholder="444032 at Fratton" required />
+          <input type="text" id="spot_title" name="spot_title" placeholder="444032 at Fratton" required />
         </div>
         <div class="field">
           <label for="spot_description">Description <span class="optional">(optional)</span></label>
-          <textarea id="spot_description" name="spot_description"
-            placeholder="Caught heading into Portsmouth Harbour..." rows="3"></textarea>
+          <textarea id="spot_description" name="spot_description" placeholder="Caught heading into Portsmouth Harbour..." rows="3"></textarea>
         </div>
         <div class="field">
           <label for="spot_timestamp">Date & time</label>
@@ -75,7 +75,21 @@
         <h2>Location <span class="optional">(optional)</span></h2>
         <p class="section-hint">Tap the map to drop a pin. Auto-fills if your photo has GPS data.</p>
         <span id="location-status" class="location-status"></span>
-        <div id="location-map"></div>
+
+        <div style="position: relative; border-radius: 10px; overflow: hidden; border: 1px solid #e4e8f0;">
+          <div id="location-map" style="border: none;"></div>
+
+          <div class="map-controls">
+            <button type="button" id="map-toggle-btn" class="map-control-btn" aria-label="Toggle Satellite View" title="Map Layers">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 12 12 17 22 12"></polyline>
+                <polyline points="2 17 12 22 22 17"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <button type="button" id="clear-location" class="btn-secondary">Clear location</button>
         <input type="hidden" id="spot_latitude" name="spot_latitude" />
         <input type="hidden" id="spot_longitude" name="spot_longitude" />
