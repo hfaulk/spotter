@@ -2178,7 +2178,7 @@ a.unit-chip:hover {
         gap: 1rem;
         padding: 1.5rem 1.75rem 2.5rem;
         align-content: start;
-        align-items: start;
+        align-items: stretch;
         background: #f9fafb;
     }
     .sidenav ~ .show-page.layout-spot .spot-card {
@@ -2190,6 +2190,160 @@ a.unit-chip:hover {
     }
     .sidenav ~ .show-page.layout-spot #spot-map {
         height: 300px;
+    }
+
+    /* Desktop layout without a sidebar */
+    .show-page.layout-spot.shared-layout {
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        min-height: 100vh;
+        background: #f9fafb;
+        padding-bottom: 0;
+        /* Make absolutely sure there is no overflow: hidden here */
+    }
+
+    .show-page.layout-spot.shared-layout .spot-image-full {
+        flex: 0 0 45%;
+        height: 100vh;
+        background: #1b1b1f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: sticky;
+        top: 0;
+        overflow: hidden;
+    }
+
+    .show-page.layout-spot.shared-layout .spot-image-full img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        position: relative;
+        z-index: 1;
+    }
+
+    .show-page.layout-spot.shared-layout .spot-image-bg {
+        display: block;
+        position: absolute;
+        inset: -20px;
+        background-size: cover;
+        background-position: center;
+        filter: blur(34px) brightness(0.7);
+        opacity: 0.55;
+        z-index: 0;
+    }
+
+    .show-page.layout-spot.shared-layout .show-right {
+        flex: 1;
+        min-width: 0;
+        background: #f9fafb;
+        display: flex;
+        flex-direction: column;
+        /* Make absolutely sure overflow-y: auto is deleted from here */
+    }
+
+    /* Hide mobile topbar on desktop */
+    .show-page.layout-spot.shared-layout .topbar {
+        display: none;
+    }
+
+    /* Back to nice, breathable padding */
+    .show-page.layout-spot.shared-layout .spot-title-block {
+        flex-shrink: 0;
+        margin-top: 0;
+        border-radius: 0;
+        padding: 2rem 2rem 1.25rem;
+        background: white;
+        border-bottom: 1px solid #f0f2f8;
+    }
+
+    .show-page.layout-spot.shared-layout .spot-title {
+        font-size: 1.5rem;
+    }
+
+    /* Back to standard gaps and padding */
+    .show-page.layout-spot.shared-layout .spot-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 1.5rem 2rem 2.5rem;
+        align-content: start;
+        align-items: stretch;
+    }
+
+    .show-page.layout-spot.shared-layout .spot-card {
+        background: white;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+        padding: 1.25rem;
+    }
+
+    .show-page.layout-spot.shared-layout .card-location,
+    .show-page.layout-spot.shared-layout .shared-cta {
+        grid-column: 1 / -1;
+    }
+
+    /* Restored the proper map height */
+    .show-page.layout-spot.shared-layout #spot-map {
+        height: 300px;
+    }
+
+    /* Constrain the units list so it scrolls instead of expanding the card */
+    .show-page.layout-spot .spot-card .units-list {
+        max-height: 135px; /* Roughly the height of a fully populated camera panel */
+        overflow-y: auto;
+        padding-right: 0.5rem; /* Prevents scrollbar from eating into the text */
+    }
+
+    /* Custom, subtle scrollbar styling */
+    .show-page.layout-spot .spot-card .units-list::-webkit-scrollbar {
+        width: 6px;
+    }
+    .show-page.layout-spot .spot-card .units-list::-webkit-scrollbar-track {
+        background: #f0f2f8;
+        border-radius: 4px;
+    }
+    .show-page.layout-spot .spot-card .units-list::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+    }
+    .show-page.layout-spot
+        .spot-card
+        .units-list::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+
+    /* Smooth out jump links and style Firefox scrollbars */
+    .show-page.layout-spot.shared-layout .show-right {
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 #f9fafb;
+    }
+
+    /* Custom WebKit (Chrome/Edge) scrollbar for the right panel */
+    .show-page.layout-spot.shared-layout .show-right::-webkit-scrollbar {
+        width: 8px;
+    }
+    .show-page.layout-spot.shared-layout .show-right::-webkit-scrollbar-track {
+        background: #f9fafb;
+    }
+    .show-page.layout-spot.shared-layout .show-right::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .show-page.layout-spot.shared-layout
+        .show-right::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Push content down on mobile so it doesn't hide behind the topbar */
+    .show-page.shared-layout {
+        padding-top: 56px;
     }
 }
 

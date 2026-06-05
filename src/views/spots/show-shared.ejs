@@ -1,22 +1,24 @@
 <%- include('../partials/header') %>
 <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
 
-<div class="show-page">
+<div class="show-page layout-spot shared-layout">
 
-    <header class="topbar">
-      <div class="topbar-left"></div>
-      <span class="topbar-logo">Spotter</span>
-      <div class="topbar-right"></div>
-    </header>
+  <header class="topbar">
+    <div class="topbar-left"></div>
+    <span class="topbar-logo">Spotter</span>
+    <div class="topbar-right"></div>
+  </header>
 
-  <% if (imageUrl) { %>
-    <div class="spot-image-full">
+  <div class="spot-image-full">
+    <% if (imageUrl) { %>
+      <div class="spot-image-bg" style="background-image:url('<%= imageUrl %>')"></div>
       <img src="<%= imageUrl %>" alt="<%= spot.spot_title %>" />
-    </div>
-  <% } %>
+    <% } else { %>
+      <div class="spot-image-placeholder"></div>
+    <% } %>
+  </div>
 
-  <div class="spot-content">
-
+  <div class="show-right">
     <div class="spot-title-block">
       <h1 class="spot-title"><%= spot.spot_title %></h1>
       <% if (spot.spot_description) { %>
@@ -25,36 +27,62 @@
       <p class="spot-timestamp"><%= new Date(spot.spot_timestamp).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
     </div>
 
-    <% if (units.length > 0) { %>
-      <div class="spot-card">
-        <h2>Units</h2>
-        <div class="units-list">
-          <% units.forEach(unit => { %>
-            <div class="unit-chip">
-              <span class="unit-number"><%= unit.unit_number %></span>
-              <% if (unit.unit_class) { %><span class="unit-meta"><%= unit.unit_class %></span><% } %>
-              <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator %></span><% } %>
-            </div>
-          <% }) %>
-        </div>
-      </div>
-    <% } %>
+    <div class="spot-content">
 
-    <% if (spot.spot_latitude && spot.spot_longitude) { %>
-      <div class="spot-card">
-        <h2>Location</h2>
-        <div id="spot-map"
-          data-lat="<%= spot.spot_latitude %>"
-          data-lon="<%= spot.spot_longitude %>">
+      <% if (units.length > 0) { %>
+        <div class="spot-card">
+          <h2>Units</h2>
+          <div class="units-list">
+            <% units.forEach(unit => { %>
+              <div class="unit-chip">
+                <span class="unit-number"><%= unit.unit_number %></span>
+                <% if (unit.unit_class) { %><span class="unit-meta"><%= unit.unit_class %></span><% } %>
+                <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator %></span><% } %>
+              </div>
+            <% }) %>
+          </div>
         </div>
-      </div>
-    <% } %>
+      <% } %>
 
-    <div class="spot-card shared-cta">
-      <p>Logged with <strong>Spotter</strong></p>
-      <a href="/register" class="btn-primary">Start spotting</a>
+      <% if (spot.image_camera || spot.image_shutter_speed || spot.image_iso || spot.image_aperture || spot.image_focal_length) { %>
+        <div class="spot-card">
+          <h2>Camera</h2>
+          <div class="exif-grid">
+            <% if (spot.image_camera) { %>
+              <div class="exif-item"><span class="exif-label">Camera</span><span class="exif-value"><%= spot.image_camera %></span></div>
+            <% } %>
+            <% if (spot.image_shutter_speed) { %>
+              <div class="exif-item"><span class="exif-label">Shutter</span><span class="exif-value"><%= spot.image_shutter_speed %></span></div>
+            <% } %>
+            <% if (spot.image_aperture) { %>
+              <div class="exif-item"><span class="exif-label">Aperture</span><span class="exif-value"><%= spot.image_aperture %></span></div>
+            <% } %>
+            <% if (spot.image_iso) { %>
+              <div class="exif-item"><span class="exif-label">ISO</span><span class="exif-value"><%= spot.image_iso %></span></div>
+            <% } %>
+            <% if (spot.image_focal_length) { %>
+              <div class="exif-item"><span class="exif-label">Focal length</span><span class="exif-value"><%= spot.image_focal_length %></span></div>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+
+      <% if (spot.spot_latitude && spot.spot_longitude) { %>
+        <div class="spot-card card-location">
+          <h2>Location</h2>
+          <div id="spot-map"
+            data-lat="<%= spot.spot_latitude %>"
+            data-lon="<%= spot.spot_longitude %>">
+          </div>
+        </div>
+      <% } %>
+
+      <div class="spot-card shared-cta">
+        <p>Logged with <strong>Spotter</strong></p>
+        <a href="/register" class="btn-primary">Start spotting</a>
+      </div>
+
     </div>
-
   </div>
 </div>
 
