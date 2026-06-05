@@ -2047,42 +2047,6 @@ a.unit-chip:hover {
         font-size: 1.2rem;
     }
 
-    /* Spot show: 3-col grid */
-    .sidenav ~ .show-page .spot-content {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: auto auto 1fr;
-        gap: 0.75rem;
-        padding: 1rem 1.5rem;
-        background: #f9fafb;
-        align-items: start;
-        align-content: start;
-    }
-
-    .sidenav ~ .show-page .spot-content .card-location {
-        grid-column: 3;
-        grid-row: 1 / -1;
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sidenav ~ .show-page .spot-content .card-full {
-        grid-column: 1 / 3;
-        grid-row: 2;
-    }
-
-    .sidenav ~ .show-page #spot-map {
-        flex: 1;
-        min-height: 180px;
-    }
-    .sidenav ~ .show-page .spot-card {
-        overflow: hidden;
-    }
-
     /* Unit show: 2-col flex (wiki left, spots right) */
     .sidenav ~ .show-page .unit-content {
         flex: 0 0 auto; /* ← was: flex: 1 */
@@ -2138,28 +2102,94 @@ a.unit-chip:hover {
         right: 1.5rem;
     }
 
-    /* Portrait image: right sidebar layout */
-    .sidenav ~ .show-page.layout-portrait {
+    /* ===== SPOT SHOW — split layout (any photo orientation) ===== */
+    .sidenav ~ .show-page.layout-spot {
         flex-direction: row;
+        align-items: stretch;
     }
 
-    .sidenav ~ .show-page.layout-portrait .spot-image-full {
-        order: 2;
-        width: 380px;
+    /* LEFT — image panel: whole photo always visible, blurred self-fill */
+    .sidenav ~ .show-page.layout-spot .spot-image-full {
+        flex: 0 0 42%;
+        max-width: 640px;
         height: 100vh;
-        flex-shrink: 0;
+        background: #1b1b1f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-image-full img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        position: relative;
+        z-index: 1;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-image-bg {
+        display: block;
+        inset: 0;
+        transform: scale(1.1);
+        filter: blur(34px) brightness(0.7);
+        opacity: 0.55;
+        z-index: 0;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-image-placeholder {
+        width: 100%;
+        height: 100%;
     }
 
-    .sidenav ~ .show-page.layout-portrait .spot-image-full img {
-        width: 380px;
-        height: 100vh;
-        object-fit: cover;
-        object-position: center center;
+    /* Pin back button + menu to the image panel, not the viewport */
+    .sidenav ~ .show-page.layout-spot .spot-back-btn {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-menu {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
     }
 
-    .sidenav ~ .show-page.layout-portrait .show-right {
-        order: 1;
+    /* RIGHT — scrollable info column */
+    .sidenav ~ .show-page.layout-spot .show-right {
+        flex: 1;
+        min-width: 0;
         overflow-y: auto;
+        background: #f9fafb;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-title-block {
+        flex-shrink: 0;
+        margin-top: 0;
+        border-radius: 0;
+        padding: 1.5rem 1.75rem 1.25rem;
+        background: white;
+        border-bottom: 1px solid #f0f2f8;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-title {
+        font-size: 1.4rem;
+    }
+
+    /* Card grid: Units + Camera pair on row 1; Location + Share span full.
+           Degrades cleanly when a card is absent. */
+    .sidenav ~ .show-page.layout-spot .spot-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 1.5rem 1.75rem 2.5rem;
+        align-content: start;
+        align-items: start;
+        background: #f9fafb;
+    }
+    .sidenav ~ .show-page.layout-spot .spot-card {
+        overflow: hidden;
+    }
+    .sidenav ~ .show-page.layout-spot .card-location,
+    .sidenav ~ .show-page.layout-spot .card-full {
+        grid-column: 1 / -1;
+    }
+    .sidenav ~ .show-page.layout-spot #spot-map {
+        height: 300px;
     }
 }
 

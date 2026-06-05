@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
 <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
 
-<div class="show-page">
+<div class="show-page layout-spot">
 
   <div class="spot-image-full">
     <% if (imageUrl) { %>
@@ -169,19 +169,6 @@
         console.error('Delete error:', err)
       })
   })
-
-  if (window.innerWidth >= 768) {
-      const heroImg = document.querySelector('.spot-image-full img');
-      if (heroImg) {
-          const applyLayout = () => {
-              if (heroImg.naturalHeight > heroImg.naturalWidth) {
-                  document.querySelector('.show-page').classList.add('layout-portrait');
-              }
-          };
-          if (heroImg.complete && heroImg.naturalWidth > 0) applyLayout();
-          else heroImg.addEventListener('load', applyLayout);
-      }
-  }
 </script>
 
 </body>
