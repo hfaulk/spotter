@@ -145,6 +145,14 @@ app.post("/onboarding", requireAuth, submitOnboarding);
 // ===== PROFILE =====
 app.get("/profile", requireAuth, requireOnboarding, serveProfile);
 
+// ===== PROFILE =====
+app.get("/profile", requireAuth, requireOnboarding, serveProfile);
+
+// ===== SESSION CHECK (Gap 7 Fix) =====
+app.get("/api/session-check", requireAuth, (req, res) =>
+  res.json({ ok: true }),
+);
+
 // ===== MAP =====
 app.get("/map", serveMap);
 app.get("/api/map", mapLimiter, getMapData);

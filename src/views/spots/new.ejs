@@ -11,6 +11,7 @@
     <% } %>
 
     <form action="/spots" method="POST" enctype="multipart/form-data" class="spot-form">
+      <input type="hidden" name="submission_nonce" id="submission_nonce" />
 
       <div class="form-section">
         <h2>Photo <span class="optional">(optional)</span></h2>
@@ -114,6 +115,10 @@
 <script src="https://unpkg.com/exifr@7.1.3/dist/full.umd.cjs"></script>
 <script src="/js/toast.js"></script>
 <script src="/js/spot-form.js"></script>
+<script>
+  // Generate the submission nonce on page load
+  document.getElementById('submission_nonce').value = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+</script>
 
 </body>
 </html>

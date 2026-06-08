@@ -40,6 +40,9 @@ export const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
+// Cache for duplicate submission prevention (18.4)
+const recentNonces = new Set();
+
 // ===== SERVE VIEWS =====
 export const serveNewSpot = (req, res) => {
   res.render("spots/new", { error: undefined });
@@ -57,10 +60,30 @@ export const createSpotController = async (req, res) => {
       spot_latitude,
       spot_longitude,
       spot_timestamp,
+      submission_nonce,
     } = req.body;
+
+    // 18.4 Check for exact duplicate submission
+    if (submission_nonce && recentNonces.has(submission_nonce)) {
+      return res.redirect("/profile");
+    }
 
     if (!spot_title?.trim()) {
       return res.render("spots/new", { error: "A title is required" });
+    }
+
+    // 18.2 Server-side bounds validation
+    if (
+      spot_latitude &&
+      (parseFloat(spot_latitude) < -90 || parseFloat(spot_latitude) > 90)
+    ) {
+      return res.render("spots/new", { error: "Invalid latitude provided" });
+    }
+    if (
+      spot_longitude &&
+      (parseFloat(spot_longitude) < -180 || parseFloat(spot_longitude) > 180)
+    ) {
+      return res.render("spots/new", { error: "Invalid longitude provided" });
     }
 
     const units = parseUnits(req.body);
@@ -163,16 +186,36 @@ export const createSpotController = async (req, res) => {
       });
     }
 
-    // ===== LINK UNITS =====
-    for (const unit of units) {
-      const { data: unitData, error: unitError } = await findOrCreateUnit(unit);
-      if (unitError) continue;
-      await linkUnitToSpot(spot.spot_id, unitData.unit_id);
+    // ===== LINK UNITS (18.3 Transaction Cleanup) =====
+    try {
+      for (const unit of units) {
+        const { data: unitData, error: unitError } =
+          await findOrCreateUnit(unit);
+        if (unitError) throw unitError;
+        await linkUnitToSpot(spot.spot_id, unitData.unit_id);
+      }
+    } catch (linkErr) {
+      // Revert the whole operation if linking fails
+      await deleteSpot(spot.spot_id, userId);
+      return res.render("spots/new", {
+        error: "Failed to link units, please try again",
+      });
+    }
+
+    // Cache nonce to prevent double execution
+    if (submission_nonce) {
+      recentNonces.add(submission_nonce);
+      setTimeout(() => recentNonces.delete(submission_nonce), 30000);
     }
 
     res.redirect(`/spots/${spot.spot_id}`);
   } catch (err) {
-    if (imagePath) await deleteStorageImage(imagePath);
+    // 18.8 Orphaned R2 image cleanup
+    if (imagePath) {
+      await deleteStorageImage(imagePath).catch((e) =>
+        console.error("Cleanup failed:", e),
+      );
+    }
     console.error("createSpot error:", err);
     res.render("spots/new", {
       error: "Something went wrong, please try again",
@@ -224,10 +267,12 @@ export const deleteSpotController = async (req, res) => {
 
   if (error) {
     console.error("Delete spot error:", error);
-    return res.redirect(`/spots/${spotId}`);
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to delete spot" });
   }
 
-  res.redirect("/profile");
+  res.json({ success: true });
 };
 
 // ===== HELPERS =====

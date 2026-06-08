@@ -260,9 +260,21 @@ if (sessionStorage.getItem("spotFormSubmitted")) {
 }
 
 // ===== SUBMIT LISTENER =====
+const checkSession = async () => {
+  try {
+    const res = await fetch("/api/session-check", { credentials: "include" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+};
+
 const form = document.querySelector(".spot-form");
 if (form) {
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
+    // Stop native submission immediately to perform async checks
+    e.preventDefault();
+
     const titleInput = document.getElementById("spot_title");
     const timestampInput = document.getElementById("spot_timestamp");
     const unitsInputs = document.querySelectorAll("input[name='unit_number']");
@@ -285,6 +297,16 @@ if (form) {
       return;
     }
 
+    // Gap 7 Fix: Verify session before dumping form data
+    const isValidSession = await checkSession();
+    if (!isValidSession) {
+      toast.error(
+        "Your session has expired. Please log in again. Your data has been saved below.",
+      );
+      setTimeout(() => (window.location.href = "/login"), 3000);
+      return;
+    }
+
     toast.info("Submitting...");
 
     // UI Lockout & Spinner
@@ -302,6 +324,8 @@ if (form) {
           Uploading Spot...
         `;
       }
+
+      form.submit();
     }
   });
 }
