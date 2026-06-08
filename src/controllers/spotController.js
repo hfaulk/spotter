@@ -1,6 +1,7 @@
 import multer from "multer";
 import exifr from "exifr";
 import heicConvert from "heic-convert";
+import sharp from "sharp";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import r2 from "../config/r2.js";
 import {
@@ -15,6 +16,25 @@ import {
   linkUnitToSpot,
   getUnitsBySpot,
 } from "../models/unitModel.js";
+
+// ===== VALIDATION HELPER (18.2) =====
+const validate = (rules, body) => {
+  const errors = [];
+  for (const [field, checks] of Object.entries(rules)) {
+    const val = body[field];
+    if (checks.required && (!val || !val.toString().trim()))
+      errors.push(`${field} is required`);
+    if (checks.maxLength && val?.length > checks.maxLength)
+      errors.push(`${field} must be under ${checks.maxLength} characters`);
+    if (checks.pattern && val && !checks.pattern.test(val))
+      errors.push(`${field} contains invalid characters`);
+    if (checks.min !== undefined && Number(val) < checks.min)
+      errors.push(`${field} is out of range`);
+    if (checks.max !== undefined && Number(val) > checks.max)
+      errors.push(`${field} is out of range`);
+  }
+  return errors;
+};
 
 // ===== MULTER CONFIG =====
 const storage = multer.memoryStorage();
@@ -37,7 +57,7 @@ const fileFilter = (req, file, cb) => {
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 15 * 1024 * 1024 }, // Allowed up to 15MB initially, we compress later
 });
 
 // Cache for duplicate submission prevention (18.4)
@@ -52,6 +72,7 @@ export const serveNewSpot = (req, res) => {
 export const createSpotController = async (req, res) => {
   const userId = req.user.id;
   let imagePath = null;
+  let thumbPath = null;
 
   try {
     const {
@@ -68,22 +89,18 @@ export const createSpotController = async (req, res) => {
       return res.redirect("/profile");
     }
 
-    if (!spot_title?.trim()) {
-      return res.render("spots/new", { error: "A title is required" });
-    }
-
     // 18.2 Server-side bounds validation
-    if (
-      spot_latitude &&
-      (parseFloat(spot_latitude) < -90 || parseFloat(spot_latitude) > 90)
-    ) {
-      return res.render("spots/new", { error: "Invalid latitude provided" });
-    }
-    if (
-      spot_longitude &&
-      (parseFloat(spot_longitude) < -180 || parseFloat(spot_longitude) > 180)
-    ) {
-      return res.render("spots/new", { error: "Invalid longitude provided" });
+    const validationErrors = validate(
+      {
+        spot_title: { required: true, maxLength: 200 },
+        spot_latitude: { min: -90, max: 90 },
+        spot_longitude: { min: -180, max: 180 },
+      },
+      req.body,
+    );
+
+    if (validationErrors.length) {
+      return res.render("spots/new", { error: validationErrors[0] });
     }
 
     const units = parseUnits(req.body);
@@ -119,45 +136,78 @@ export const createSpotController = async (req, res) => {
       }
     }
 
-    // ===== CONVERT HEIC =====
-    let fileBuffer = req.file?.buffer;
-    let fileMimeType = req.file?.mimetype;
-
-    if (fileMimeType === "image/heic" || fileMimeType === "image/heif") {
-      try {
-        const converted = await heicConvert({
-          buffer: fileBuffer,
-          format: "JPEG",
-          quality: 0.9,
-        });
-        fileBuffer = Buffer.from(converted);
-        fileMimeType = "image/jpeg";
-      } catch (err) {
-        console.error("HEIC conversion error:", err);
-        return res.render("spots/new", {
-          error: "Could not process HEIC image, please try again",
-        });
-      }
-    }
-
-    // ===== PHOTO UPLOAD =====
+    // ===== FILE PROCESSING (18.7 & 3) =====
     if (req.file) {
-      const ext = fileMimeType === "image/png" ? "png" : "jpg";
-      imagePath = `${userId}/${Date.now()}.${ext}`;
+      let fileBuffer = req.file.buffer;
+      const isHeic =
+        req.file.mimetype === "image/heic" ||
+        req.file.mimetype === "image/heif";
+
+      if (isHeic) {
+        try {
+          const converted = await heicConvert({
+            buffer: fileBuffer,
+            format: "JPEG",
+            quality: 0.9,
+          });
+          fileBuffer = Buffer.from(converted);
+        } catch (err) {
+          console.error("HEIC conversion error:", err);
+          return res.render("spots/new", {
+            error: "Could not process HEIC image, please try again",
+          });
+        }
+      }
 
       try {
-        await r2.send(
-          new PutObjectCommand({
-            Bucket: process.env.R2_BUCKET_NAME,
-            Key: imagePath,
-            Body: fileBuffer,
-            ContentType: fileMimeType,
-          }),
-        );
-      } catch (uploadError) {
-        console.error("R2 upload error:", uploadError);
+        // 18.7 Corrupt/tiny image check
+        const meta = await sharp(fileBuffer).metadata();
+        if (!meta.width || meta.width < 100)
+          throw new Error("Image too small or corrupt");
+
+        // Section 3: WebP Compression & Thumbnails
+        const ext = "webp";
+        imagePath = `${userId}/${Date.now()}.${ext}`;
+        thumbPath = `${userId}/${Date.now()}_thumb.${ext}`;
+
+        // Main display image: Max 2048px wide
+        const mainBuffer = await sharp(fileBuffer)
+          .rotate() // Auto-rotate using EXIF orientation
+          .resize({ width: 2048, withoutEnlargement: true })
+          .webp({ quality: 85 })
+          .toBuffer();
+
+        // Thumbnail image: Max 400px wide
+        const thumbBuffer = await sharp(fileBuffer)
+          .rotate()
+          .resize({ width: 400, withoutEnlargement: true })
+          .webp({ quality: 82 })
+          .toBuffer();
+
+        // Upload both concurrently
+        await Promise.all([
+          r2.send(
+            new PutObjectCommand({
+              Bucket: process.env.R2_BUCKET_NAME,
+              Key: imagePath,
+              Body: mainBuffer,
+              ContentType: "image/webp",
+            }),
+          ),
+          r2.send(
+            new PutObjectCommand({
+              Bucket: process.env.R2_BUCKET_NAME,
+              Key: thumbPath,
+              Body: thumbBuffer,
+              ContentType: "image/webp",
+            }),
+          ),
+        ]);
+      } catch (err) {
+        console.error("Image processing/upload error:", err);
         return res.render("spots/new", {
-          error: "Photo upload failed, please try again",
+          error:
+            "The photo appears to be corrupt or could not be uploaded — please try again.",
         });
       }
     }
@@ -176,11 +226,13 @@ export const createSpotController = async (req, res) => {
       spot_longitude: spot_longitude ? parseFloat(spot_longitude) : null,
       spot_timestamp: timestamp,
       image_path: imagePath,
+      image_thumb_path: thumbPath,
       ...exifData,
     });
 
     if (spotError) {
       if (imagePath) await deleteStorageImage(imagePath);
+      if (thumbPath) await deleteStorageImage(thumbPath);
       return res.render("spots/new", {
         error: "Failed to save spot, please try again",
       });
@@ -211,11 +263,9 @@ export const createSpotController = async (req, res) => {
     res.redirect(`/spots/${spot.spot_id}`);
   } catch (err) {
     // 18.8 Orphaned R2 image cleanup
-    if (imagePath) {
-      await deleteStorageImage(imagePath).catch((e) =>
-        console.error("Cleanup failed:", e),
-      );
-    }
+    if (imagePath) await deleteStorageImage(imagePath).catch(() => {});
+    if (thumbPath) await deleteStorageImage(thumbPath).catch(() => {});
+
     console.error("createSpot error:", err);
     res.render("spots/new", {
       error: "Something went wrong, please try again",

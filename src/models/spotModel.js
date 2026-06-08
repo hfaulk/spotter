@@ -11,6 +11,7 @@ export const createSpot = async ({
   spot_longitude,
   spot_timestamp,
   image_path,
+  image_thumb_path,
   image_shutter_speed,
   image_iso,
   image_aperture,
@@ -30,6 +31,7 @@ export const createSpot = async ({
       spot_timestamp,
       spot_share_token,
       image_path: image_path || null,
+      image_thumb_path: image_thumb_path || null,
       image_shutter_speed: image_shutter_speed || null,
       image_iso: image_iso || null,
       image_aperture: image_aperture || null,
@@ -92,7 +94,7 @@ export const deleteSpot = async (spotId, userId) => {
   // Verify ownership
   const { data: spot, error: fetchError } = await supabase
     .from("spot")
-    .select("spot_id, image_path")
+    .select("spot_id, image_path, image_thumb_path")
     .eq("spot_id", spotId)
     .eq("user_id", userId)
     .single();
@@ -111,9 +113,12 @@ export const deleteSpot = async (spotId, userId) => {
 
   if (deleteError) return { error: deleteError };
 
-  // Delete photo from storage if exists
+  // Delete photos from storage if they exist
   if (spot.image_path) {
     await deleteStorageImage(spot.image_path);
+  }
+  if (spot.image_thumb_path) {
+    await deleteStorageImage(spot.image_thumb_path);
   }
 
   return { error: null };
