@@ -1,3 +1,5 @@
+import "dotenv/config.js"; // MUST be the absolute first line to load .env before other imports evaluate
+
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -42,6 +44,26 @@ import { showUnit } from "./src/controllers/unitController.js";
 import { serveMap, getMapData } from "./src/controllers/mapController.js";
 import { requireAuth, requireOnboarding } from "./src/middleware/auth.js";
 
+// ===== 18.1 ENVIRONMENT VARIABLE VALIDATION =====
+// Now this runs safely because dotenv has loaded the variables
+const REQUIRED_ENV = [
+  "SUPABASE_URL",
+  "SUPABASE_SECRET_KEY",
+  "BASE_URL",
+  "CLOUDFLARE_ACCOUNT_ID",
+  "R2_ACCESS_KEY_ID",
+  "R2_SECRET_ACCESS_KEY",
+  "R2_BUCKET_NAME",
+  "R2_PUBLIC_URL",
+];
+const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
+if (missingEnv.length) {
+  console.error(
+    `Missing required environment variables: ${missingEnv.join(", ")}`,
+  );
+  process.exit(1);
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -55,13 +77,38 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// ===== RATE LIMITING =====
+// ===== RATE LIMITING (Bug 17.1 & 18.6 Fix) =====
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { error: "Too many attempts, please try again in 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
+  handler: (req, res) => {
+    const page = req.path.includes("login")
+      ? "auth/login"
+      : req.path.includes("register")
+        ? "auth/register"
+        : "auth/forgot-password";
+    res.status(429).render(page, {
+      error: "Too many attempts — please wait 15 minutes before trying again.",
+      success: undefined,
+      fields: req.body || {},
+      sent: false,
+    });
+  },
+});
+
+const spotLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  handler: (req, res) =>
+    res.status(429).json({ error: "Slow down — max 30 spots per 15 minutes." }),
+});
+
+const mapLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  handler: (req, res) => res.status(429).json({ error: "Too many requests." }),
 });
 
 // ===== ROOT =====
@@ -71,6 +118,11 @@ app.get("/", (req, res) => {
   );
   res.redirect(hasSession ? "/map" : "/login");
 });
+
+// ===== HEALTH (18.9) =====
+app.get("/health", (req, res) =>
+  res.json({ status: "ok", uptime: process.uptime() }),
+);
 
 // ===== AUTH =====
 app.get("/login", serveLogin);
@@ -95,7 +147,7 @@ app.get("/profile", requireAuth, requireOnboarding, serveProfile);
 
 // ===== MAP =====
 app.get("/map", serveMap);
-app.get("/api/map", getMapData);
+app.get("/api/map", mapLimiter, getMapData);
 
 // ===== SETTINGS =====
 app.get("/settings", requireAuth, requireOnboarding, serveSettings);
@@ -107,6 +159,7 @@ app.post(
   "/spots",
   requireAuth,
   requireOnboarding,
+  spotLimiter,
   upload.single("photo"),
   createSpotController,
 );
@@ -127,8 +180,18 @@ app.get("/s/:token", showSharedSpot);
 // ===== LEGACY REDIRECT =====
 app.get("/dashboard", (req, res) => res.redirect("/profile"));
 
-// ===== START =====
+// ===== GRACEFUL SHUTDOWN (18.9) =====
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
+const server = app.listen(PORT, () =>
   console.log(`Spotter running on http://localhost:${PORT}`),
 );
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received — closing server gracefully");
+  server.close(() => {
+    console.log("Server closed");
+    process.exit(0);
+  });
+  // Force exit after 10s if connections don't drain
+  setTimeout(() => process.exit(1), 10000);
+});
