@@ -1749,6 +1749,93 @@ a.unit-chip:hover {
     color: #333;
 }
 
+/* ===== PASSWORD UX ===== */
+.password-input-wrap {
+    position: relative;
+}
+.password-input-wrap input {
+    padding-right: 2.75rem;
+}
+.password-toggle {
+    position: absolute;
+    right: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+.password-toggle:hover {
+    color: midnightblue;
+}
+
+.password-reqs {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+}
+.password-reqs li {
+    font-size: 0.8rem;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.password-reqs li::before {
+    content: "○";
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+.password-reqs li.met {
+    color: #16a34a;
+}
+.password-reqs li.met::before {
+    content: "✓";
+}
+
+.strength-bar-wrap {
+    height: 4px;
+    background: #f0f2f8;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+.strength-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 2px;
+    transition:
+        width 0.3s,
+        background 0.3s;
+}
+.strength-bar[data-score="1"] {
+    width: 20%;
+    background: #ef4444;
+}
+.strength-bar[data-score="2"] {
+    width: 40%;
+    background: #f97316;
+}
+.strength-bar[data-score="3"] {
+    width: 65%;
+    background: #eab308;
+}
+.strength-bar[data-score="4"] {
+    width: 85%;
+    background: #84cc16;
+}
+.strength-bar[data-score="5"] {
+    width: 100%;
+    background: #16a34a;
+}
+
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
     body {
