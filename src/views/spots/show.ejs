@@ -90,7 +90,7 @@
         <h2>Share</h2>
         <p class="section-hint">Share this spot with anyone — they won't need an account to view it.</p>
         <div class="share-row">
-          <span class="share-url" id="share-url"><%= process.env.BASE_URL ?? '' %>/s/<%= spot.spot_share_token %></span>
+          <span class="share-url" id="share-url" data-token="<%= spot.spot_share_token %>">Generating link...</span>
           <button type="button" id="copy-share" class="btn-secondary">Copy</button>
         </div>
       </div>
@@ -104,6 +104,7 @@
 <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 <script src="/js/toast.js"></script>
 <script>
+  // ===== MAP INITIALIZATION =====
   const mapEl = document.getElementById('spot-map')
   if (mapEl) {
     const lat = parseFloat(mapEl.dataset.lat)
@@ -119,9 +120,15 @@
     })
   }
 
-  // ===== COPY SHARE =====
-  const copyBtn = document.getElementById('copy-share')
-  const shareUrl = document.getElementById('share-url')
+  // ===== COPY SHARE & DYNAMIC URL =====
+  const copyBtn = document.getElementById('copy-share');
+  const shareUrl = document.getElementById('share-url');
+
+  // Dynamically generate the URL using the data-token attribute
+  if (shareUrl && shareUrl.dataset.token) {
+    shareUrl.textContent = `${window.location.origin}/s/${shareUrl.dataset.token}`;
+  }
+
   const fallbackCopy = (text) => {
     const ta = document.createElement('textarea')
     ta.value = text
@@ -130,6 +137,7 @@
     document.execCommand('copy')
     document.body.removeChild(ta)
   }
+
   copyBtn?.addEventListener('click', () => {
     const url = shareUrl.textContent.trim()
     const onSuccess = () => {
