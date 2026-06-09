@@ -56,13 +56,33 @@ export const getSpotById = async (spotId, userId) => {
 };
 
 export const getSpotByShareToken = async (token) => {
-  const { data, error } = await supabase
+  // 1. Fetch the spot normally (this is guaranteed to work)
+  const { data: spot, error: spotError } = await supabase
     .from("spot")
     .select("*")
     .eq("spot_share_token", token)
     .single();
 
-  return { data, error };
+  if (spotError || !spot) {
+    console.error("Spot fetch error:", spotError);
+    return { data: null, error: spotError };
+  }
+
+  // 2. Manually fetch the user data (removed avatar_path for now)
+  const { data: userData, error: userError } = await supabase
+    .from("user")
+    .select("username, first_name, last_name")
+    .eq("user_id", spot.user_id)
+    .single();
+
+  if (userError) {
+    console.error("User fetch error (might be RLS):", userError);
+  }
+
+  // Attach the user data to the spot object so your EJS template can read it
+  spot.user = userData || null;
+
+  return { data: spot, error: null };
 };
 
 export const getSpotsByUser = async (userId) => {
