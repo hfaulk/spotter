@@ -1,0 +1,142 @@
+{
+  "Class 08": { "operators": ["Various"], "total_units": 996 },
+  "Class 20": { "operators": ["GBRf", "LSL"], "total_units": 228 },
+  "Class 37": {
+    "operators": ["Colas", "GBRf", "West Coast"],
+    "total_units": 309
+  },
+  "Class 47": {
+    "operators": ["West Coast", "GBRf", "Colas"],
+    "total_units": 512
+  },
+  "Class 56": { "operators": ["GBRf", "Colas"], "total_units": 135 },
+  "Class 57": { "operators": ["West Coast", "GBRf"], "total_units": 33 },
+  "Class 58": { "operators": ["Retired/Exported"], "total_units": 50 },
+  "Class 59": { "operators": ["Freightliner", "GBRf"], "total_units": 15 },
+  "Class 60": { "operators": ["DB Cargo"], "total_units": 100 },
+  "Class 66": {
+    "operators": ["Freightliner", "GBRf", "DB Cargo"],
+    "total_units": 480
+  },
+  "Class 67": { "operators": ["DB Cargo", "Colas", "TfW"], "total_units": 30 },
+  "Class 68": { "operators": ["DRS", "ScotRail"], "total_units": 34 },
+  "Class 69": { "operators": ["GBRf"], "total_units": 10 },
+  "Class 70": { "operators": ["Freightliner"], "total_units": 19 },
+  "Class 73": { "operators": ["GBRf", "Network Rail"], "total_units": 112 },
+  "Class 86": {
+    "operators": ["West Coast", "Freightliner"],
+    "total_units": 200
+  },
+  "Class 87": {
+    "operators": ["West Coast", "Bulgarian State Railways"],
+    "total_units": 36
+  },
+  "Class 88": { "operators": ["DRS"], "total_units": 10 },
+  "Class 90": { "operators": ["Freightliner", "DB Cargo"], "total_units": 50 },
+  "Class 92": { "operators": ["DB Cargo", "GBRf"], "total_units": 46 },
+  "Class 93": { "operators": ["Stadler/ROG"], "total_units": 30 },
+  "Class 99": { "operators": ["GBRf"], "total_units": 30 },
+  "Class 139": { "operators": ["Pre Metro Operations"], "total_units": 2 },
+  "Class 142": { "operators": ["Retired/Stored"], "total_units": 97 },
+  "Class 143": { "operators": ["Retired/Stored"], "total_units": 25 },
+  "Class 144": { "operators": ["Retired/Stored"], "total_units": 23 },
+  "Class 150": { "operators": ["Northern", "GWR"], "total_units": 136 },
+  "Class 153": { "operators": ["Various"], "total_units": 70 },
+  "Class 155": { "operators": ["Northern"], "total_units": 7 },
+  "Class 156": {
+    "operators": ["Northern", "ScotRail", "EMR"],
+    "total_units": 114
+  },
+  "Class 158": {
+    "operators": ["Northern", "ScotRail", "TfW", "SWR"],
+    "total_units": 182
+  },
+  "Class 159": { "operators": ["SWR"], "total_units": 30 },
+  "Class 165": { "operators": ["Chiltern", "GWR"], "total_units": 76 },
+  "Class 166": { "operators": ["GWR"], "total_units": 21 },
+  "Class 170": {
+    "operators": ["CrossCountry", "ScotRail", "EMR"],
+    "total_units": 147
+  },
+  "Class 171": { "operators": ["Southern"], "total_units": 30 },
+  "Class 172": { "operators": ["Chiltern", "WMT"], "total_units": 37 },
+  "Class 175": { "operators": ["TfW"], "total_units": 27 },
+  "Class 180": {
+    "operators": ["Grand Central", "Hull Trains"],
+    "total_units": 14
+  },
+  "Class 185": { "operators": ["TPE"], "total_units": 51 },
+  "Class 195": { "operators": ["Northern"], "total_units": 101 },
+  "Class 196": { "operators": ["WMT"], "total_units": 26 },
+  "Class 197": { "operators": ["TfW"], "total_units": 51 },
+  "Class 230": { "operators": ["Vivarail"], "total_units": 10 },
+  "Class 231": { "operators": ["TfW"], "total_units": 11 },
+  "Class 317": { "operators": ["Retired/Stored"], "total_units": 72 },
+  "Class 318": { "operators": ["ScotRail"], "total_units": 21 },
+  "Class 319": { "operators": ["Northern", "ROG"], "total_units": 86 },
+  "Class 320": { "operators": ["ScotRail"], "total_units": 22 },
+  "Class 321": { "operators": ["Various"], "total_units": 117 },
+  "Class 322": { "operators": ["Retired/Stored"], "total_units": 5 },
+  "Class 323": { "operators": ["Northern", "WMT"], "total_units": 43 },
+  "Class 331": { "operators": ["Northern"], "total_units": 43 },
+  "Class 332": { "operators": ["Retired"], "total_units": 14 },
+  "Class 333": { "operators": ["Northern"], "total_units": 16 },
+  "Class 334": { "operators": ["ScotRail"], "total_units": 40 },
+  "Class 345": { "operators": ["TfL"], "total_units": 70 },
+  "Class 350": { "operators": ["Avanti", "WMT"], "total_units": 87 },
+  "Class 357": { "operators": ["c2c"], "total_units": 74 },
+  "Class 360": { "operators": ["Greater Anglia", "EMR"], "total_units": 26 },
+  "Class 365": { "operators": ["Retired"], "total_units": 41 },
+  "Class 373": { "operators": ["Eurostar"], "total_units": 27 },
+  "Class 374": { "operators": ["Eurostar"], "total_units": 17 },
+  "Class 375": { "operators": ["Southeastern"], "total_units": 112 },
+  "Class 376": { "operators": ["Southeastern"], "total_units": 36 },
+  "Class 377": {
+    "operators": ["Southern", "Southeastern"],
+    "total_units": 214
+  },
+  "Class 378": { "operators": ["TfL"], "total_units": 57 },
+  "Class 379": { "operators": ["Greater Anglia"], "total_units": 30 },
+  "Class 380": { "operators": ["ScotRail"], "total_units": 38 },
+  "Class 385": { "operators": ["ScotRail"], "total_units": 70 },
+  "Class 387": {
+    "operators": ["GWR", "Great Northern", "Gatwick Express"],
+    "total_units": 108
+  },
+  "Class 390": { "operators": ["Avanti West Coast"], "total_units": 56 },
+  "Class 395": { "operators": ["Southeastern"], "total_units": 29 },
+  "Class 397": { "operators": ["TPE"], "total_units": 12 },
+  "Class 398": { "operators": ["TfW"], "total_units": 36 },
+  "Class 399": { "operators": ["Stagecoach Supertram"], "total_units": 7 },
+  "Class 442": { "operators": ["Retired"], "total_units": 24 },
+  "Class 444": { "operators": ["SWR"], "total_units": 45 },
+  "Class 445": { "operators": ["Retired"], "total_units": 73 },
+  "Class 450": { "operators": ["SWR"], "total_units": 127 },
+  "Class 455": { "operators": ["Southern", "SWR"], "total_units": 137 },
+  "Class 456": { "operators": ["Retired"], "total_units": 24 },
+  "Class 458": { "operators": ["SWR"], "total_units": 36 },
+  "Class 460": { "operators": ["Retired"], "total_units": 8 },
+  "Class 465": { "operators": ["Southeastern"], "total_units": 147 },
+  "Class 466": { "operators": ["Southeastern"], "total_units": 43 },
+  "Class 484": { "operators": ["Island Line"], "total_units": 5 },
+  "Class 700": {
+    "operators": ["Thameslink", "Great Northern"],
+    "total_units": 115
+  },
+  "Class 701": { "operators": ["SWR"], "total_units": 90 },
+  "Class 707": { "operators": ["Southeastern"], "total_units": 30 },
+  "Class 710": { "operators": ["TfL"], "total_units": 54 },
+  "Class 717": { "operators": ["Great Northern"], "total_units": 25 },
+  "Class 720": { "operators": ["Greater Anglia", "c2c"], "total_units": 145 },
+  "Class 730": { "operators": ["WMT"], "total_units": 48 },
+  "Class 745": { "operators": ["Greater Anglia"], "total_units": 20 },
+  "Class 755": { "operators": ["Greater Anglia"], "total_units": 24 },
+  "Class 769": { "operators": ["Various"], "total_units": 21 },
+  "Class 777": { "operators": ["Merseyrail"], "total_units": 53 },
+  "Class 800": { "operators": ["GWR", "LNER"], "total_units": 81 },
+  "Class 801": { "operators": ["LNER"], "total_units": 42 },
+  "Class 802": { "operators": ["GWR", "TPE"], "total_units": 58 },
+  "Class 803": { "operators": ["Lumo"], "total_units": 5 },
+  "Class 805": { "operators": ["Avanti West Coast"], "total_units": 13 },
+  "Class 807": { "operators": ["Avanti West Coast"], "total_units": 10 }
+}
