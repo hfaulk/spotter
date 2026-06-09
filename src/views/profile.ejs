@@ -43,13 +43,13 @@
         <div class="spots-list">
           <% spots.forEach(spot => { %>
             <a href="/spots/<%= spot.spot_id %>" class="spot-item">
-              <div class="spot-item-photo <%= !spot.imageUrl ? 'spot-item-no-photo' : '' %>">
-                <% if (spot.imageUrl) { %>
-                  <img src="<%= spot.imageUrl %>" alt="<%= spot.spot_title %>" />
-                <% } else { %>
-                  <span>No photo</span>
-                <% } %>
-              </div>
+                <div class="spot-item-photo">
+                  <% if (spot.image_thumb_path || spot.image_path) { %>
+                    <img src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.image_thumb_path || spot.image_path %>" loading="lazy" alt="Spot photo" />
+                  <% } else { %>
+                    <div class="spot-item-no-photo"><span>No photo</span></div>
+                  <% } %>
+                </div>
               <div class="spot-item-info">
                 <p class="spot-item-title"><%= spot.spot_title %></p>
                 <% if (spot.units.length > 0) { %>
