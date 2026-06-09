@@ -2026,12 +2026,18 @@ a.unit-chip:hover {
 
     /* Settings gets a centred card layout */
     .sidenav ~ .app-page .settings-page {
-        max-width: 640px;
-        padding: 2rem;
+        margin: 0 !important; /* Removes the dead-center alignment */
+        padding: 3rem 4rem !important; /* Pushes it down and away from the sidebar nicely */
+        max-width: 720px; /* Lets it breathe just a tiny bit wider */
+    }
+
+    .settings-card .settings-heading:first-child {
+        margin-top: 0;
+        margin-bottom: 1.25rem; /* Gives it room to breathe before the form fields */
     }
 
     /* Hide sign out on desktop — it's in the sidebar */
-    .settings-signout {
+    .settings-card:has(.settings-signout) {
         display: none;
     }
 
