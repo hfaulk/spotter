@@ -140,3 +140,16 @@ process.on("SIGTERM", () => {
   });
   setTimeout(() => process.exit(1), 10000);
 });
+
+// Catch unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  // Optional: send to Sentry or an error monitoring service here
+});
+
+// Catch synchronous exceptions that slipped through
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception thrown:", err);
+  // It is best practice to eventually restart the server after this,
+  // but this stops the immediate abrupt crash.
+});
