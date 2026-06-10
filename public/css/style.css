@@ -2479,6 +2479,76 @@ a.unit-chip:hover {
         .show-right::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
+
+    /* ===== GUEST MAP (Desktop Overrides) ===== */
+    .app-page.guest-map {
+        margin: 0;
+        max-width: 100%;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .guest-map .topbar-map {
+        display: flex;
+        position: fixed;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        transform: none;
+    }
+
+    .guest-map #main-map {
+        bottom: 60px; /* Leaves room for the bottom guest bar */
+    }
+
+    .guest-map .map-guest-bar {
+        max-width: 100%;
+        width: 100%;
+        padding: 1rem 2rem;
+    }
+
+    .guest-map .map-controls {
+        bottom: 85px;
+        right: 1.5rem;
+        left: auto;
+    }
+
+    /* Transform the bottom sheet into a right-side panel like normal desktop */
+    .guest-map .map-sheet {
+        left: auto;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 380px;
+        max-width: 380px;
+        max-height: none;
+        border-radius: 0;
+        border-left: 1px solid #f0f2f8;
+        transform: translateX(100%);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .guest-map .map-sheet.open {
+        transform: translateX(0);
+    }
+    .guest-map .map-sheet-handle {
+        display: none;
+    }
+    .guest-map .map-sheet-content {
+        padding: 0;
+        overflow-y: auto;
+        height: 100%;
+    }
+    .guest-map .sheet-hero {
+        height: 220px;
+        border-radius: 0;
+    }
+    .guest-map .map-sheet-backdrop {
+        left: 0;
+        width: 100%;
+        bottom: 0;
+    }
 }
 
 @media (max-width: 767px) {

@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
 
-<div class="app-page map-app-page">
+<div class="app-page map-app-page <%= locals.authUser ? '' : 'guest-map' %>">
 
   <header class="topbar topbar-map">
     <span class="topbar-logo">
