@@ -6,8 +6,8 @@ const formatHour = (h) => {
   return `${hour}${ampm}`;
 };
 
-export const getHotspots = async () => {
-  const { data: spots, error } = await supabase
+export const getHotspots = async (bounds) => {
+  let query = supabase
     .from("spot")
     .select(
       "spot_id, spot_latitude, spot_longitude, spot_timestamp, image_path, user_id",
@@ -15,11 +15,22 @@ export const getHotspots = async () => {
     .not("spot_latitude", "is", null)
     .not("spot_longitude", "is", null);
 
+  // If bounds are provided, filter the spots to only those visible on screen
+  if (bounds && bounds.n && bounds.s && bounds.e && bounds.w) {
+    query = query
+      .lte("spot_latitude", parseFloat(bounds.n))
+      .gte("spot_latitude", parseFloat(bounds.s))
+      .lte("spot_longitude", parseFloat(bounds.e))
+      .gte("spot_longitude", parseFloat(bounds.w));
+  }
+
+  const { data: spots, error } = await query;
+
   if (error) return { data: null, error };
   if (!spots?.length)
     return { data: { type: "FeatureCollection", features: [] }, error: null };
 
-  // Section 18.11: Fetch all units for these spots in a single query
+  // Fetch all units for these spots in a single query
   const spotIds = spots.map((s) => s.spot_id);
   const { data: allSpotUnits } = await supabase
     .from("spot_unit")

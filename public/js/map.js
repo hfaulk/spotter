@@ -12,7 +12,7 @@ const satelliteStyle = {
       ],
       tileSize: 256,
       attribution: "Tiles © Esri",
-      maxzoom: 19, // <-- MOVED HERE: Stops fetching new tiles past 19, but allows stretching
+      maxzoom: 19,
     },
   },
   layers: [
@@ -20,7 +20,6 @@ const satelliteStyle = {
       id: "satellite-layer",
       type: "raster",
       source: "esri-satellite",
-      // <-- REMOVED maxzoom from here so the layer never turns off
     },
   ],
 };
@@ -148,12 +147,10 @@ sheet.addEventListener(
 sheet.addEventListener(
   "touchmove",
   (e) => {
-    // Only allow default scroll if we're scrolling within content (not at the top)
     const isAtTop = sheet.scrollTop === 0;
     const touchCurrentY = e.touches[0].clientY;
     const diffY = touchCurrentY - touchStartY;
 
-    // If at the top and swiping down, prevent default to allow custom handling
     if (isAtTop && diffY > 0) {
       e.preventDefault();
     }
@@ -169,7 +166,6 @@ sheet.addEventListener(
     const diffY = touchEndY - touchStartY;
     const diffX = Math.abs(touchEndX - touchStartX);
 
-    // Swipe down more than horizontal movement, and more than 80px
     if (diffY > 80 && diffY > diffX) {
       closeSheet();
     }
@@ -183,14 +179,33 @@ document
 backdrop.addEventListener("click", closeSheet);
 map.on("click", closeSheet);
 
-map.on("load", async () => {
+// ===== BOUNDING BOX DATA FETCHING =====
+let currentMarkers = []; // Array to track active markers
+
+const loadSpots = async () => {
   try {
-    const res = await fetch("/api/map");
+    // 1. Get the current visible bounds of the map
+    const bounds = map.getBounds();
+    const n = bounds.getNorth();
+    const s = bounds.getSouth();
+    const e = bounds.getEast();
+    const w = bounds.getWest();
+
+    // 2. Fetch only the spots inside this box
+    const res = await fetch(`/api/map?n=${n}&s=${s}&e=${e}&w=${w}`);
     const geojson = await res.json();
 
+    // 3. Delete all old markers from the map
+    currentMarkers.forEach((marker) => marker.remove());
+    currentMarkers = [];
+
+    // 4. Draw the new markers
     geojson.features.forEach((feature) => {
       const { is_hotspot, spot_count } = feature.properties;
       const [lon, lat] = feature.geometry.coordinates;
+
+      // Null safety check
+      if (typeof lat !== "number" || typeof lon !== "number") return;
 
       const el = document.createElement("div");
       if (is_hotspot) {
@@ -200,21 +215,30 @@ map.on("load", async () => {
         el.className = "map-marker-dot";
       }
 
-      new maplibregl.Marker({ element: el, anchor: "center" })
+      const marker = new maplibregl.Marker({ element: el, anchor: "center" })
         .setLngLat([lon, lat])
         .addTo(map);
 
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
+      el.addEventListener("click", (ev) => {
+        ev.stopPropagation();
         openSheet(feature);
       });
+
+      // Save the marker to our array so we can delete it next time
+      currentMarkers.push(marker);
     });
   } catch (err) {
     console.error("Failed to load map data:", err);
-    toast.error("Failed to load map data. Please refresh the page.");
+    // Note: We don't use toast.error here because it would spam the user if they pan while offline
   }
-});
+};
 
+// Initial load
+map.on("load", loadSpots);
+// Re-fetch whenever the user stops panning or zooming
+map.on("moveend", loadSpots);
+
+// ===== GEOLOCATION =====
 document.getElementById("near-me-btn").addEventListener("click", () => {
   if (!navigator.geolocation) {
     console.warn("Geolocation not supported");
