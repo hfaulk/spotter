@@ -163,17 +163,22 @@
 
   document.addEventListener('click', () => menuDropdown?.classList.remove('open'))
 
-  // ===== DELETE =====
+  // ===== DELETE (Bug 17.2 fix — parse the JSON response) =====
   document.getElementById('delete-btn')?.addEventListener('click', () => {
     if (!confirm('Are you sure? This cannot be undone.')) return
     toast.info('Deleting...')
     fetch('/spots/<%= spot.spot_id %>', { method: 'DELETE' })
-      .then(res => {
-        toast.success('Spot deleted!')
-        window.location.href = res.redirected ? res.url : '/profile'
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          toast.success('Spot deleted!')
+          setTimeout(() => { window.location.href = '/profile' }, 600)
+        } else {
+          toast.error(data.error || 'Failed to delete spot — please try again.')
+        }
       })
       .catch(err => {
-        toast.error('Failed to delete spot')
+        toast.error('Network error — could not delete spot.')
         console.error('Delete error:', err)
       })
   })

@@ -19,19 +19,62 @@ const setSessionCookies = (res, session) => {
   res.cookie("refresh_token", session.refresh_token, refreshCookieOptions);
 };
 
+// ===== FRIENDLY ERROR MAPPING (Gap 17.6) =====
+// Supabase error strings are technical and inconsistent. Map them to
+// human messages and insulate the app from Supabase wording changes.
+const friendlyAuthError = (msg = "") => {
+  const m = msg.toLowerCase();
+  if (m.includes("already registered") || m.includes("already exists"))
+    return "An account with that email already exists. Try logging in instead.";
+  if (m.includes("invalid login") || m.includes("invalid credentials"))
+    return "Incorrect username or password.";
+  if (m.includes("email not confirmed"))
+    return "Please confirm your email before logging in. Check your inbox.";
+  if (m.includes("rate limit"))
+    return "Too many attempts — please wait a few minutes and try again.";
+  if (m.includes("password"))
+    return "Password must be at least 8 characters.";
+  return "Something went wrong — please try again.";
+};
+
 // ===== SERVE VIEWS =====
 export const serveLogin = (req, res) => {
+  // Map error flags passed via query params (Bug 17.3)
+  const errorMap = {
+    oauth_failed:
+      "Google sign-in failed — please try again or use your email and password.",
+  };
+  const error = errorMap[req.query.error];
+
   const success =
     req.query.reset === "success"
       ? "Password reset successfully. Please log in."
       : undefined;
-  res.render("auth/login", { success, error: undefined });
+
+  res.render("auth/login", { success, error });
 };
 export const serveRegister = (req, res) => res.render("auth/register");
 
 // ===== EMAIL AUTH =====
 export const registerUser = async (req, res) => {
   const { first_name, last_name, username, email, password } = req.body;
+
+  // Bug 17.4: Supabase signUp deliberately does NOT error on duplicate
+  // emails (anti-enumeration), it just returns session: null — which the
+  // code below misreads as "needs email confirmation". Check our own user
+  // table first so completed registrations get a clear error.
+  const { data: existingEmail } = await supabase
+    .from("user")
+    .select("user_id")
+    .eq("user_email", email)
+    .single();
+
+  if (existingEmail) {
+    return res.render("auth/register", {
+      error: "An account with that email already exists. Try logging in instead.",
+      fields: { first_name, last_name, username, email },
+    });
+  }
 
   const { data: existing } = await supabase
     .from("user")
@@ -54,7 +97,7 @@ export const registerUser = async (req, res) => {
 
   if (error) {
     return res.render("auth/register", {
-      error: error.message,
+      error: friendlyAuthError(error.message),
       fields: { first_name, last_name, username, email },
     });
   }
@@ -80,7 +123,10 @@ export const loginUser = async (req, res) => {
     .single();
 
   if (lookupError || !userData) {
-    return res.render("auth/login", { error: "Username not found" });
+    return res.render("auth/login", {
+      error: "Username not found",
+      success: undefined,
+    });
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -88,7 +134,12 @@ export const loginUser = async (req, res) => {
     password,
   });
 
-  if (error) return res.render("auth/login", { error: "Invalid password" });
+  if (error) {
+    return res.render("auth/login", {
+      error: friendlyAuthError(error.message),
+      success: undefined,
+    });
+  }
 
   setSessionCookies(res, data.session);
   res.redirect("/profile");
@@ -103,7 +154,8 @@ export const googleAuth = async (req, res) => {
     },
   });
 
-  if (error) return res.redirect("/login");
+  // Bug 17.3: surface the failure instead of silently bouncing to a blank login
+  if (error) return res.redirect("/login?error=oauth_failed");
   res.redirect(data.url);
 };
 
@@ -166,7 +218,7 @@ export const submitForgotPassword = async (req, res) => {
   if (error) {
     return res.render("auth/forgot-password", {
       sent: false,
-      error: error.message,
+      error: friendlyAuthError(error.message),
     });
   }
 
@@ -209,7 +261,9 @@ export const submitResetPassword = async (req, res) => {
   });
 
   if (error) {
-    return res.render("auth/reset-password", { error: error.message });
+    return res.render("auth/reset-password", {
+      error: friendlyAuthError(error.message),
+    });
   }
 
   res.clearCookie("access_token");

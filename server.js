@@ -2,6 +2,8 @@ import "dotenv/config.js"; // MUST be the absolute first line to load .env befor
 
 import express from "express";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import rateLimit from "express-rate-limit";
@@ -70,6 +72,54 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.set("trust proxy", 1);
+
+// ===== SECURITY HEADERS (18.5) =====
+// Strip any trailing slash so the CSP source is a clean origin
+const R2_ORIGIN = process.env.R2_PUBLIC_URL.replace(/\/+$/, "");
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        // 'unsafe-inline' needed for the inline <script> blocks in views
+        // and inline event handlers (e.g. onclick="history.back()").
+        scriptSrc: ["'self'", "'unsafe-inline'", "unpkg.com"],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "fonts.googleapis.com",
+          "unpkg.com",
+        ],
+        fontSrc: ["'self'", "fonts.gstatic.com"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          R2_ORIGIN,
+          "*.openfreemap.org",
+          "*.arcgisonline.com",
+          "upload.wikimedia.org",
+          "en.wikipedia.org",
+        ],
+        // MapLibre fetches tiles/glyphs/sprites via fetch(), so tile hosts
+        // must be allowed in connect-src, not just img-src.
+        connectSrc: [
+          "'self'",
+          "*.supabase.co",
+          "*.openfreemap.org",
+          "*.arcgisonline.com",
+          "en.wikipedia.org",
+        ],
+        // MapLibre spins up web workers from blob: URLs
+        workerSrc: ["'self'", "blob:"],
+      },
+    },
+  }),
+);
+
+// ===== REQUEST LOGGING (18.10) =====
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 // ===== CONFIG =====
 app.set("view engine", "ejs");
@@ -147,9 +197,6 @@ app.post("/onboarding", requireAuth, submitOnboarding);
 // ===== PROFILE =====
 app.get("/profile", requireAuth, requireOnboarding, serveProfile);
 
-// ===== PROFILE =====
-app.get("/profile", requireAuth, requireOnboarding, serveProfile);
-
 // ===== SESSION CHECK (Gap 7 Fix) =====
 app.get("/api/session-check", requireAuth, (req, res) =>
   res.json({ ok: true }),
@@ -189,6 +236,27 @@ app.get("/s/:token", showSharedSpot);
 
 // ===== LEGACY REDIRECT =====
 app.get("/dashboard", (req, res) => res.redirect("/profile"));
+
+// ===== 404 HANDLER (15) =====
+// Must come after every route and the static middleware
+app.use((req, res) => {
+  res.status(404).render("404");
+});
+
+// ===== ERROR HANDLER (15) =====
+// Express 5 catches async errors automatically and routes them here
+app.use((err, req, res, next) => {
+  console.error(
+    JSON.stringify({
+      ts: new Date().toISOString(),
+      route: `${req.method} ${req.path}`,
+      userId: req.user?.id ?? null,
+      error: err?.message ?? String(err),
+      stack: err?.stack ?? null,
+    }),
+  );
+  res.status(500).render("error");
+});
 
 // ===== GRACEFUL SHUTDOWN (18.9) =====
 const PORT = process.env.PORT || 3000;
