@@ -85,6 +85,9 @@ app.use(
         // 'unsafe-inline' needed for the inline <script> blocks in views
         // and inline event handlers (e.g. onclick="history.back()").
         scriptSrc: ["'self'", "'unsafe-inline'", "unpkg.com"],
+
+        scriptSrcAttr: ["'unsafe-inline'"],
+
         styleSrc: [
           "'self'",
           "'unsafe-inline'",

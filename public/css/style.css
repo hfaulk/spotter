@@ -415,7 +415,7 @@ input[type="datetime-local"] {
     transform: translateX(-50%);
     width: 100%;
     max-width: 480px;
-    height: 64px;
+    height: 100px;
     background: white;
     box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.08);
     display: flex;
@@ -1586,7 +1586,7 @@ a.unit-chip:hover {
 
 /* Specific Override for the Full-Screen Map (map.ejs) on Mobile */
 .map-app-page .map-controls {
-    bottom: 80px; /* Pushes it above the mobile bottom nav */
+    bottom: 115px; /* Pushes it above the mobile bottom nav */
     right: 1rem;
 }
 
