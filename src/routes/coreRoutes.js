@@ -1,0 +1,33 @@
+import express from "express";
+import { requireAuth } from "../middleware/auth.js";
+import { mapLimiter } from "../middleware/rateLimiters.js";
+import { serveMap, getMapData } from "../controllers/mapController.js";
+import { showSharedSpot } from "../controllers/spotController.js";
+
+const router = express.Router();
+
+// Root & Redirects
+router.get("/", (req, res) => {
+  const hasSession = !!(
+    req.cookies?.access_token || req.cookies?.refresh_token
+  );
+  res.redirect(hasSession ? "/map" : "/login");
+});
+router.get("/dashboard", (req, res) => res.redirect("/profile"));
+
+// Map
+router.get("/map", serveMap);
+router.get("/api/map", mapLimiter, getMapData);
+
+// Public Shared Spots
+router.get("/s/:token", showSharedSpot);
+
+// APIs & Health
+router.get("/api/session-check", requireAuth, (req, res) =>
+  res.json({ ok: true }),
+);
+router.get("/health", (req, res) =>
+  res.json({ status: "ok", uptime: process.uptime() }),
+);
+
+export default router;
