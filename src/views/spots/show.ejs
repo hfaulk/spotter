@@ -11,7 +11,7 @@
       <div class="spot-image-placeholder"></div>
     <% } %>
 
-    <button onclick="history.back()" class="spot-back-btn">
+    <button class="spot-back-btn js-back-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="15 18 9 12 15 6"/>
       </svg>
@@ -25,7 +25,7 @@
         </svg>
       </button>
       <div class="spot-menu-dropdown" id="spot-menu-dropdown">
-        <button class="spot-menu-item spot-menu-item-danger" id="delete-btn">Delete spot</button>
+          <button class="spot-menu-item spot-menu-item-danger" id="delete-btn" data-spot-id="<%= spot.spot_id %>">Delete spot</button>
       </div>
     </div>
   </div>
@@ -103,86 +103,10 @@
 
 <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 <script src="/js/toast.js"></script>
-<script>
-  // ===== MAP INITIALIZATION =====
-  const mapEl = document.getElementById('spot-map')
-  if (mapEl) {
-    const lat = parseFloat(mapEl.dataset.lat)
-    const lon = parseFloat(mapEl.dataset.lon)
-    const map = new maplibregl.Map({
-      container: 'spot-map',
-      style: 'https://tiles.openfreemap.org/styles/liberty',
-      center: [lon, lat],
-      zoom: 14
-    })
-    map.on('load', () => {
-      new maplibregl.Marker().setLngLat([lon, lat]).addTo(map)
-    })
-  }
-
-  // ===== COPY SHARE & DYNAMIC URL =====
-  const copyBtn = document.getElementById('copy-share');
-  const shareUrl = document.getElementById('share-url');
-
-  // Dynamically generate the URL using the data-token attribute
-  if (shareUrl && shareUrl.dataset.token) {
-    shareUrl.textContent = `${window.location.origin}/s/${shareUrl.dataset.token}`;
-  }
-
-  const fallbackCopy = (text) => {
-    const ta = document.createElement('textarea')
-    ta.value = text
-    document.body.appendChild(ta)
-    ta.select()
-    document.execCommand('copy')
-    document.body.removeChild(ta)
-  }
-
-  copyBtn?.addEventListener('click', () => {
-    const url = shareUrl.textContent.trim()
-    const onSuccess = () => {
-      toast.success('Link copied to clipboard!')
-      copyBtn.textContent = 'Copied!'
-      setTimeout(() => copyBtn.textContent = 'Copy', 2000)
-    }
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(onSuccess).catch(() => { fallbackCopy(url); onSuccess() })
-    } else {
-      fallbackCopy(url); onSuccess()
-    }
-  })
-
-  // ===== THREE DOTS MENU =====
-  const menuTrigger = document.getElementById('spot-menu-trigger')
-  const menuDropdown = document.getElementById('spot-menu-dropdown')
-
-  menuTrigger?.addEventListener('click', (e) => {
-    e.stopPropagation()
-    menuDropdown.classList.toggle('open')
-  })
-
-  document.addEventListener('click', () => menuDropdown?.classList.remove('open'))
-
-  // ===== DELETE (Bug 17.2 fix — parse the JSON response) =====
-  document.getElementById('delete-btn')?.addEventListener('click', () => {
-    if (!confirm('Are you sure? This cannot be undone.')) return
-    toast.info('Deleting...')
-    fetch('/spots/<%= spot.spot_id %>', { method: 'DELETE' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          toast.success('Spot deleted!')
-          setTimeout(() => { window.location.href = '/profile' }, 600)
-        } else {
-          toast.error(data.error || 'Failed to delete spot — please try again.')
-        }
-      })
-      .catch(err => {
-        toast.error('Network error — could not delete spot.')
-        console.error('Delete error:', err)
-      })
-  })
-</script>
+<script src="/js/main.js"></script>
+<script src="/js/spot-show.js"></script>
+</body>
+</html>
 
 </body>
 </html>
