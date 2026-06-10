@@ -168,7 +168,7 @@ export const createSpotController = async (req, res) => {
         // Section 3: WebP Compression & Thumbnails
         const ext = "webp";
         imagePath = `${userId}/${Date.now()}.${ext}`;
-        thumbPath = `${userId}/${Date.now()}_thumb.${ext}`;
+        thumbPath = `${userId}/${Date.now()}_thumb.jpeg`;
 
         // Main display image: Max 2048px wide
         const mainBuffer = await sharp(fileBuffer)
@@ -181,7 +181,7 @@ export const createSpotController = async (req, res) => {
         const thumbBuffer = await sharp(fileBuffer)
           .rotate()
           .resize({ width: 400, withoutEnlargement: true })
-          .webp({ quality: 82 })
+          .jpeg({ quality: 82 })
           .toBuffer();
 
         // Upload both concurrently
@@ -199,7 +199,7 @@ export const createSpotController = async (req, res) => {
               Bucket: process.env.R2_BUCKET_NAME,
               Key: thumbPath,
               Body: thumbBuffer,
-              ContentType: "image/webp",
+              ContentType: "image/jpeg",
             }),
           ),
         ]);

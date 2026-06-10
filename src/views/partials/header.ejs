@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spotter</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 
@@ -19,6 +18,30 @@
 
   <script src="/js/toast.js"></script>
   <script src="/js/main.js"></script>
+
+  <% if (locals.spot) { %>
+    <title><%= spot.spot_title %> | Spotter</title>
+    <meta property="og:title" content="<%= spot.spot_title %>">
+    <meta property="og:description" content="Spotted with Spotter. <%= spot.spot_description ? spot.spot_description : 'Tap to see the location, units, and camera details.' %>">
+    <meta property="og:type" content="website">
+
+    <% const ogImage = spot.image_thumb_path ? `${process.env.R2_PUBLIC_URL}/${spot.image_thumb_path}` : (locals.imageUrl ? imageUrl : null); %>
+
+    <% if (ogImage) { %>
+      <meta property="og:image" content="<%= ogImage %>">
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="<%= spot.spot_title %>">
+      <meta name="twitter:description" content="Spotted with Spotter">
+      <meta name="twitter:image" content="<%= ogImage %>">
+    <% } %>
+
+  <% } else { %>
+    <title>Spotter</title>
+    <meta property="og:title" content="Spotter">
+    <meta property="og:description" content="Discover, log, and share your best spotting locations.">
+    <meta property="og:type" content="website">
+  <% } %>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
