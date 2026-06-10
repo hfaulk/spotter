@@ -63,35 +63,34 @@
       <% } %>
     </div>
 
-    <!-- UNITS TAB -->
+    <!-- UNITS TAB (Unit Collection §19) -->
     <div class="tab-content hidden" id="tab-units">
-      <% if (collection.length === 0) { %>
+      <% if (classCollection.length === 0) { %>
         <div class="empty-state">
           <p>No units in your collection yet.</p>
           <p class="empty-hint">Units appear here when you log a spot.</p>
         </div>
       <% } else { %>
-          <div class="collection-list">
-            <% collection.forEach(unit => { %>
-              <a href="/units/<%= unit.unit_id %>" class="collection-item">
-                <div class="collection-item-info">
-                  <span class="unit-number"><%= unit.unit_number %></span>
-                  <div class="collection-item-meta">
-                    <% if (unit.unit_class) { %><span class="unit-meta"><%= unit.unit_class %></span><% } %>
-                    <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator %></span><% } %>
-                  </div>
-                </div>
-                <div class="collection-item-count">
-                  <span class="times-spotted"><%= unit.times_spotted %></span>
-                  <span class="times-spotted-label">spotted</span>
-                </div>
-              </a>
-            <% }) %>
-          </div>
+        <div class="class-grid">
+          <% classCollection.forEach((cls, i) => { %>
+            <button type="button" class="class-card" data-class-index="<%= i %>" data-class-num="<%= cls.classNum || '' %>">
+              <span class="class-card-progress"><%= cls.spotted %><% if (cls.total != null) { %>/<%= cls.total %><% } %></span>
+              <div class="class-card-img"></div>
+              <span class="class-card-name"><%= cls.classNum || 'Other' %></span>
+            </button>
+          <% }) %>
+        </div>
       <% } %>
     </div>
 
   </main>
+
+  <!-- CLASS DETAIL SHEET -->
+  <div class="class-sheet" id="class-sheet">
+    <div class="class-sheet-handle" id="class-sheet-handle"></div>
+    <div class="class-sheet-content" id="class-sheet-content"></div>
+  </div>
+  <div class="class-sheet-backdrop" id="class-sheet-backdrop"></div>
 
   <%- include('partials/bottomnav', { activePage }) %>
 </div>
@@ -106,6 +105,11 @@
     })
   })
 </script>
+
+<script>
+  window.SPOTTER_COLLECTION = <%- collectionJson %>;
+</script>
+<script src="/js/collection.js"></script>
 
 </body>
 </html>

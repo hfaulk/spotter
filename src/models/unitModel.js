@@ -69,6 +69,54 @@ export const getUserCollection = async (userId) => {
   return { data: collection, error: null };
 };
 
+// ===== UNIT COLLECTION (§19) =====
+// Same as getUserCollection, but also attaches the image from the user's
+// MOST RECENT spot of each unit — used for the collection tiles.
+export const getUserCollectionDetailed = async (userId) => {
+  const { data, error } = await supabase
+    .from("spot_unit")
+    .select(
+      "unit(*), spot!inner(user_id, spot_timestamp, image_thumb_path, image_path)",
+    )
+    .eq("spot.user_id", userId);
+
+  if (error) return { data: null, error };
+
+  const unitMap = {};
+  data?.forEach((row) => {
+    const unit = row.unit;
+    const spot = row.spot;
+    if (!unit) return;
+
+    if (!unitMap[unit.unit_id]) {
+      unitMap[unit.unit_id] = {
+        ...unit,
+        times_spotted: 0,
+        latest_spot_ts: 0,
+        latest_image_path: null,
+      };
+    }
+
+    const u = unitMap[unit.unit_id];
+    u.times_spotted++;
+
+    const ts = spot?.spot_timestamp
+      ? new Date(spot.spot_timestamp).getTime()
+      : 0;
+    if (ts >= u.latest_spot_ts) {
+      u.latest_spot_ts = ts;
+      u.latest_image_path =
+        spot.image_thumb_path || spot.image_path || u.latest_image_path;
+    }
+  });
+
+  const collection = Object.values(unitMap).sort(
+    (a, b) => b.times_spotted - a.times_spotted,
+  );
+
+  return { data: collection, error: null };
+};
+
 export const getUnitById = async (unitId) => {
   const { data, error } = await supabase
     .from("unit")
