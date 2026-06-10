@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
+import compression from "compression";
 import { fileURLToPath } from "url";
 
 // Import Route Modules
@@ -38,6 +39,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.set("trust proxy", 1);
+
+app.use(compression());
 
 // ===== SECURITY HEADERS =====
 const R2_ORIGIN = process.env.R2_PUBLIC_URL.replace(/\/+$/, "");
@@ -85,7 +88,12 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 // ===== CONFIG =====
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src/views"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    maxAge: "30d", // Cache static assets for 30 days
+    etag: true, // Helps the browser know if the file changed
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
