@@ -1,277 +1,457 @@
 {
   "Class 08": {
-    "operators": ["various"],
-    "fleet_size": 996,
+    "operators": ["various", "heritage"],
+    "fleet_size": 100,
     "lifecycle": "limited",
     "roles": ["shunter"],
-    "deployment_regions": ["all_regions"],
+    "deployment_regions": ["uk_wide"],
     "network_coverage": "yards_and_depots",
-    "base_spot_score": 0.3
+    "base_spot_score": 0.35
   },
-  "Class 20": {
-    "operators": ["gbrf", "lsl"],
-    "fleet_size": 228,
-    "lifecycle": "limited",
-    "roles": ["diesel_locomotive", "freight"],
-    "deployment_regions": ["all_regions"],
-    "network_coverage": "freight_national",
-    "base_spot_score": 0.5
-  },
-  "Class 37": {
-    "operators": ["colas", "gbrf", "west_coast"],
-    "fleet_size": 309,
+
+  "Class 09": {
+    "operators": ["gbrf", "network_rail"],
+    "fleet_size": 10,
     "lifecycle": "active",
-    "roles": ["diesel_locomotive", "mixed_traffic"],
-    "deployment_regions": ["england", "scotland", "wales"],
-    "network_coverage": "national",
-    "base_spot_score": 0.8
-  },
-  "Class 43": {
-    "operators": ["lner", "crosscountry", "gwr"],
-    "fleet_size": 197,
-    "lifecycle": "active",
-    "roles": ["high_speed_passenger"],
-    "deployment_regions": ["england", "scotland", "wales"],
-    "network_coverage": "intercity_national",
-    "base_spot_score": 0.95
-  },
-  "Class 47": {
-    "operators": ["west_coast", "gbrf", "colas"],
-    "fleet_size": 512,
-    "lifecycle": "limited",
-    "roles": ["diesel_locomotive", "mixed_traffic"],
-    "deployment_regions": ["all_regions"],
-    "network_coverage": "freight_and_heritage_national",
-    "base_spot_score": 0.4
-  },
-  "Class 56": {
-    "operators": ["gbrf", "colas"],
-    "fleet_size": 135,
-    "lifecycle": "limited",
-    "roles": ["heavy_freight_diesel"],
-    "deployment_regions": ["england", "wales", "scotland"],
-    "network_coverage": "freight_national",
-    "base_spot_score": 0.3
-  },
-  "Class 57": {
-    "operators": ["west_coast", "gbrf"],
-    "fleet_size": 33,
-    "lifecycle": "limited",
-    "roles": ["diesel_locomotive", "rescue_engine"],
-    "deployment_regions": ["all_regions"],
-    "network_coverage": "mixed_use",
+    "roles": ["shunter"],
+    "deployment_regions": ["england"],
+    "network_coverage": "industrial",
     "base_spot_score": 0.25
   },
-  "Class 58": {
-    "operators": ["retired_exported"],
-    "fleet_size": 50,
+
+  "Class 14": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["diesel_locomotive"],
     "deployment_regions": [],
     "network_coverage": "none",
     "base_spot_score": 0.0
   },
+
+  "Class 20": {
+    "operators": ["gbrf", "colas", "lsl"],
+    "fleet_size": 20,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive", "freight"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "freight_national",
+    "base_spot_score": 0.55
+  },
+
+  "Class 24": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 25": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 26": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 27": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 31": {
+    "operators": ["network_rail", "heritage", "railtour"],
+    "fleet_size": 8,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": ["england"],
+    "network_coverage": "engineering_and_charter",
+    "base_spot_score": 0.25
+  },
+
+  "Class 33": {
+    "operators": ["heritage", "rail_operations_group"],
+    "fleet_size": 6,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "charter",
+    "base_spot_score": 0.2
+  },
+
+  "Class 35": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 37": {
+    "operators": ["gbrf", "colas", "drs", "network_rail", "west_coast", "lsl"],
+    "fleet_size": 60,
+    "lifecycle": "active",
+    "roles": ["diesel_locomotive", "mixed_traffic"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "freight_and_charter",
+    "base_spot_score": 0.8
+  },
+
+  "Class 40": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 45": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 46": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 47": {
+    "operators": ["west_coast", "gbrf", "colas", "lsl", "heritage"],
+    "fleet_size": 25,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive", "mixed_traffic"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "charter_and_freight",
+    "base_spot_score": 0.35
+  },
+
+  "Class 50": {
+    "operators": ["heritage"],
+    "fleet_size": 6,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": ["england"],
+    "network_coverage": "charter",
+    "base_spot_score": 0.2
+  },
+
+  "Class 52": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_hydraulic"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 55": {
+    "operators": ["heritage"],
+    "fleet_size": 2,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "charter",
+    "base_spot_score": 0.15
+  },
+
+  "Class 56": {
+    "operators": ["gbrf", "colas"],
+    "fleet_size": 10,
+    "lifecycle": "limited",
+    "roles": ["heavy_freight_diesel"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "freight",
+    "base_spot_score": 0.5
+  },
+
+  "Class 57": {
+    "operators": ["west_coast", "gbrf", "drs"],
+    "fleet_size": 18,
+    "lifecycle": "limited",
+    "roles": ["diesel_locomotive", "rescue"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "mixed_use",
+    "base_spot_score": 0.45
+  },
+
+  "Class 58": {
+    "operators": [],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["diesel_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
   "Class 59": {
     "operators": ["freightliner", "gbrf"],
     "fleet_size": 15,
-    "lifecycle": "limited",
+    "lifecycle": "active",
     "roles": ["freight_diesel"],
-    "deployment_regions": ["england"],
-    "network_coverage": "freight_core_routes",
-    "base_spot_score": 0.3
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "freight_core",
+    "base_spot_score": 0.6
   },
+
   "Class 60": {
     "operators": ["db_cargo"],
-    "fleet_size": 100,
+    "fleet_size": 10,
     "lifecycle": "limited",
     "roles": ["heavy_freight_diesel"],
-    "deployment_regions": ["england", "wales"],
+    "deployment_regions": ["england"],
     "network_coverage": "freight_national",
-    "base_spot_score": 0.35
+    "base_spot_score": 0.5
   },
+
   "Class 66": {
-    "operators": ["freightliner", "gbrf", "db_cargo"],
-    "fleet_size": 480,
+    "operators": ["freightliner", "gbrf", "db_cargo", "colas"],
+    "fleet_size": 400,
     "lifecycle": "active",
     "roles": ["freight_diesel", "workhorse"],
-    "deployment_regions": ["all_regions"],
-    "network_coverage": "national_freight",
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "freight_national",
     "base_spot_score": 1.0
   },
+
   "Class 67": {
-    "operators": ["db_cargo", "colas", "tfw"],
+    "operators": ["db_cargo", "gbrf", "colas", "tfw"],
     "fleet_size": 30,
     "lifecycle": "active",
     "roles": ["passenger_locomotive", "charter"],
-    "deployment_regions": ["england", "wales", "scotland"],
-    "network_coverage": "national_light",
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "charter_and_rescue",
     "base_spot_score": 0.6
   },
+
   "Class 68": {
-    "operators": ["drs", "scotrail"],
-    "fleet_size": 34,
+    "operators": ["drs", "transpennine_express"],
+    "fleet_size": 15,
     "lifecycle": "active",
-    "roles": ["freight_diesel", "passenger_diesel"],
-    "deployment_regions": ["scotland", "england"],
-    "network_coverage": "cross_border",
-    "base_spot_score": 0.6
+    "roles": ["diesel_locomotive", "passenger_freight"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "interchangeable",
+    "base_spot_score": 0.65
   },
+
   "Class 69": {
     "operators": ["gbrf"],
-    "fleet_size": 10,
+    "fleet_size": 20,
     "lifecycle": "active",
-    "roles": ["freight_diesel_conversion"],
+    "roles": ["freight_conversion"],
     "deployment_regions": ["england"],
     "network_coverage": "freight_limited",
     "base_spot_score": 0.4
   },
+
   "Class 70": {
     "operators": ["freightliner"],
-    "fleet_size": 19,
+    "fleet_size": 20,
     "lifecycle": "active",
-    "roles": ["freight_electric_diesel"],
+    "roles": ["freight_diesel"],
     "deployment_regions": ["england"],
     "network_coverage": "freight_core",
-    "base_spot_score": 0.5
+    "base_spot_score": 0.55
   },
+
   "Class 73": {
-    "operators": ["gbrf", "network_rail"],
-    "fleet_size": 112,
-    "lifecycle": "limited",
+    "operators": ["gbrf", "network_rail", "rail_operations_group"],
+    "fleet_size": 15,
+    "lifecycle": "active",
     "roles": ["electro_diesel", "engineering"],
     "deployment_regions": ["south_east", "london"],
-    "network_coverage": "regional",
+    "network_coverage": "engineering_and_charter",
     "base_spot_score": 0.35
   },
+
+  "Class 81": {
+    "operators": [],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["electric_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
   "Class 86": {
-    "operators": ["west_coast", "freightliner"],
-    "fleet_size": 200,
+    "operators": ["heritage", "charter"],
+    "fleet_size": 2,
     "lifecycle": "limited",
     "roles": ["electric_locomotive"],
-    "deployment_regions": ["england"],
-    "network_coverage": "historic_core",
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "charter",
     "base_spot_score": 0.2
   },
+
   "Class 87": {
-    "operators": ["west_coast", "bulgarian_state_railways"],
-    "fleet_size": 36,
-    "lifecycle": "rare",
+    "operators": ["west_coast"],
+    "fleet_size": 1,
+    "lifecycle": "limited",
     "roles": ["electric_locomotive"],
-    "deployment_regions": ["england"],
-    "network_coverage": "heritage",
-    "base_spot_score": 0.1
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "charter",
+    "base_spot_score": 0.15
   },
+
   "Class 88": {
     "operators": ["drs"],
     "fleet_size": 10,
     "lifecycle": "active",
     "roles": ["electro_diesel"],
-    "deployment_regions": ["england", "scotland"],
-    "network_coverage": "freight_national",
-    "base_spot_score": 0.5
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "freight_and_rescue",
+    "base_spot_score": 0.6
   },
+
   "Class 89": {
-    "operators": ["lner"],
+    "operators": [],
     "fleet_size": 1,
-    "lifecycle": "rare",
+    "lifecycle": "withdrawn",
     "roles": ["prototype_electric"],
     "deployment_regions": [],
     "network_coverage": "none",
     "base_spot_score": 0.05
   },
+
   "Class 90": {
-    "operators": ["freightliner", "db_cargo"],
-    "fleet_size": 50,
+    "operators": ["freightliner", "db_cargo", "greater_anglia"],
+    "fleet_size": 40,
     "lifecycle": "active",
     "roles": ["electric_locomotive"],
     "deployment_regions": ["england"],
-    "network_coverage": "freight_intercity",
+    "network_coverage": "freight_and_mail",
     "base_spot_score": 0.7
   },
+
   "Class 91": {
     "operators": ["lner"],
     "fleet_size": 31,
-    "lifecycle": "active",
+    "lifecycle": "limited",
     "roles": ["high_speed_electric"],
-    "deployment_regions": ["east_coast", "london", "north"],
-    "network_coverage": "intercity_east_coast",
-    "base_spot_score": 0.8
+    "deployment_regions": ["east_coast"],
+    "network_coverage": "intercity",
+    "base_spot_score": 0.6
   },
+
   "Class 92": {
     "operators": ["db_cargo", "gbrf"],
-    "fleet_size": 46,
+    "fleet_size": 35,
     "lifecycle": "active",
     "roles": ["international_freight_electric"],
     "deployment_regions": ["england", "channel_tunnel"],
     "network_coverage": "euro_freight",
     "base_spot_score": 0.7
   },
+
   "Class 93": {
-    "operators": ["stadler", "rog"],
+    "operators": ["rail_operations_group"],
     "fleet_size": 30,
     "lifecycle": "active",
     "roles": ["tri_mode_locomotive"],
     "deployment_regions": ["england"],
     "network_coverage": "modern_freight",
-    "base_spot_score": 0.7
+    "base_spot_score": 0.8
   },
+
+  "Class 97": {
+    "operators": ["network_rail"],
+    "fleet_size": 10,
+    "lifecycle": "active",
+    "roles": ["engineering", "infrastructure"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "test_and_measurement",
+    "base_spot_score": 0.25
+  },
+
   "Class 99": {
     "operators": ["gbrf"],
-    "fleet_size": 30,
+    "fleet_size": 10,
     "lifecycle": "active",
-    "roles": ["next_gen_locomotive"],
-    "deployment_regions": ["england"],
-    "network_coverage": "emerging",
-    "base_spot_score": 0.7
+    "roles": ["bi_mode_freight"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "next_generation_freight",
+    "base_spot_score": 0.85
   },
-  "Class 139": {
-    "operators": ["pre_metro_operations"],
-    "fleet_size": 2,
-    "lifecycle": "rare",
-    "roles": ["light_rail"],
-    "deployment_regions": ["england"],
-    "network_coverage": "microline",
-    "base_spot_score": 0.1
-  },
+
   "Class 140": {
-    "operators": ["prototype"],
-    "fleet_size": 1,
-    "lifecycle": "rare",
+    "operators": [],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
     "roles": ["prototype_dmu"],
     "deployment_regions": [],
     "network_coverage": "none",
-    "base_spot_score": 0.05
+    "base_spot_score": 0.0
   },
+
   "Class 141": {
-    "operators": ["retired"],
-    "fleet_size": 20,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["dmu"],
     "deployment_regions": [],
     "network_coverage": "none",
     "base_spot_score": 0.0
   },
+
   "Class 142": {
-    "operators": ["retired"],
-    "fleet_size": 97,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["dmu"],
     "deployment_regions": [],
     "network_coverage": "none",
     "base_spot_score": 0.0
   },
+
   "Class 143": {
-    "operators": ["retired"],
-    "fleet_size": 25,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["dmu"],
     "deployment_regions": [],
     "network_coverage": "none",
     "base_spot_score": 0.0
   },
+
   "Class 144": {
-    "operators": ["retired"],
-    "fleet_size": 23,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["dmu"],
     "deployment_regions": [],
@@ -281,55 +461,60 @@
 
   "Class 150": {
     "operators": ["northern", "gwr"],
-    "fleet_size": 136,
+    "fleet_size": 120,
     "lifecycle": "active",
-    "roles": ["dmu", "regional_passenger"],
-    "deployment_regions": ["north", "south_west", "midlands"],
+    "roles": ["dmu", "regional"],
+    "deployment_regions": ["england", "wales"],
     "network_coverage": "regional",
     "base_spot_score": 0.9
   },
+
   "Class 153": {
-    "operators": ["various"],
-    "fleet_size": 70,
+    "operators": ["gwr", "northern", "tfw"],
+    "fleet_size": 25,
     "lifecycle": "limited",
     "roles": ["single_car_dmu"],
-    "deployment_regions": ["all_regions"],
-    "network_coverage": "regional",
-    "base_spot_score": 0.4
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "rural_branch",
+    "base_spot_score": 0.5
   },
+
   "Class 155": {
     "operators": ["northern"],
     "fleet_size": 7,
-    "lifecycle": "rare",
+    "lifecycle": "limited",
     "roles": ["dmu"],
     "deployment_regions": ["north"],
-    "network_coverage": "local",
-    "base_spot_score": 0.2
+    "network_coverage": "regional",
+    "base_spot_score": 0.3
   },
+
   "Class 156": {
     "operators": ["northern", "scotrail", "emr"],
     "fleet_size": 114,
     "lifecycle": "active",
-    "roles": ["dmu", "regional_passenger"],
-    "deployment_regions": ["north", "scotland", "midlands"],
+    "roles": ["dmu", "regional"],
+    "deployment_regions": ["england", "scotland"],
     "network_coverage": "regional",
-    "base_spot_score": 0.85
+    "base_spot_score": 0.95
   },
+
   "Class 158": {
     "operators": ["northern", "scotrail", "tfw", "swr"],
-    "fleet_size": 182,
+    "fleet_size": 180,
     "lifecycle": "active",
-    "roles": ["dmu", "intercity_regional"],
-    "deployment_regions": ["england", "wales", "scotland"],
-    "network_coverage": "national_regional",
+    "roles": ["dmu", "interurban"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "regional_and_intercity",
     "base_spot_score": 1.0
   },
+
   "Class 159": {
     "operators": ["swr"],
     "fleet_size": 30,
     "lifecycle": "active",
-    "roles": ["dmu", "intercity_regional"],
-    "deployment_regions": ["south_west", "london"],
+    "roles": ["dmu", "regional"],
+    "deployment_regions": ["south_west"],
     "network_coverage": "regional",
     "base_spot_score": 0.6
   },
@@ -339,10 +524,11 @@
     "fleet_size": 76,
     "lifecycle": "active",
     "roles": ["dmu", "commuter"],
-    "deployment_regions": ["london", "south_west", "midlands"],
-    "network_coverage": "commuter_regional",
-    "base_spot_score": 0.8
+    "deployment_regions": ["london", "midlands"],
+    "network_coverage": "commuter",
+    "base_spot_score": 0.85
   },
+
   "Class 166": {
     "operators": ["gwr"],
     "fleet_size": 21,
@@ -350,187 +536,182 @@
     "roles": ["dmu", "commuter"],
     "deployment_regions": ["south_west"],
     "network_coverage": "regional",
-    "base_spot_score": 0.7
+    "base_spot_score": 0.75
   },
+
   "Class 168": {
     "operators": ["chiltern"],
     "fleet_size": 28,
     "lifecycle": "active",
     "roles": ["dmu", "commuter"],
-    "deployment_regions": ["london", "midlands"],
+    "deployment_regions": ["midlands"],
     "network_coverage": "commuter",
-    "base_spot_score": 0.6
+    "base_spot_score": 0.7
   },
 
   "Class 170": {
     "operators": ["crosscountry", "scotrail", "emr"],
-    "fleet_size": 147,
+    "fleet_size": 130,
     "lifecycle": "active",
-    "roles": ["dmu", "intercity_regional"],
-    "deployment_regions": ["england", "scotland", "wales"],
-    "network_coverage": "national_regional",
+    "roles": ["dmu", "regional"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "regional_and_intercity",
     "base_spot_score": 0.95
   },
+
   "Class 171": {
     "operators": ["southern"],
     "fleet_size": 30,
     "lifecycle": "active",
     "roles": ["dmu", "commuter"],
     "deployment_regions": ["south_east"],
-    "network_coverage": "regional",
-    "base_spot_score": 0.7
+    "network_coverage": "commuter",
+    "base_spot_score": 0.75
   },
+
   "Class 172": {
-    "operators": ["chiltern", "wmt"],
+    "operators": ["wmt", "chiltern"],
     "fleet_size": 37,
     "lifecycle": "active",
     "roles": ["dmu", "commuter"],
     "deployment_regions": ["midlands"],
-    "network_coverage": "regional",
-    "base_spot_score": 0.7
+    "network_coverage": "commuter",
+    "base_spot_score": 0.75
   },
+
   "Class 175": {
     "operators": ["tfw"],
     "fleet_size": 27,
-    "lifecycle": "active",
-    "roles": ["dmu", "intercity_regional"],
+    "lifecycle": "limited",
+    "roles": ["dmu", "regional"],
     "deployment_regions": ["wales"],
     "network_coverage": "regional",
-    "base_spot_score": 0.6
+    "base_spot_score": 0.5
   },
 
   "Class 180": {
     "operators": ["grand_central", "hull_trains"],
-    "fleet_size": 14,
+    "fleet_size": 10,
     "lifecycle": "limited",
     "roles": ["high_speed_dmu"],
-    "deployment_regions": ["north", "midlands"],
-    "network_coverage": "intercity_limited",
+    "deployment_regions": ["england"],
+    "network_coverage": "intercity",
     "base_spot_score": 0.5
   },
+
   "Class 185": {
     "operators": ["tpe"],
     "fleet_size": 51,
     "lifecycle": "active",
     "roles": ["high_speed_dmu"],
     "deployment_regions": ["north"],
-    "network_coverage": "intercity_north",
+    "network_coverage": "intercity",
     "base_spot_score": 0.9
   },
+
   "Class 195": {
     "operators": ["northern"],
-    "fleet_size": 101,
+    "fleet_size": 100,
     "lifecycle": "active",
     "roles": ["dmu", "modern_commuter"],
     "deployment_regions": ["north"],
     "network_coverage": "regional",
-    "base_spot_score": 0.9
+    "base_spot_score": 0.95
   },
+
   "Class 196": {
     "operators": ["wmt"],
     "fleet_size": 26,
     "lifecycle": "active",
-    "roles": ["dmu", "regional_commuter"],
+    "roles": ["dmu", "regional"],
     "deployment_regions": ["midlands"],
     "network_coverage": "regional",
     "base_spot_score": 0.8
   },
+
   "Class 197": {
     "operators": ["tfw"],
     "fleet_size": 51,
     "lifecycle": "active",
-    "roles": ["dmu", "regional_passenger"],
+    "roles": ["dmu", "regional"],
     "deployment_regions": ["wales"],
     "network_coverage": "regional",
     "base_spot_score": 0.85
   },
 
-  "Class 220": {
-    "operators": ["crosscountry"],
-    "fleet_size": 34,
-    "lifecycle": "active",
-    "roles": ["high_speed_dmu"],
-    "deployment_regions": ["national"],
-    "network_coverage": "intercity",
-    "base_spot_score": 0.9
-  },
-  "Class 221": {
-    "operators": ["avanti", "crosscountry"],
-    "fleet_size": 44,
-    "lifecycle": "active",
-    "roles": ["tilting_dmu"],
-    "deployment_regions": ["national"],
-    "network_coverage": "intercity",
-    "base_spot_score": 0.95
-  },
-  "Class 222": {
-    "operators": ["emr"],
-    "fleet_size": 23,
-    "lifecycle": "active",
-    "roles": ["high_speed_dmu"],
-    "deployment_regions": ["midlands"],
-    "network_coverage": "intercity",
-    "base_spot_score": 0.9
-  },
-  "Class 230": {
-    "operators": ["vivarail"],
-    "fleet_size": 10,
-    "lifecycle": "rare",
-    "roles": ["dmu", "battery_dmu"],
-    "deployment_regions": ["midlands", "wales"],
-    "network_coverage": "regional_limited",
+  "Class 313": {
+    "operators": ["network_rail"],
+    "fleet_size": 3,
+    "lifecycle": "limited",
+    "roles": ["emu", "engineering"],
+    "deployment_regions": ["south_east"],
+    "network_coverage": "test_and_support",
     "base_spot_score": 0.2
   },
-  "Class 231": {
-    "operators": ["tfw"],
-    "fleet_size": 11,
-    "lifecycle": "active",
-    "roles": ["dmu", "battery_dmu"],
-    "deployment_regions": ["wales"],
-    "network_coverage": "regional",
-    "base_spot_score": 0.7
+
+  "Class 315": {
+    "operators": [],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 317": {
+    "operators": [],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
   },
 
   "Class 318": {
     "operators": ["scotrail"],
     "fleet_size": 21,
-    "lifecycle": "active",
+    "lifecycle": "limited",
     "roles": ["emu", "suburban"],
     "deployment_regions": ["scotland"],
-    "network_coverage": "urban_regional",
-    "base_spot_score": 0.5
+    "network_coverage": "regional",
+    "base_spot_score": 0.6
   },
+
   "Class 319": {
-    "operators": ["northern", "rog"],
-    "fleet_size": 86,
+    "operators": ["northern"],
+    "fleet_size": 26,
     "lifecycle": "limited",
     "roles": ["emu", "dual_voltage"],
-    "deployment_regions": ["north", "london", "south_east"],
+    "deployment_regions": ["north", "london"],
     "network_coverage": "commuter_cross_region",
-    "base_spot_score": 0.4
-  },
-  "Class 320": {
-    "operators": ["scotrail"],
-    "fleet_size": 22,
-    "lifecycle": "active",
-    "roles": ["emu", "suburban"],
-    "deployment_regions": ["scotland"],
-    "network_coverage": "urban_regional",
     "base_spot_score": 0.5
   },
 
-  "Class 321": {
-    "operators": ["various"],
-    "fleet_size": 117,
+  "Class 320": {
+    "operators": ["scotrail"],
+    "fleet_size": 22,
     "lifecycle": "limited",
-    "roles": ["emu", "commuter"],
-    "deployment_regions": ["east", "london", "midlands"],
-    "network_coverage": "commuter_national_fragmented",
-    "base_spot_score": 0.3
+    "roles": ["emu", "suburban"],
+    "deployment_regions": ["scotland"],
+    "network_coverage": "regional",
+    "base_spot_score": 0.6
   },
+
+  "Class 321": {
+    "operators": ["greater_anglia"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
   "Class 322": {
-    "operators": ["retired"],
-    "fleet_size": 5,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["emu"],
     "deployment_regions": [],
@@ -539,14 +720,35 @@
   },
 
   "Class 323": {
-    "operators": ["northern", "wmt"],
+    "operators": ["northern"],
     "fleet_size": 43,
     "lifecycle": "active",
     "roles": ["emu", "commuter"],
-    "deployment_regions": ["midlands", "north"],
+    "deployment_regions": ["north", "midlands"],
     "network_coverage": "regional_commuter",
-    "base_spot_score": 0.7
+    "base_spot_score": 0.8
   },
+
+  "Class 324": {
+    "operators": ["tpe"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 325": {
+    "operators": ["royal_mail"],
+    "fleet_size": 1,
+    "lifecycle": "limited",
+    "roles": ["postal_emu"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "mail_network",
+    "base_spot_score": 0.2
+  },
+
   "Class 331": {
     "operators": ["northern"],
     "fleet_size": 43,
@@ -554,25 +756,27 @@
     "roles": ["emu", "modern_commuter"],
     "deployment_regions": ["north"],
     "network_coverage": "regional",
-    "base_spot_score": 0.8
+    "base_spot_score": 0.85
   },
+
   "Class 332": {
-    "operators": ["retired"],
-    "fleet_size": 14,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["emu"],
     "deployment_regions": [],
     "network_coverage": "none",
     "base_spot_score": 0.0
   },
+
   "Class 333": {
     "operators": ["northern"],
     "fleet_size": 16,
-    "lifecycle": "active",
+    "lifecycle": "limited",
     "roles": ["emu"],
     "deployment_regions": ["north"],
     "network_coverage": "regional",
-    "base_spot_score": 0.7
+    "base_spot_score": 0.6
   },
 
   "Class 334": {
@@ -581,7 +785,7 @@
     "lifecycle": "active",
     "roles": ["emu", "suburban"],
     "deployment_regions": ["scotland"],
-    "network_coverage": "urban_regional",
+    "network_coverage": "regional",
     "base_spot_score": 0.8
   },
 
@@ -592,15 +796,15 @@
     "roles": ["emu", "high_capacity_commuter"],
     "deployment_regions": ["london"],
     "network_coverage": "urban_core",
-    "base_spot_score": 0.95
+    "base_spot_score": 1.0
   },
 
   "Class 350": {
-    "operators": ["avanti", "wmt"],
+    "operators": ["wmt"],
     "fleet_size": 87,
     "lifecycle": "active",
     "roles": ["emu", "outer_suburban"],
-    "deployment_regions": ["midlands", "north", "london"],
+    "deployment_regions": ["midlands", "north"],
     "network_coverage": "intercity_commuter_mix",
     "base_spot_score": 0.9
   },
@@ -610,24 +814,24 @@
     "fleet_size": 74,
     "lifecycle": "active",
     "roles": ["emu", "commuter"],
-    "deployment_regions": ["east", "london"],
+    "deployment_regions": ["east"],
     "network_coverage": "commuter_core",
     "base_spot_score": 0.9
   },
 
   "Class 360": {
-    "operators": ["greater_anglia", "emr"],
+    "operators": ["greater_anglia"],
     "fleet_size": 26,
-    "lifecycle": "active",
+    "lifecycle": "limited",
     "roles": ["emu", "regional"],
-    "deployment_regions": ["east", "midlands"],
+    "deployment_regions": ["east"],
     "network_coverage": "regional",
-    "base_spot_score": 0.7
+    "base_spot_score": 0.6
   },
 
   "Class 365": {
-    "operators": ["retired"],
-    "fleet_size": 41,
+    "operators": [],
+    "fleet_size": 0,
     "lifecycle": "withdrawn",
     "roles": ["emu"],
     "deployment_regions": [],
@@ -637,21 +841,22 @@
 
   "Class 373": {
     "operators": ["eurostar"],
-    "fleet_size": 27,
-    "lifecycle": "active",
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
     "roles": ["high_speed_international"],
-    "deployment_regions": ["channel_tunnel"],
-    "network_coverage": "international",
-    "base_spot_score": 0.3
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.1
   },
+
   "Class 374": {
     "operators": ["eurostar"],
-    "fleet_size": 17,
-    "lifecycle": "active",
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
     "roles": ["high_speed_international"],
-    "deployment_regions": ["channel_tunnel"],
-    "network_coverage": "international",
-    "base_spot_score": 0.3
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.1
   },
 
   "Class 375": {
@@ -659,18 +864,19 @@
     "fleet_size": 112,
     "lifecycle": "active",
     "roles": ["emu", "commuter"],
-    "deployment_regions": ["south_east", "london"],
+    "deployment_regions": ["south_east"],
     "network_coverage": "commuter_core",
-    "base_spot_score": 0.85
+    "base_spot_score": 0.9
   },
+
   "Class 376": {
     "operators": ["southeastern"],
     "fleet_size": 36,
     "lifecycle": "active",
     "roles": ["emu", "metro_commuter"],
-    "deployment_regions": ["london", "south_east"],
+    "deployment_regions": ["london"],
     "network_coverage": "high_density_commuter",
-    "base_spot_score": 0.8
+    "base_spot_score": 0.85
   },
 
   "Class 377": {
@@ -678,7 +884,7 @@
     "fleet_size": 214,
     "lifecycle": "active",
     "roles": ["emu", "commuter", "outer_suburban"],
-    "deployment_regions": ["south_east", "london"],
+    "deployment_regions": ["south_east"],
     "network_coverage": "very_high_density",
     "base_spot_score": 1.0
   },
@@ -690,26 +896,26 @@
     "roles": ["emu", "metro"],
     "deployment_regions": ["london"],
     "network_coverage": "urban_core",
-    "base_spot_score": 0.9
+    "base_spot_score": 0.95
   },
 
   "Class 379": {
     "operators": ["greater_anglia"],
-    "fleet_size": 30,
-    "lifecycle": "active",
-    "roles": ["emu", "commuter"],
-    "deployment_regions": ["east"],
-    "network_coverage": "regional_commuter",
-    "base_spot_score": 0.7
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
   },
 
   "Class 380": {
     "operators": ["scotrail"],
     "fleet_size": 38,
-    "lifecycle": "active",
+    "lifecycle": "limited",
     "roles": ["emu", "suburban"],
     "deployment_regions": ["scotland"],
-    "network_coverage": "urban_regional",
+    "network_coverage": "regional",
     "base_spot_score": 0.8
   },
 
@@ -721,5 +927,365 @@
     "deployment_regions": ["scotland"],
     "network_coverage": "regional",
     "base_spot_score": 0.9
+  },
+
+  "Class 387": {
+    "operators": ["greater_anglia", "gwr", "southern"],
+    "fleet_size": 106,
+    "lifecycle": "active",
+    "roles": ["emu", "outer_suburban", "intercity_light"],
+    "deployment_regions": ["london", "south_east", "east"],
+    "network_coverage": "commuter_and_regional",
+    "base_spot_score": 0.95
+  },
+
+  "Class 390": {
+    "operators": ["avanti"],
+    "fleet_size": 56,
+    "lifecycle": "active",
+    "roles": ["high_speed_emu", "tilting"],
+    "deployment_regions": ["england", "scotland", "wales"],
+    "network_coverage": "intercity_west_coast",
+    "base_spot_score": 1.0
+  },
+
+  "Class 395": {
+    "operators": ["southeastern"],
+    "fleet_size": 29,
+    "lifecycle": "active",
+    "roles": ["high_speed_emu"],
+    "deployment_regions": ["kent"],
+    "network_coverage": "high_speed_regional",
+    "base_spot_score": 0.9
+  },
+
+  "Class 397": {
+    "operators": ["tpe"],
+    "fleet_size": 61,
+    "lifecycle": "active",
+    "roles": ["intercity_emu"],
+    "deployment_regions": ["north"],
+    "network_coverage": "intercity_north",
+    "base_spot_score": 0.95
+  },
+
+  "Class 399": {
+    "operators": ["gtr"],
+    "fleet_size": 6,
+    "lifecycle": "active",
+    "roles": ["tram_train", "bi_mode"],
+    "deployment_regions": ["sheffield"],
+    "network_coverage": "tram_train_network",
+    "base_spot_score": 0.6
+  },
+
+  "Class 800": {
+    "operators": ["gwr", "lner"],
+    "fleet_size": 93,
+    "lifecycle": "active",
+    "roles": ["bi_mode_intercity"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "intercity_national",
+    "base_spot_score": 1.0
+  },
+
+  "Class 801": {
+    "operators": ["lner"],
+    "fleet_size": 34,
+    "lifecycle": "active",
+    "roles": ["electric_intercity"],
+    "deployment_regions": ["east_coast"],
+    "network_coverage": "intercity_electric",
+    "base_spot_score": 0.95
+  },
+
+  "Class 802": {
+    "operators": ["gwr", "transpennine_express"],
+    "fleet_size": 93,
+    "lifecycle": "active",
+    "roles": ["bi_mode_intercity"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "intercity_national",
+    "base_spot_score": 1.0
+  },
+
+  "Class 805": {
+    "operators": ["avanti"],
+    "fleet_size": 13,
+    "lifecycle": "active",
+    "roles": ["bi_mode_intercity"],
+    "deployment_regions": ["west_coast"],
+    "network_coverage": "intercity_core",
+    "base_spot_score": 0.9
+  },
+
+  "Class 807": {
+    "operators": ["transpennine_express"],
+    "fleet_size": 10,
+    "lifecycle": "active",
+    "roles": ["electric_intercity"],
+    "deployment_regions": ["north"],
+    "network_coverage": "intercity_north",
+    "base_spot_score": 0.9
+  },
+
+  "Class 810": {
+    "operators": ["east_midlands_railway"],
+    "fleet_size": 33,
+    "lifecycle": "active",
+    "roles": ["bi_mode_intercity"],
+    "deployment_regions": ["midlands"],
+    "network_coverage": "intercity_midlands",
+    "base_spot_score": 0.85
+  },
+
+  "Class 71": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["electric_locomotive"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 101": {
+    "operators": ["heritage", "northern", "wales_rail"],
+    "fleet_size": 0,
+    "lifecycle": "limited",
+    "roles": ["dmu", "regional_passenger"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "heritage_and_rural",
+    "base_spot_score": 0.35
+  },
+
+  "Class 104": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["dmu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 108": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "limited",
+    "roles": ["dmu"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "heritage",
+    "base_spot_score": 0.25
+  },
+
+  "Class 117": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["dmu"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 121": {
+    "operators": ["heritage"],
+    "fleet_size": 1,
+    "lifecycle": "limited",
+    "roles": ["bubble_car", "dmu"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "heritage",
+    "base_spot_score": 0.2
+  },
+
+  "Class 122": {
+    "operators": ["heritage"],
+    "fleet_size": 1,
+    "lifecycle": "limited",
+    "roles": ["bubble_car", "dmu"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "heritage",
+    "base_spot_score": 0.2
+  },
+
+  "Class 710": {
+    "operators": ["london_overground"],
+    "fleet_size": 54,
+    "lifecycle": "active",
+    "roles": ["emu", "metro_commuter"],
+    "deployment_regions": ["london", "essex"],
+    "network_coverage": "urban_commuter",
+    "base_spot_score": 0.95
+  },
+
+  "Class 701": {
+    "operators": ["swr"],
+    "fleet_size": 90,
+    "lifecycle": "active",
+    "roles": ["emu", "high_capacity_commuter"],
+    "deployment_regions": ["london", "south_west"],
+    "network_coverage": "metro_commuter",
+    "base_spot_score": 0.9
+  },
+
+  "Class 745": {
+    "operators": ["greater_anglia"],
+    "fleet_size": 24,
+    "lifecycle": "active",
+    "roles": ["bi_mode_intercity"],
+    "deployment_regions": ["east"],
+    "network_coverage": "intercity_and_airport",
+    "base_spot_score": 0.95
+  },
+
+  "Class 755": {
+    "operators": ["greater_anglia"],
+    "fleet_size": 38,
+    "lifecycle": "active",
+    "roles": ["bi_mode_modular"],
+    "deployment_regions": ["east", "east_anglia_rural"],
+    "network_coverage": "regional_and_intercity_mix",
+    "base_spot_score": 1.0
+  },
+
+  "Class 803": {
+    "operators": ["lumo"],
+    "fleet_size": 5,
+    "lifecycle": "active",
+    "roles": ["electric_intercity"],
+    "deployment_regions": ["east_coast"],
+    "network_coverage": "intercity_east_coast",
+    "base_spot_score": 0.85
+  },
+
+  "Class 700": {
+    "operators": ["thameslink"],
+    "fleet_size": 115,
+    "lifecycle": "active",
+    "roles": ["emu", "high_capacity_commuter"],
+    "deployment_regions": ["london", "south_east"],
+    "network_coverage": "thameslink_core",
+    "base_spot_score": 1.0
+  },
+
+  "Class 707": {
+    "operators": ["swr"],
+    "fleet_size": 30,
+    "lifecycle": "active",
+    "roles": ["emu", "metro_commuter"],
+    "deployment_regions": ["london", "south_west"],
+    "network_coverage": "metro_commuter",
+    "base_spot_score": 0.75
+  },
+
+  "Class 444": {
+    "operators": ["swr"],
+    "fleet_size": 45,
+    "lifecycle": "active",
+    "roles": ["emu", "intercity_regional"],
+    "deployment_regions": ["south_west", "london"],
+    "network_coverage": "intercity_commuter_mix",
+    "base_spot_score": 0.85
+  },
+
+  "Class 450": {
+    "operators": ["swr"],
+    "fleet_size": 127,
+    "lifecycle": "active",
+    "roles": ["emu", "outer_suburban"],
+    "deployment_regions": ["london", "south_west"],
+    "network_coverage": "commuter_core",
+    "base_spot_score": 0.95
+  },
+
+  "Class 458": {
+    "operators": ["swr"],
+    "fleet_size": 30,
+    "lifecycle": "active",
+    "roles": ["emu", "outer_suburban"],
+    "deployment_regions": ["london", "south_west"],
+    "network_coverage": "commuter_core",
+    "base_spot_score": 0.8
+  },
+
+  "Class 220": {
+    "operators": ["crosscountry"],
+    "fleet_size": 20,
+    "lifecycle": "active",
+    "roles": ["dmu", "intercity"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "intercity_crosscountry",
+    "base_spot_score": 0.8
+  },
+
+  "Class 221": {
+    "operators": ["crosscountry", "avanti"],
+    "fleet_size": 20,
+    "lifecycle": "active",
+    "roles": ["dmu", "tilting_intercity"],
+    "deployment_regions": ["uk_wide"],
+    "network_coverage": "intercity_tilting",
+    "base_spot_score": 0.85
+  },
+
+  "Class 222": {
+    "operators": ["east_midlands_railway"],
+    "fleet_size": 27,
+    "lifecycle": "active",
+    "roles": ["dmu", "intercity"],
+    "deployment_regions": ["midlands"],
+    "network_coverage": "intercity_midlands",
+    "base_spot_score": 0.85
+  },
+
+  "Class 411": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu", "slam_door"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 421": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu", "slam_door"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 423": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu", "slam_door"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 508": {
+    "operators": ["heritage"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu", "suburban"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
+  },
+
+  "Class 455": {
+    "operators": ["swr", "southern"],
+    "fleet_size": 0,
+    "lifecycle": "withdrawn",
+    "roles": ["emu", "suburban"],
+    "deployment_regions": [],
+    "network_coverage": "none",
+    "base_spot_score": 0.0
   }
 }
