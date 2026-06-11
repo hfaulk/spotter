@@ -63,6 +63,12 @@ export const upload = multer({
 // Cache for duplicate submission prevention (18.4)
 const recentNonces = new Set();
 
+// The global spot sheet submits via fetch and wants JSON back;
+// the /spots/new fallback page still uses classic form posts.
+const wantsJson = (req) =>
+  req.headers["x-requested-with"] === "fetch" ||
+  req.headers.accept?.includes("application/json");
+
 // ===== SERVE VIEWS =====
 export const serveNewSpot = (req, res) => {
   res.render("spots/new", { error: undefined });
@@ -71,8 +77,15 @@ export const serveNewSpot = (req, res) => {
 // ===== CREATE SPOT =====
 export const createSpotController = async (req, res) => {
   const userId = req.user.id;
+  const isAjax = wantsJson(req);
   let imagePath = null;
   let thumbPath = null;
+
+  // One place to report failures in whichever format the client expects
+  const fail = (message, status = 400) =>
+    isAjax
+      ? res.status(status).json({ success: false, error: message })
+      : res.render("spots/new", { error: message });
 
   try {
     const {
@@ -86,7 +99,9 @@ export const createSpotController = async (req, res) => {
 
     // 18.4 Check for exact duplicate submission
     if (submission_nonce && recentNonces.has(submission_nonce)) {
-      return res.redirect("/profile");
+      return isAjax
+        ? res.json({ success: true, duplicate: true })
+        : res.redirect("/profile");
     }
 
     // 18.2 Server-side bounds validation
@@ -100,14 +115,12 @@ export const createSpotController = async (req, res) => {
     );
 
     if (validationErrors.length) {
-      return res.render("spots/new", { error: validationErrors[0] });
+      return fail(validationErrors[0]);
     }
 
     const units = parseUnits(req.body);
     if (units.length === 0) {
-      return res.render("spots/new", {
-        error: "At least one unit is required",
-      });
+      return fail("At least one unit is required");
     }
 
     // ===== EXIF EXTRACTION =====
@@ -153,9 +166,7 @@ export const createSpotController = async (req, res) => {
           fileBuffer = Buffer.from(converted);
         } catch (err) {
           console.error("HEIC conversion error:", err);
-          return res.render("spots/new", {
-            error: "Could not process HEIC image, please try again",
-          });
+          return fail("Could not process HEIC image, please try again");
         }
       }
 
@@ -205,10 +216,9 @@ export const createSpotController = async (req, res) => {
         ]);
       } catch (err) {
         console.error("Image processing/upload error:", err);
-        return res.render("spots/new", {
-          error:
-            "The photo appears to be corrupt or could not be uploaded — please try again.",
-        });
+        return fail(
+          "The photo appears to be corrupt or could not be uploaded — please try again.",
+        );
       }
     }
 
@@ -233,9 +243,7 @@ export const createSpotController = async (req, res) => {
     if (spotError) {
       if (imagePath) await deleteStorageImage(imagePath);
       if (thumbPath) await deleteStorageImage(thumbPath);
-      return res.render("spots/new", {
-        error: "Failed to save spot, please try again",
-      });
+      return fail("Failed to save spot, please try again", 500);
     }
 
     // ===== LINK UNITS (18.3 Transaction Cleanup) =====
@@ -249,9 +257,7 @@ export const createSpotController = async (req, res) => {
     } catch (linkErr) {
       // Revert the whole operation if linking fails
       await deleteSpot(spot.spot_id, userId);
-      return res.render("spots/new", {
-        error: "Failed to link units, please try again",
-      });
+      return fail("Failed to link units, please try again", 500);
     }
 
     // Cache nonce to prevent double execution
@@ -260,6 +266,9 @@ export const createSpotController = async (req, res) => {
       setTimeout(() => recentNonces.delete(submission_nonce), 30000);
     }
 
+    if (isAjax) {
+      return res.json({ success: true, spotId: spot.spot_id });
+    }
     res.redirect(`/spots/${spot.spot_id}`);
   } catch (err) {
     // 18.8 Orphaned R2 image cleanup
@@ -267,9 +276,7 @@ export const createSpotController = async (req, res) => {
     if (thumbPath) await deleteStorageImage(thumbPath).catch(() => {});
 
     console.error("createSpot error:", err);
-    res.render("spots/new", {
-      error: "Something went wrong, please try again",
-    });
+    return fail("Something went wrong, please try again", 500);
   }
 };
 

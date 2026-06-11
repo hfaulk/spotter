@@ -2962,3 +2962,122 @@ a.unit-chip:hover {
     outline: 2px solid midnightblue;
     outline-offset: -2px;
 }
+
+/* ===== LOG-A-SPOT SHEET (global) ===== */
+.spot-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(110%);
+    width: 100%;
+    max-width: 480px;
+    background: #f9fafb;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    z-index: 700;
+    visibility: hidden;
+    transition:
+        transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1),
+        visibility 0s linear 0.35s;
+    max-height: 92vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+.spot-sheet.open {
+    transform: translateX(-50%) translateY(0);
+    visibility: visible;
+    transition:
+        transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1),
+        visibility 0s linear 0s;
+}
+
+.spot-sheet-handle {
+    position: sticky;
+    top: 8px;
+    display: block;
+    margin: 8px auto -12px;
+    width: 36px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 2px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.spot-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 699;
+    pointer-events: none;
+    transition: background 0.3s;
+    overscroll-behavior: contain;
+}
+
+.spot-sheet-backdrop.visible {
+    background: rgba(0, 0, 0, 0.25);
+    pointer-events: all;
+}
+
+.spot-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1rem 0.25rem;
+}
+
+.spot-sheet-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: midnightblue;
+    margin: 0;
+}
+
+.spot-sheet-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    transition:
+        color 0.15s,
+        background 0.15s;
+}
+.spot-sheet-close:hover {
+    color: midnightblue;
+    background: #eef0fb;
+}
+
+.spot-sheet .spot-form {
+    padding: 0.5rem 1rem 2rem;
+}
+
+/* Desktop: right-side panel, like the class/hotspot sheets */
+@media (min-width: 768px) {
+    .spot-sheet {
+        left: auto;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 440px;
+        max-width: 440px;
+        max-height: none;
+        border-radius: 0;
+        border-left: 1px solid #f0f2f8;
+        transform: translateX(100%);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .spot-sheet.open {
+        transform: translateX(0);
+    }
+
+    .spot-sheet-handle {
+        display: none;
+    }
+}

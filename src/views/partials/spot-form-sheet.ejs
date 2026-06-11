@@ -1,0 +1,96 @@
+<!-- Global "Log a spot" slide-up sheet / desktop side panel -->
+<div class="spot-sheet" id="spot-sheet" aria-hidden="true">
+
+  <div class="spot-sheet-body">
+    <div class="spot-sheet-header">
+      <h2 class="spot-sheet-title">Log a spot</h2>
+      <button type="button" class="spot-sheet-close" id="spot-sheet-close" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form action="/spots" method="POST" enctype="multipart/form-data" class="spot-form spot-sheet-form" id="ss-form">
+      <input type="hidden" name="submission_nonce" id="ss-nonce" />
+
+      <div class="form-section">
+        <h2>Photo <span class="optional">(optional)</span></h2>
+        <div class="photo-upload">
+          <input type="file" id="ss-photo" name="photo" accept="image/jpeg,image/png,image/heic,image/heif" />
+          <label for="ss-photo" class="photo-label">
+            <div class="photo-label-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span id="ss-photo-label-text">Add a photo</span>
+            </div>
+          </label>
+          <img id="ss-photo-preview" src="" alt="" style="display:none;" />
+        </div>
+
+        <div id="ss-exif-panel" style="display:none;">
+          <div class="exif-grid">
+            <div class="exif-item"><span class="exif-label">Camera</span><span class="exif-value" id="ss-exif-camera">—</span></div>
+            <div class="exif-item"><span class="exif-label">Shutter</span><span class="exif-value" id="ss-exif-shutter">—</span></div>
+            <div class="exif-item"><span class="exif-label">Aperture</span><span class="exif-value" id="ss-exif-aperture">—</span></div>
+            <div class="exif-item"><span class="exif-label">ISO</span><span class="exif-value" id="ss-exif-iso">—</span></div>
+            <div class="exif-item"><span class="exif-label">Focal length</span><span class="exif-value" id="ss-exif-focal">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Details</h2>
+        <div class="field">
+          <label for="ss-title">Title</label>
+          <input type="text" id="ss-title" name="spot_title" placeholder="444032 at Fratton" required />
+        </div>
+        <div class="field">
+          <label for="ss-description">Description <span class="optional">(optional)</span></label>
+          <textarea id="ss-description" name="spot_description" placeholder="Caught heading into Portsmouth Harbour..." rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label for="ss-timestamp">Date &amp; time</label>
+          <input type="datetime-local" id="ss-timestamp" name="spot_timestamp" />
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Location <span class="optional">(optional)</span></h2>
+        <p class="section-hint">Tap the map to drop a pin. Auto-fills if your photo has GPS data.</p>
+        <span id="ss-location-status" class="location-status"></span>
+
+        <div style="position: relative; border-radius: 10px; overflow: hidden; border: 1px solid #e4e8f0;">
+          <div id="ss-location-map" style="border:none; height:280px;"></div>
+          <div class="map-controls">
+            <button type="button" id="ss-map-toggle-btn" class="map-control-btn" aria-label="Toggle Satellite View" title="Map Layers">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 12 12 17 22 12"></polyline>
+                <polyline points="2 17 12 22 22 17"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" id="ss-clear-location" class="btn-secondary">Clear location</button>
+        <input type="hidden" id="ss-lat" name="spot_latitude" />
+        <input type="hidden" id="ss-lon" name="spot_longitude" />
+      </div>
+
+      <div class="form-section">
+        <h2>Units</h2>
+        <p class="section-hint">Add every unit you spotted.</p>
+        <div id="ss-units-container"></div>
+        <button type="button" id="ss-add-unit" class="btn-secondary">+ Add another unit</button>
+      </div>
+
+      <button type="submit" class="btn-primary" id="ss-submit">Save spot</button>
+    </form>
+  </div>
+</div>
+<div class="spot-sheet-backdrop" id="spot-sheet-backdrop"></div>
+
+<script src="/js/spot-sheet.js"></script>

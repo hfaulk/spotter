@@ -1,5 +1,12 @@
 // public/js/spot-show.js
 document.addEventListener("DOMContentLoaded", () => {
+  // ===== CREATION SUCCESS TOAST =====
+  // Set by spot-sheet.js right before navigating here after a successful save
+  if (sessionStorage.getItem("spotCreated")) {
+    sessionStorage.removeItem("spotCreated");
+    toast.success("Spot created successfully!");
+  }
+
   // ===== MAP INITIALIZATION =====
   const mapEl = document.getElementById("spot-map");
   if (mapEl) {
