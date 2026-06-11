@@ -49,22 +49,40 @@ const inferClassDigits = (unit) => {
   return null;
 };
 
+// Denominator for progress: prefer active_fleet (units actually out there
+// to spot) when the roster provides it, falling back to fleet_size (total
+// ever built). Populate active_fleet in roster.json over time — heritage
+// classes like the 47s are where the difference matters most.
+const classTotal = (info) => info.active_fleet ?? info.fleet_size ?? null;
+
 const buildClassCollection = (collection) => {
   const groups = {};
 
+  // Seed EVERY roster class so unspotted ones still show (greyed out).
+  for (const [key, info] of Object.entries(roster)) {
+    groups[key] = {
+      classNum: key.replace(/[^0-9]/g, ""),
+      total: classTotal(info),
+      lifecycle: info.lifecycle || null,
+      units: [],
+    };
+  }
+
+  // Merge in the user's actual collection.
   for (const unit of collection) {
     const digits = inferClassDigits(unit);
     const rosterKey = digits
       ? rosterLookup[digits] || rosterLookup[String(parseInt(digits, 10))]
       : null;
 
-    // Group key: prefer the canonical roster key, then raw digits, then Other
     const key = rosterKey || (digits ? `Class ${digits}` : "__other__");
 
     if (!groups[key]) {
+      // Spotted class that isn't in the roster — show it, no denominator.
       groups[key] = {
-        classNum: rosterKey ? rosterKey.replace(/[^0-9]/g, "") : digits || null,
-        total: rosterKey ? roster[rosterKey].fleet_size : null,
+        classNum: digits || null,
+        total: null,
+        lifecycle: null,
         units: [],
       };
     }
@@ -80,20 +98,36 @@ const buildClassCollection = (collection) => {
     });
   }
 
-  return Object.values(groups)
-    .map((g) => ({
-      ...g,
-      spotted: g.units.length,
-      units: g.units.sort((a, b) =>
-        String(a.unit_number).localeCompare(String(b.unit_number)),
-      ),
-    }))
-    .sort((a, b) => {
-      // Most-spotted classes first; "Other" (no classNum) always last
-      if (!a.classNum && b.classNum) return 1;
-      if (a.classNum && !b.classNum) return -1;
-      return b.spotted - a.spotted;
-    });
+  return (
+    Object.values(groups)
+      // Hide withdrawn classes you haven't spotted — they're unspottable,
+      // so a permanent grey 0/97 tile is just noise. Spot a preserved one
+      // and it appears.
+      .filter((g) => g.units.length > 0 || g.lifecycle !== "withdrawn")
+      .map((g) => ({
+        classNum: g.classNum,
+        total: g.total,
+        spotted: g.units.length,
+        units: g.units.sort((a, b) =>
+          String(a.unit_number).localeCompare(String(b.unit_number)),
+        ),
+      }))
+      .sort((a, b) => {
+        // "Other" (no classNum) always last
+        if (!a.classNum && b.classNum) return 1;
+        if (a.classNum && !b.classNum) return -1;
+        // Spotted classes before unspotted ones
+        if (b.spotted > 0 !== a.spotted > 0) {
+          return (b.spotted > 0 ? 1 : 0) - (a.spotted > 0 ? 1 : 0);
+        }
+        // Within spotted: most spotted first
+        if (b.spotted !== a.spotted) return b.spotted - a.spotted;
+        // Within unspotted (and ties): ascending class number
+        return (
+          parseInt(a.classNum || "0", 10) - parseInt(b.classNum || "0", 10)
+        );
+      })
+  );
 };
 
 export const serveProfile = async (req, res) => {

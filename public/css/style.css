@@ -2857,3 +2857,108 @@ a.unit-chip:hover {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ===== UNIT COLLECTION — v2 fixes ===== */
+
+/* Sticky drag handle — stays pinned while the sheet scrolls.
+   Darker tint so it's visible over both the hero photo and white body. */
+.class-sheet-handle {
+    position: sticky;
+    top: 8px;
+    left: auto;
+    transform: none;
+    display: block;
+    margin: 8px auto -12px;
+    background: rgba(0, 0, 0, 0.28);
+}
+
+/* Stop scroll chaining to the page behind the sheet */
+.class-sheet {
+    overscroll-behavior: contain;
+}
+.class-sheet-backdrop {
+    overscroll-behavior: contain;
+}
+
+/* Greyed-out cards for classes with nothing spotted yet */
+.class-card-empty .class-card-img {
+    filter: grayscale(1);
+    opacity: 0.5;
+}
+.class-card-empty .class-card-name {
+    color: #9aa0b5;
+}
+.class-card-empty .class-card-progress {
+    background: rgba(150, 156, 178, 0.92);
+}
+
+/* Bottom nav is 100px tall but content only reserved 64px —
+   last list item was hiding behind the nav. (Desktop unaffected:
+   the more-specific desktop rule still zeroes the padding.) */
+.app-content {
+    padding-bottom: 110px;
+}
+
+/* Re-hide the handle on desktop (the sticky rule above would
+   otherwise override the earlier display:none) */
+@media (min-width: 768px) {
+    .class-sheet-handle {
+        display: none;
+    }
+}
+
+/* ===== UNIT COLLECTION — v3 fixes ===== */
+
+/* Desktop grid: remove the 900px cap so it fills the viewport properly */
+@media (min-width: 768px) {
+    .class-grid {
+        max-width: none;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+}
+
+/* ===== BOTTOMNAV — proper PWA sizing ===== */
+/* 64px of real nav + the device's home-indicator inset, instead of a
+   blanket 100px. Requires viewport-fit=cover in the viewport meta. */
+.bottomnav {
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    justify-content: center;
+    gap: 3rem;
+}
+
+/* Tap targets: fixed 64px-wide zones instead of full-width thirds —
+   still well above the 44px minimum, but no more clunky dead space */
+.nav-item {
+    flex: 0 0 64px;
+    max-width: 64px;
+}
+
+.nav-item svg {
+    width: 26px;
+    height: 26px;
+}
+
+.nav-item-new {
+    flex: 0 0 48px;
+}
+
+/* Content clearance now matches the slimmer nav */
+.app-content {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Map was sized against the old 64px assumption; keep it flush with
+   the new nav on notched devices (desktop rules still override this) */
+#main-map {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Visible focus ring when the sheet takes keyboard focus */
+.class-sheet:focus {
+    outline: none;
+}
+.class-sheet:focus-visible {
+    outline: 2px solid midnightblue;
+    outline-offset: -2px;
+}

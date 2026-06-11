@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const content = document.getElementById("class-sheet-content");
   if (!sheet || !backdrop || !content) return;
 
+  sheet.setAttribute("tabindex", "-1"); // focusable for a11y
+  let lastFocused = null;
+
   const esc = (s) =>
     String(s ?? "").replace(
       /[&<>"']/g,
@@ -35,9 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) =>
         data
           ? {
-              img: data.originalimage?.source || data.thumbnail?.source || null,
               thumb:
                 data.thumbnail?.source || data.originalimage?.source || null,
+              original: data.originalimage?.source || null,
               extract: data.extract || null,
               url: data.content_urls?.desktop?.page || null,
             }
@@ -48,8 +51,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return wikiCache[classNum];
   };
 
-  // ===== CLASS CARD IMAGES =====
-  document.querySelectorAll(".class-card").forEach((card) => {
+  // Hero image: ask Wikimedia for a 640px rendition instead of the
+  // original (which can be several MB) — huge mobile win.
+  const heroSrc = (info) => {
+    if (!info) return null;
+    if (info.thumb && /\/\d+px-/.test(info.thumb)) {
+      return info.thumb.replace(/\/\d+px-/, "/640px-");
+    }
+    return info.thumb || info.original;
+  };
+
+  // ===== CLASS CARD IMAGES (lazy — the grid is ~60 cards now) =====
+  const loadCardImage = (card) => {
     const num = card.dataset.classNum;
     if (!num) return;
     fetchWiki(num).then((info) => {
@@ -61,12 +74,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     });
-  });
+  };
+
+  const cards = document.querySelectorAll(".class-card");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          obs.unobserve(entry.target);
+          loadCardImage(entry.target);
+        });
+      },
+      { rootMargin: "200px" },
+    );
+    cards.forEach((card) => io.observe(card));
+  } else {
+    cards.forEach(loadCardImage);
+  }
 
   // ===== SHEET OPEN / CLOSE =====
   const closeSheet = () => {
     sheet.classList.remove("open");
     backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+    lastFocused?.focus?.();
+    lastFocused = null;
   };
 
   const buildUnitTiles = (cls) => {
@@ -126,18 +159,22 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    lastFocused = document.activeElement;
     sheet.classList.add("open");
     backdrop.classList.add("visible");
     sheet.scrollTop = 0;
+    document.body.style.overflow = "hidden"; // lock the page behind
+    sheet.focus({ preventScroll: true });
 
     // Fill the wiki hero + description once it arrives
     fetchWiki(cls.classNum).then((info) => {
       if (!info) return;
       const hero = document.getElementById("class-sheet-hero");
       const desc = document.getElementById("class-sheet-desc");
+      const src = heroSrc(info);
 
-      if (hero && info.img) {
-        hero.style.backgroundImage = `url('${info.img}')`;
+      if (hero && src) {
+        hero.style.backgroundImage = `url('${src}')`;
         hero.classList.remove("class-sheet-hero-empty");
       }
       if (desc && info.extract) {
@@ -151,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  document.querySelectorAll(".class-card").forEach((card) => {
+  cards.forEach((card) => {
     card.addEventListener("click", () => {
       openClass(parseInt(card.dataset.classIndex, 10));
     });
@@ -165,13 +202,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") closeSheet();
   });
 
-  // Swipe-down to close on mobile (same feel as the map sheet)
+  // ===== TOUCH: swipe-down to close, without scrolling the page behind =====
   let touchStartY = 0;
   let touchStartX = 0;
+
   sheet.addEventListener("touchstart", (e) => {
     touchStartY = e.touches[0].clientY;
     touchStartX = e.touches[0].clientX;
   });
+
+  // When the sheet is scrolled to the top and the user keeps pulling down,
+  // swallow the gesture so it can't chain to the page behind (map.js trick).
+  sheet.addEventListener(
+    "touchmove",
+    (e) => {
+      const diffY = e.touches[0].clientY - touchStartY;
+      if (sheet.scrollTop === 0 && diffY > 0) e.preventDefault();
+    },
+    { passive: false },
+  );
+
   sheet.addEventListener("touchend", (e) => {
     const diffY = e.changedTouches[0].clientY - touchStartY;
     const diffX = Math.abs(e.changedTouches[0].clientX - touchStartX);
