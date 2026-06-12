@@ -1,5 +1,6 @@
 import supabase from "../config/supabase.js";
 import { getUserById, updateUser } from "../models/userModel.js";
+import { getSpotsByUser, deleteSpot } from "../models/spotModel.js";
 
 export const serveSettings = async (req, res) => {
   const { data: profile } = await getUserById(req.user.id);
@@ -55,4 +56,66 @@ export const updateProfile = async (req, res) => {
     success: "Profile updated",
     activePage: "settings",
   });
+};
+
+// ===== ACCOUNT DELETION (GDPR right to erasure) =====
+// Removes, in order: every spot (incl. spot_unit links + R2 images, via
+// the existing deleteSpot path), the profile row, then the Supabase auth
+// user. Order matters: if anything fails partway, the auth user still
+// exists, so the person can log in and retry — no orphaned login.
+export const deleteAccount = async (req, res) => {
+  const userId = req.user.id;
+
+  const renderError = async () => {
+    const { data: profile } = await getUserById(userId);
+    return res.render("settings", {
+      profile,
+      error:
+        "Account deletion failed partway — please try again, or contact us if it keeps happening.",
+      success: undefined,
+      activePage: "settings",
+    });
+  };
+
+  try {
+    // 1. Delete all spots (handles spot_unit rows + both R2 images each)
+    const { data: spots } = await getSpotsByUser(userId);
+    for (const spot of spots || []) {
+      const { error } = await deleteSpot(spot.spot_id, userId);
+      if (error) {
+        console.error(
+          "deleteAccount: spot deletion failed",
+          spot.spot_id,
+          error,
+        );
+        return renderError();
+      }
+    }
+
+    // 2. Delete the profile row
+    const { error: userRowError } = await supabase
+      .from("user")
+      .delete()
+      .eq("user_id", userId);
+    if (userRowError) {
+      console.error("deleteAccount: user row deletion failed", userRowError);
+      return renderError();
+    }
+
+    // 3. Delete the auth user (last, so a partial failure is recoverable)
+    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    if (authError) {
+      console.error("deleteAccount: auth deletion failed", authError);
+      // Profile row is gone but login still works — requireOnboarding will
+      // route them to onboarding; surface the error so they retry.
+      return renderError();
+    }
+
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+    res.redirect("/login?deleted=success");
+  } catch (err) {
+    console.error("deleteAccount error:", err);
+    return renderError();
+  }
 };

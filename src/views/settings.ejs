@@ -47,6 +47,22 @@
         <a href="/signout" class="btn-danger settings-signout">Sign out</a>
       </div>
 
+      <div class="settings-card settings-card-danger">
+        <h2 class="settings-heading">Danger zone</h2>
+        <p class="section-hint" style="margin-bottom: 0.85rem;">
+          Permanently delete your account, all of your spots, and all of your photos. This cannot be undone.
+        </p>
+        <form action="/settings/delete-account" method="POST" id="delete-account-form">
+          <div class="field" style="margin-bottom: 0.85rem;">
+            <label for="delete_confirm">Type DELETE to confirm</label>
+            <input type="text" id="delete_confirm" autocomplete="off" autocapitalize="characters" />
+          </div>
+          <button type="submit" class="btn-danger">Delete my account</button>
+        </form>
+      </div>
+
+      <p class="auth-link" style="margin-top: 0.5rem;"><a href="/privacy">Privacy policy</a></p>
+
     </div>
   </main>
 
@@ -68,12 +84,25 @@
       successEl.remove();
     }
 
-    // Add form submission listeners
-    const forms = document.querySelectorAll('.settings-form');
-    forms.forEach(form => {
-      form.addEventListener('submit', function() {
-        toast.info('Saving...');
-      });
+    // Profile save feedback
+    const profileForm = document.querySelector('.settings-form');
+    profileForm?.addEventListener('submit', function() {
+      toast.info('Saving...');
+    });
+
+    // Account deletion: require typed confirmation
+    const deleteForm = document.getElementById('delete-account-form');
+    deleteForm?.addEventListener('submit', function(e) {
+      const typed = document.getElementById('delete_confirm').value.trim();
+      if (typed !== 'DELETE') {
+        e.preventDefault();
+        toast.warning('Type DELETE in the box to confirm account deletion.');
+        return;
+      }
+      toast.info('Deleting your account...');
+      const btn = deleteForm.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
     });
   });
 </script>

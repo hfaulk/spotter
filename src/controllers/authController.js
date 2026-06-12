@@ -32,8 +32,7 @@ const friendlyAuthError = (msg = "") => {
     return "Please confirm your email before logging in. Check your inbox.";
   if (m.includes("rate limit"))
     return "Too many attempts — please wait a few minutes and try again.";
-  if (m.includes("password"))
-    return "Password must be at least 8 characters.";
+  if (m.includes("password")) return "Password must be at least 8 characters.";
   return "Something went wrong — please try again.";
 };
 
@@ -49,7 +48,9 @@ export const serveLogin = (req, res) => {
   const success =
     req.query.reset === "success"
       ? "Password reset successfully. Please log in."
-      : undefined;
+      : req.query.deleted === "success"
+        ? "Your account and all your data have been deleted. Goodbye 👋"
+        : undefined;
 
   res.render("auth/login", { success, error });
 };
@@ -71,7 +72,8 @@ export const registerUser = async (req, res) => {
 
   if (existingEmail) {
     return res.render("auth/register", {
-      error: "An account with that email already exists. Try logging in instead.",
+      error:
+        "An account with that email already exists. Try logging in instead.",
       fields: { first_name, last_name, username, email },
     });
   }

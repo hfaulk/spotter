@@ -22,6 +22,9 @@ router.get("/api/map", mapLimiter, getMapData);
 // Public Shared Spots
 router.get("/s/:token", showSharedSpot);
 
+// Privacy policy (public)
+router.get("/privacy", (req, res) => res.render("privacy"));
+
 // APIs & Health
 router.get("/api/session-check", requireAuth, (req, res) =>
   res.json({ ok: true }),

@@ -8,6 +8,7 @@ import {
 import {
   serveSettings,
   updateProfile,
+  deleteAccount,
 } from "../controllers/settingsController.js";
 
 const router = express.Router();
@@ -17,5 +18,8 @@ router.post("/onboarding", requireAuth, submitOnboarding);
 router.get("/profile", requireAuth, requireOnboarding, serveProfile);
 router.get("/settings", requireAuth, requireOnboarding, serveSettings);
 router.post("/settings/profile", requireAuth, requireOnboarding, updateProfile);
+// requireOnboarding deliberately omitted: someone whose profile row is
+// half-deleted (failed previous attempt) must still be able to retry.
+router.post("/settings/delete-account", requireAuth, deleteAccount);
 
 export default router;

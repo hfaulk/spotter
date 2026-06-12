@@ -26,11 +26,23 @@ const getUser = async (token) => {
   return null;
 };
 
+// fetch() callers (spot sheet, delete buttons) need a 401 they can react
+// to — following a 302 to /login just hands them an HTML page and breaks
+// their JSON parsing.
+const wantsJson = (req) =>
+  req.headers["x-requested-with"] === "fetch" ||
+  req.headers.accept?.includes("application/json");
+
+const denyAuth = (req, res) =>
+  wantsJson(req)
+    ? res.status(401).json({ success: false, error: "Session expired" })
+    : res.redirect("/login");
+
 export const requireAuth = async (req, res, next) => {
   const token = req.cookies?.access_token;
   const refreshToken = req.cookies?.refresh_token;
 
-  if (!token && !refreshToken) return res.redirect("/login");
+  if (!token && !refreshToken) return denyAuth(req, res);
 
   const user = await getUser(token);
 
@@ -44,7 +56,7 @@ export const requireAuth = async (req, res, next) => {
 
   if (!refreshToken) {
     res.clearCookie("access_token");
-    return res.redirect("/login");
+    return denyAuth(req, res);
   }
 
   const { data: refreshData, error: refreshError } =
@@ -55,7 +67,7 @@ export const requireAuth = async (req, res, next) => {
   if (refreshError || !refreshData.session) {
     res.clearCookie("access_token");
     res.clearCookie("refresh_token");
-    return res.redirect("/login");
+    return denyAuth(req, res);
   }
 
   res.cookie("access_token", refreshData.session.access_token, cookieOptions);
