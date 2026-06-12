@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
               thumb:
                 data.thumbnail?.source || data.originalimage?.source || null,
               original: data.originalimage?.source || null,
+              originalWidth: data.originalimage?.width || 0,
               extract: data.extract || null,
               url: data.content_urls?.desktop?.page || null,
             }
@@ -51,33 +52,23 @@ document.addEventListener("DOMContentLoaded", () => {
     return wikiCache[classNum];
   };
 
-  // Hero image: prefer a 640px Wikimedia rendition (the API thumb is only
-  // ~320px and looks soft at hero size), but FALL BACK to the thumb —
-  // Wikimedia 404s any rendition request wider than the original image,
-  // so the 640px URL is not guaranteed to exist.
+  // Hero image: the API thumb is ~320px and looks soft at hero size.
+  // Wikimedia rejects (400) any rendition request wider than the original,
+  // so only ask for a 640px rendition when the original is genuinely wider;
+  // otherwise just use the original image itself. No probing, no failed
+  // requests in the console.
   const setHeroImage = (heroEl, info) => {
     if (!heroEl || !info?.thumb) return;
 
-    const apply = (src) => {
-      heroEl.style.backgroundImage = `url('${src}')`;
-      heroEl.classList.remove("class-sheet-hero-empty");
-    };
-
-    const upscaled = /\/\d+px-/.test(info.thumb)
-      ? info.thumb.replace(/\/\d+px-/, "/640px-")
-      : null;
-
-    if (!upscaled || upscaled === info.thumb) {
-      apply(info.thumb);
-      return;
+    let src = info.thumb;
+    if (info.originalWidth > 640 && /\/\d+px-/.test(info.thumb)) {
+      src = info.thumb.replace(/\/\d+px-/, "/640px-");
+    } else if (info.original) {
+      src = info.original;
     }
 
-    // Show the known-good thumb immediately, swap in the sharper
-    // rendition only if it actually loads.
-    apply(info.thumb);
-    const probe = new Image();
-    probe.onload = () => apply(upscaled);
-    probe.src = upscaled;
+    heroEl.style.backgroundImage = `url('${src}')`;
+    heroEl.classList.remove("class-sheet-hero-empty");
   };
 
   // ===== CLASS CARD IMAGES (lazy — the grid is ~60 cards now) =====
@@ -125,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const spotted = cls.units
       .map(
         (u) => `
-        <a href="/units/${esc(u.unit_id)}" class="unit-tile">
+        <a href="${u.latest_spot_id ? `/spots/${esc(u.latest_spot_id)}` : `/units/${esc(u.unit_id)}`}" class="unit-tile">
           ${
             u.image
               ? `<img src="${esc(u.image)}" alt="${esc(u.unit_number)}" loading="lazy" />`

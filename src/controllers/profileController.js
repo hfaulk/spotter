@@ -89,6 +89,7 @@ const buildClassCollection = (collection) => {
 
     groups[key].units.push({
       unit_id: unit.unit_id,
+      latest_spot_id: unit.latest_spot_id || null,
       unit_number: unit.unit_number,
       unit_operator: unit.unit_operator || null,
       times_spotted: unit.times_spotted,

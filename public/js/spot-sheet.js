@@ -74,9 +74,19 @@ document.addEventListener("DOMContentLoaded", () => {
         attribution: "Tiles © Esri",
         maxzoom: 19,
       },
+      // Transparent place names + boundaries overlay (hybrid mode)
+      "esri-labels": {
+        type: "raster",
+        tiles: [
+          "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+        ],
+        tileSize: 256,
+        maxzoom: 19,
+      },
     },
     layers: [
       { id: "satellite-layer", type: "raster", source: "esri-satellite" },
+      { id: "labels-layer", type: "raster", source: "esri-labels" },
     ],
   };
 
@@ -280,6 +290,20 @@ document.addEventListener("DOMContentLoaded", () => {
   unitsContainer.appendChild(createUnitRow());
   setNowTimestamp();
   setNonce();
+
+  // ===== BFCACHE RESTORE =====
+  // Pressing Back after a successful save can restore this page from the
+  // back-forward cache, frozen mid-submit: sheet open, form filled, and
+  // isSubmitting=true (which blocks closeSheet). Reset everything.
+  window.addEventListener("pageshow", (e) => {
+    if (!e.persisted) return;
+    isSubmitting = false;
+    resetForm();
+    sheet.classList.remove("open");
+    sheet.setAttribute("aria-hidden", "true");
+    backdrop.classList.remove("visible");
+    document.body.style.overflow = "";
+  });
 
   // ===== OPEN / CLOSE =====
   const openSheet = () => {

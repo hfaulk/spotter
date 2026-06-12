@@ -70,13 +70,14 @@ export const getUserCollection = async (userId) => {
 };
 
 // ===== UNIT COLLECTION (§19) =====
-// Same as getUserCollection, but also attaches the image from the user's
-// MOST RECENT spot of each unit — used for the collection tiles.
+// Same as getUserCollection, but also attaches the image AND the spot id
+// from the user's MOST RECENT spot of each unit — the collection tiles
+// use the image, and tapping a tile jumps straight to that spot.
 export const getUserCollectionDetailed = async (userId) => {
   const { data, error } = await supabase
     .from("spot_unit")
     .select(
-      "unit(*), spot!inner(user_id, spot_timestamp, image_thumb_path, image_path)",
+      "unit(*), spot!inner(spot_id, user_id, spot_timestamp, image_thumb_path, image_path)",
     )
     .eq("spot.user_id", userId);
 
@@ -94,6 +95,7 @@ export const getUserCollectionDetailed = async (userId) => {
         times_spotted: 0,
         latest_spot_ts: 0,
         latest_image_path: null,
+        latest_spot_id: null,
       };
     }
 
@@ -105,6 +107,7 @@ export const getUserCollectionDetailed = async (userId) => {
       : 0;
     if (ts >= u.latest_spot_ts) {
       u.latest_spot_ts = ts;
+      u.latest_spot_id = spot.spot_id || u.latest_spot_id;
       u.latest_image_path =
         spot.image_thumb_path || spot.image_path || u.latest_image_path;
     }

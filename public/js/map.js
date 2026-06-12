@@ -14,12 +14,26 @@ const satelliteStyle = {
       attribution: "Tiles © Esri",
       maxzoom: 19,
     },
+    // Transparent place names + boundaries overlay (hybrid mode)
+    "esri-labels": {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+      maxzoom: 19,
+    },
   },
   layers: [
     {
       id: "satellite-layer",
       type: "raster",
       source: "esri-satellite",
+    },
+    {
+      id: "labels-layer",
+      type: "raster",
+      source: "esri-labels",
     },
   ],
 };
