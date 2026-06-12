@@ -2,40 +2,58 @@ const isLoggedIn = window.SPOTTER_CONFIG?.isLoggedIn || false;
 
 // MapLibre Styles
 const streetStyle = "https://tiles.openfreemap.org/styles/liberty";
-const satelliteStyle = {
-  version: 8,
-  sources: {
-    "esri-satellite": {
-      type: "raster",
-      tiles: [
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      ],
-      tileSize: 256,
-      attribution: "Tiles © Esri",
-      maxzoom: 19,
-    },
-    // Transparent place names + boundaries overlay (hybrid mode)
-    "esri-labels": {
-      type: "raster",
-      tiles: [
-        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
-      ],
-      tileSize: 256,
-      maxzoom: 19,
-    },
-  },
-  layers: [
-    {
-      id: "satellite-layer",
-      type: "raster",
-      source: "esri-satellite",
-    },
-    {
-      id: "labels-layer",
-      type: "raster",
-      source: "esri-labels",
-    },
-  ],
+// ===== HYBRID SATELLITE STYLE =====
+// Fetch the Liberty street style once and rebuild it as: Esri imagery on
+// the bottom, then ONLY Liberty's boundary lines and text labels on top.
+// Same fonts/names as the street view, zero extra cost.
+let hybridStylePromise = null;
+const getHybridStyle = () => {
+  if (hybridStylePromise) return hybridStylePromise;
+  hybridStylePromise = fetch(streetStyle)
+    .then((res) => res.json())
+    .then((style) => {
+      style.sources["esri-satellite"] = {
+        type: "raster",
+        tiles: [
+          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        ],
+        tileSize: 256,
+        attribution: "Tiles © Esri",
+        maxzoom: 19,
+      };
+      const overlays = style.layers.filter(
+        (l) =>
+          l.type === "symbol" || // all text labels + icons
+          /boundary|admin/.test(l.id), // country/region boundary lines
+      );
+      style.layers = [
+        { id: "satellite-layer", type: "raster", source: "esri-satellite" },
+        ...overlays,
+      ];
+      return style;
+    })
+    .catch(() => {
+      hybridStylePromise = null; // allow retry next toggle
+      // Fallback: plain imagery, no labels — better than a broken toggle
+      return {
+        version: 8,
+        sources: {
+          "esri-satellite": {
+            type: "raster",
+            tiles: [
+              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            ],
+            tileSize: 256,
+            attribution: "Tiles © Esri",
+            maxzoom: 19,
+          },
+        },
+        layers: [
+          { id: "satellite-layer", type: "raster", source: "esri-satellite" },
+        ],
+      };
+    });
+  return hybridStylePromise;
 };
 
 const map = new maplibregl.Map({
@@ -49,16 +67,16 @@ const map = new maplibregl.Map({
 let isSatellite = false;
 const toggleBtn = document.getElementById("map-toggle-btn");
 
-toggleBtn?.addEventListener("click", (e) => {
+toggleBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
   isSatellite = !isSatellite;
 
   if (isSatellite) {
-    map.setStyle(satelliteStyle);
     toggleBtn.classList.add("active");
+    map.setStyle(await getHybridStyle());
   } else {
-    map.setStyle(streetStyle);
     toggleBtn.classList.remove("active");
+    map.setStyle(streetStyle);
   }
 });
 
