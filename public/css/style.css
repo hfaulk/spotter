@@ -3081,3 +3081,39 @@ a.unit-chip:hover {
         display: none;
     }
 }
+
+/* ===== POST-SHEET FIX PACK ===== */
+
+/* Sheet photo preview was unstyled (old rule targets #photo-preview) */
+#ss-photo-preview {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 0.75rem;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+/* datetime-local has an intrinsic min-width that overflows narrow sheets */
+.spot-sheet .field input,
+.spot-sheet .field textarea {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Toasts: respect the notch/status bar (viewport-fit=cover) */
+#toast-container {
+    top: calc(1rem + env(safe-area-inset-top, 0px));
+}
+
+/* Spot show page: reserve space for the real nav height + safe area */
+@media (max-width: 767px) {
+    .show-page {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* Settings headings: consistent spacing on all screen sizes */
+.settings-card .settings-heading {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+}
