@@ -51,14 +51,33 @@ document.addEventListener("DOMContentLoaded", () => {
     return wikiCache[classNum];
   };
 
-  // Hero image: ask Wikimedia for a 640px rendition instead of the
-  // original (which can be several MB) — huge mobile win.
-  const heroSrc = (info) => {
-    if (!info) return null;
-    if (info.thumb && /\/\d+px-/.test(info.thumb)) {
-      return info.thumb.replace(/\/\d+px-/, "/640px-");
+  // Hero image: prefer a 640px Wikimedia rendition (the API thumb is only
+  // ~320px and looks soft at hero size), but FALL BACK to the thumb —
+  // Wikimedia 404s any rendition request wider than the original image,
+  // so the 640px URL is not guaranteed to exist.
+  const setHeroImage = (heroEl, info) => {
+    if (!heroEl || !info?.thumb) return;
+
+    const apply = (src) => {
+      heroEl.style.backgroundImage = `url('${src}')`;
+      heroEl.classList.remove("class-sheet-hero-empty");
+    };
+
+    const upscaled = /\/\d+px-/.test(info.thumb)
+      ? info.thumb.replace(/\/\d+px-/, "/640px-")
+      : null;
+
+    if (!upscaled || upscaled === info.thumb) {
+      apply(info.thumb);
+      return;
     }
-    return info.thumb || info.original;
+
+    // Show the known-good thumb immediately, swap in the sharper
+    // rendition only if it actually loads.
+    apply(info.thumb);
+    const probe = new Image();
+    probe.onload = () => apply(upscaled);
+    probe.src = upscaled;
   };
 
   // ===== CLASS CARD IMAGES (lazy — the grid is ~60 cards now) =====
@@ -171,12 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!info) return;
       const hero = document.getElementById("class-sheet-hero");
       const desc = document.getElementById("class-sheet-desc");
-      const src = heroSrc(info);
 
-      if (hero && src) {
-        hero.style.backgroundImage = `url('${src}')`;
-        hero.classList.remove("class-sheet-hero-empty");
-      }
+      setHeroImage(hero, info);
+
       if (desc && info.extract) {
         desc.style.display = "block";
         desc.innerHTML = `${esc(info.extract)}${
