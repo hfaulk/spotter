@@ -87,12 +87,12 @@ export const getSpotByShareToken = async (token) => {
 
 export const getSpotsByUser = async (userId) => {
   return await supabase
-    .from("spots")
+    .from("spot")
     .select(
       `
       *,
-      units:spot_units(
-        unit:units(*)
+      units:spot_unit(
+        unit:unit(*)
       )
     `,
     )
