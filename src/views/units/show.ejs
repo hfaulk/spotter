@@ -2,7 +2,7 @@
 
 <div class="show-page">
 
-    <div class="spot-image-full" id="unit-hero">
+    <div class="spot-image-full img-loading-dark" id="unit-hero">
       <div class="spot-image-bg" id="unit-hero-bg" style="display:none"></div>
       <div class="unit-hero-placeholder" id="unit-hero-placeholder"></div>
       <img id="unit-hero-img" src="" alt="" style="display:none;" />
@@ -43,9 +43,15 @@
               <div class="spots-list">
                 <% spots.forEach(spot => { %>
                   <a href="/spots/<%= spot.spot_id %>" class="spot-item">
-                      <div class="spot-item-photo">
+                      <div class="spot-item-photo<% if (spot.image_thumb_path || spot.image_path) { %> img-loading<% } %>">
                         <% if (spot.image_thumb_path || spot.image_path) { %>
-                          <img src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.image_thumb_path || spot.image_path %>" loading="lazy" alt="Spot photo" />
+                          <img
+                            src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.image_thumb_path || spot.image_path %>"
+                            loading="lazy"
+                            alt="Spot photo"
+                            onload="this.parentElement.classList.remove('img-loading')"
+                            onerror="this.parentElement.classList.remove('img-loading')"
+                          />
                         <% } else { %>
                           <div class="spot-item-no-photo"><span>No photo</span></div>
                         <% } %>
@@ -67,9 +73,6 @@
 </div>
 
 <script src="/js/main.js"></script>
-<script src="/js/unit-show.js"></script>
-</body>
-</html>
-
+<script src="/js/unit-show.js?v=2"></script>
 </body>
 </html>

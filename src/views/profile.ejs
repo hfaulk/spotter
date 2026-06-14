@@ -43,9 +43,15 @@
         <div class="spots-list">
           <% spots.forEach(spot => { %>
             <a href="/spots/<%= spot.spot_id %>" class="spot-item">
-                <div class="spot-item-photo">
+                <div class="spot-item-photo<% if (spot.image_thumb_path || spot.image_path) { %> img-loading<% } %>">
                   <% if (spot.image_thumb_path || spot.image_path) { %>
-                    <img src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.image_thumb_path || spot.image_path %>" loading="lazy" alt="Spot photo" />
+                    <img
+                      src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.image_thumb_path || spot.image_path %>"
+                      loading="lazy"
+                      alt="Spot photo"
+                      onload="this.parentElement.classList.remove('img-loading')"
+                      onerror="this.parentElement.classList.remove('img-loading')"
+                    />
                   <% } else { %>
                     <div class="spot-item-no-photo"><span>No photo</span></div>
                   <% } %>
@@ -75,7 +81,7 @@
           <% classCollection.forEach((cls, i) => { %>
             <button type="button" class="class-card" data-class-index="<%= i %>" data-class-num="<%= cls.classNum || '' %>">
               <span class="class-card-progress"><%= cls.spotted %><% if (cls.total != null) { %>/<%= cls.total %><% } %></span>
-              <div class="class-card-img"></div>
+              <div class="class-card-img img-loading"></div>
               <span class="class-card-name"><%= cls.classNum || 'Other' %></span>
             </button>
           <% }) %>
@@ -121,7 +127,7 @@
 <script>
   window.SPOTTER_COLLECTION = <%- collectionJson %>;
 </script>
-<script src="/js/collection.js?v=5"></script>
+<script src="/js/collection.js?v=6"></script>
 
 </body>
 </html>

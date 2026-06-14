@@ -75,15 +75,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadCardImage = (card) => {
     const num = card.dataset.classNum;
     if (!num) return;
-    fetchWiki(num).then((info) => {
-      if (info?.thumb) {
-        const imgEl = card.querySelector(".class-card-img");
-        if (imgEl) {
-          imgEl.style.backgroundImage = `url('${info.thumb}')`;
-          imgEl.classList.add("has-img");
+    const imgEl = card.querySelector(".class-card-img");
+    fetchWiki(num)
+      .then((info) => {
+        if (info?.thumb) {
+          if (imgEl) {
+            // Probe-load so we only remove the shimmer once the image is ready
+            const probe = new Image();
+            probe.onload = () => {
+              imgEl.style.backgroundImage = `url('${info.thumb}')`;
+              imgEl.classList.add("has-img");
+              imgEl.classList.remove("img-loading");
+            };
+            probe.onerror = () => {
+              imgEl.classList.remove("img-loading");
+            };
+            probe.src = info.thumb;
+          }
+        } else {
+          // No wiki image — stop shimmer so the empty background shows cleanly
+          if (imgEl) imgEl.classList.remove("img-loading");
         }
-      }
-    });
+      })
+      .catch(() => {
+        if (imgEl) imgEl.classList.remove("img-loading");
+      });
   };
 
   const cards = document.querySelectorAll(".class-card");

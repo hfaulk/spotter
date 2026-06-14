@@ -131,9 +131,15 @@ const openSheet = (feature) => {
   document.getElementById("map-sheet-content").innerHTML = `
     ${
       preview_image
-        ? `<div class="sheet-hero" style="background-image:url('${preview_image}')">
-           <span class="sheet-hero-label">Latest spot</span>
-         </div>`
+        ? `<div class="sheet-hero img-loading-dark">
+             <img
+               src="${preview_image}"
+               alt="Latest spot"
+               onload="this.parentElement.classList.remove('img-loading-dark')"
+               onerror="this.parentElement.classList.remove('img-loading-dark')"
+             />
+             <span class="sheet-hero-label">Latest spot</span>
+           </div>`
         : `<div class="sheet-hero sheet-hero-empty"></div>`
     }
     <div class="sheet-body">

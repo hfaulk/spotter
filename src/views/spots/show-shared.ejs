@@ -9,10 +9,15 @@
     <div class="topbar-right"></div>
   </header>
 
-  <div class="spot-image-full">
+  <div class="spot-image-full<% if (imageUrl) { %> img-loading-dark<% } %>">
     <% if (imageUrl) { %>
       <div class="spot-image-bg" style="background-image:url('<%= imageUrl %>')"></div>
-      <img src="<%= imageUrl %>" alt="<%= spot.spot_title %>" />
+      <img
+        src="<%= imageUrl %>"
+        alt="<%= spot.spot_title %>"
+        onload="this.closest('.spot-image-full').classList.remove('img-loading-dark')"
+        onerror="this.closest('.spot-image-full').classList.remove('img-loading-dark')"
+      />
     <% } else { %>
       <div class="spot-image-placeholder"></div>
     <% } %>

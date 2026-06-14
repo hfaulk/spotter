@@ -3117,3 +3117,41 @@ a.unit-chip:hover {
     margin-top: 0;
     margin-bottom: 1.25rem;
 }
+
+/* ===== SKELETON SHIMMER (photo loading state) ===== */
+/* Applied to containers while their child <img> is still loading.
+   Removed by JS once img.onload fires, or immediately if no photo. */
+@keyframes shimmer {
+    0% {
+        background-position: -400px 0;
+    }
+    100% {
+        background-position: 400px 0;
+    }
+}
+
+.img-loading {
+    background: linear-gradient(90deg, #e8eaf0 25%, #f0f2f8 50%, #e8eaf0 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Hero panels are dark-background (image sits on #111 / #1b1b1f),
+   so use a darker shimmer so it doesn't look jarring */
+.img-loading-dark {
+    background: linear-gradient(90deg, #1a1a1f 25%, #26262e 50%, #1a1a1f 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.sheet-hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sheet-hero {
+    position: relative; /* needed for the img absolute positioning */
+}
