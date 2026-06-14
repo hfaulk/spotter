@@ -111,3 +111,10 @@ window.openReportModal = (reference, type) => {
     }
   });
 };
+
+// ===== DELEGATED REPORT BUTTON HANDLER =====
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".js-report-btn");
+  if (!btn) return;
+  openReportModal(btn.dataset.reference, btn.dataset.type);
+});

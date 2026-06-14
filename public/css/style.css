@@ -3247,3 +3247,8 @@ a.unit-chip:hover {
     color: rgba(255, 255, 255, 0.5);
     text-align: center;
 }
+
+button {
+    cursor: pointer;
+    touch-action: manipulation; /* This is the big one! */
+}

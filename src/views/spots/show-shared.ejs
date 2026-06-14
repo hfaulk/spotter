@@ -109,14 +109,17 @@
       </div>
 
       <!-- Report Feature -->
-      <div style="text-align: center; margin-top: 32px; margin-bottom: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
-        <button type="button" onclick="openReportModal('Shared Spot Token: <%= spot.spot_share_token %>', 'shared')"
-           style="background:none; border:none; padding:0; font-size: 0.85rem; color: #94a3b8; text-decoration: underline; cursor: pointer; transition: color 0.2s; font-family: inherit;"
-           onmouseover="this.style.color='#ef4444'"
-           onmouseout="this.style.color='#94a3b8'">
-          Report inappropriate content
-        </button>
-      </div>
+        <div style="text-align: center; margin-top: 32px; margin-bottom: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+            <button type="button"
+                class="js-report-btn"
+                data-reference="Shared Spot Token: <%= spot.spot_share_token %>"
+                data-type="shared"
+                style="background:none; border:none; padding:0; font-size: 0.85rem; color: #94a3b8; text-decoration: underline; cursor: pointer; transition: color 0.2s; font-family: inherit;"
+                onmouseover="this.style.color='#ef4444'"
+                onmouseout="this.style.color='#94a3b8'">
+            Report inappropriate content
+            </button>
+        </div>
 
     </div>
   </div>

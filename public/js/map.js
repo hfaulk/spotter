@@ -132,12 +132,12 @@ const openSheet = (feature) => {
     : "";
 
   const reportHtml = `
-    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; text-align: center;">
-      <button type="button" onclick="openReportModal('Map Coordinates: ${lat}, ${lon}', 'map')" style="background:none; border:none; padding:0; font-size: 0.75rem; color: #ef4444; cursor: pointer; font-family: inherit;">
-        ⚑ Report this area
-      </button>
-    </div>
-  `;
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; text-align: center;">
+        <button type="button" class="js-report-btn" data-reference="Map Coordinates: ${lat}, ${lon}" data-type="map" style="background:none; border:none; padding:0; font-size: 0.75rem; color: #ef4444; cursor: pointer; font-family: inherit;">
+          ⚑ Report this area
+        </button>
+      </div>
+    `;
 
   document.getElementById("map-sheet-content").innerHTML = `
     ${
