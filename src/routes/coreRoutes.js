@@ -33,7 +33,7 @@ router.get("/privacy", (req, res) =>
 );
 
 // APIs & Health
-router.post("/api/report", requireAuth, submitReport);
+router.post("/api/report", requireAuth, reportLimiter, submitReport);
 router.get("/api/session-check", requireAuth, (req, res) =>
   res.json({ ok: true }),
 );
