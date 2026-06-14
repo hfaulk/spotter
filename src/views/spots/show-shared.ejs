@@ -33,9 +33,13 @@
 
             <% if (spot.user) { %>
               <a class="shared-author">
-                <div class="shared-author-avatar">
+                <div class="shared-author-avatar<% if (spot.user.avatar_path) { %> img-loading<% } %>">
                 <% if (spot.user.avatar_path) { %>
-                    <img src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.user.avatar_path %>" alt="<%= spot.user.first_name %>" />
+                    <img src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.user.avatar_path %>"
+                        alt="<%= spot.user.first_name %>"
+                        onload="this.parentElement.classList.remove('img-loading')"
+                        onerror="this.parentElement.classList.remove('img-loading')"
+                    />
                 <% } else { %>
                     <%= (spot.user.first_name ? spot.user.first_name.charAt(0).toUpperCase() : '') + (spot.user.last_name ? spot.user.last_name.charAt(0).toUpperCase() : '') || '?' %>
                 <% } %>
