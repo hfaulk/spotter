@@ -86,13 +86,18 @@ export const getSpotByShareToken = async (token) => {
 };
 
 export const getSpotsByUser = async (userId) => {
-  const { data, error } = await supabase
-    .from("spot")
-    .select("*")
+  return await supabase
+    .from("spots")
+    .select(
+      `
+      *,
+      units:spot_units(
+        unit:units(*)
+      )
+    `,
+    )
     .eq("user_id", userId)
     .order("spot_timestamp", { ascending: false });
-
-  return { data, error };
 };
 
 export const deleteStorageImage = async (imagePath) => {

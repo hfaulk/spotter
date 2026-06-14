@@ -140,26 +140,19 @@ export const serveProfile = async (req, res) => {
   res.setHeader("Expires", "0");
 
   const { data: profile } = await getUserById(userId);
-  const { data: spots } = await getSpotsByUser(userId);
   const { data: collection } = await getUserCollectionDetailed(userId);
 
-  const spotsWithImages = await Promise.all(
-    (spots || []).map(async (spot) => {
-      let spotData = { ...spot };
+  const { data: spots } = await getSpotsByUser(userId);
 
-      // Add image URL
-      const imageUrl = spot.image_path
-        ? `${process.env.R2_PUBLIC_URL}/${spot.image_path}`
-        : null;
-      spotData.imageUrl = imageUrl;
-
-      // Fetch and attach units for this spot
-      const { data: unitData } = await getUnitsBySpot(spot.spot_id);
-      spotData.units = unitData?.map((row) => row.unit) || [];
-
-      return spotData;
-    }),
-  );
+  // No more looping database queries! We just format the data Supabase gave us.
+  const spotsWithImages = (spots || []).map((spot) => ({
+    ...spot,
+    imageUrl: spot.image_path
+      ? `${process.env.R2_PUBLIC_URL}/${spot.image_path}`
+      : null,
+    // Supabase returns nested relations as an array of objects, we map it flat:
+    units: spot.units?.map((u) => u.unit) || [],
+  }));
 
   const classCollection = buildClassCollection(collection || []);
 
