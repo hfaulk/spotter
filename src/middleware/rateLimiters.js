@@ -32,3 +32,16 @@ export const mapLimiter = rateLimit({
   max: 60,
   handler: (req, res) => res.status(429).json({ error: "Too many requests." }),
 });
+
+export const reportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 3, // Allow only 3 reports per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({
+      error:
+        "Report limit reached. Please wait an hour before submitting more reports.",
+    });
+  },
+});
