@@ -20,6 +20,108 @@ document.addEventListener("DOMContentLoaded", () => {
   let isSubmitting = false;
   let lastFocused = null;
 
+  // ===== UPLOAD OVERLAY =====
+  const MESSAGES = [
+    "Logging your spot...",
+    "Compressing your photo...",
+    "Uploading to the cloud...",
+    "Saving unit details...",
+    "Almost there...",
+    "Pinning to the map...",
+    "Just a moment...",
+    "Finishing up...",
+  ];
+
+  let overlayEl = null;
+  let overlayBarEl = null;
+  let overlayMsgEl = null;
+  let msgIndex = 0;
+  let msgTimer = null;
+  let progressTimer = null;
+  let currentProgress = 0;
+
+  const buildOverlay = () => {
+    if (overlayEl) return;
+    overlayEl = document.createElement("div");
+    overlayEl.className = "upload-overlay";
+    overlayEl.innerHTML = `
+      <div class="upload-overlay-inner">
+        <div class="upload-overlay-dot">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
+               fill="none" stroke="white" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 10 10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <p class="upload-overlay-msg" id="upload-overlay-msg">${MESSAGES[0]}</p>
+        <div class="upload-progress-track">
+          <div class="upload-progress-bar" id="upload-progress-bar"></div>
+        </div>
+        <p class="upload-overlay-sub">This can take a while with large photos</p>
+      </div>
+    `;
+    document.body.appendChild(overlayEl);
+    overlayBarEl = document.getElementById("upload-progress-bar");
+    overlayMsgEl = document.getElementById("upload-overlay-msg");
+  };
+
+  const setProgress = (pct) => {
+    currentProgress = pct;
+    if (overlayBarEl) overlayBarEl.style.width = `${pct}%`;
+  };
+
+  const nextMessage = () => {
+    if (!overlayMsgEl) return;
+    overlayMsgEl.classList.add("fade");
+    setTimeout(() => {
+      msgIndex = (msgIndex + 1) % MESSAGES.length;
+      overlayMsgEl.textContent = MESSAGES[msgIndex];
+      overlayMsgEl.classList.remove("fade");
+    }, 300);
+  };
+
+  const showOverlay = () => {
+    buildOverlay();
+    msgIndex = 0;
+    currentProgress = 0;
+    if (overlayMsgEl) overlayMsgEl.textContent = MESSAGES[0];
+    setProgress(0);
+
+    // Show it
+    requestAnimationFrame(() => overlayEl.classList.add("visible"));
+
+    // Animate progress to ~85% over ~12s (never completes — we jump to 100 on success)
+    const STEPS = [
+      { target: 15, delay: 400 },
+      { target: 35, delay: 1800 },
+      { target: 55, delay: 3500 },
+      { target: 70, delay: 5500 },
+      { target: 80, delay: 8000 },
+      { target: 85, delay: 11000 },
+    ];
+    STEPS.forEach(({ target, delay }) => {
+      progressTimer = setTimeout(() => setProgress(target), delay);
+    });
+
+    // Cycle through messages every 6s
+    msgTimer = setInterval(nextMessage, 6000);
+  };
+
+  const hideOverlay = (success = false) => {
+    clearInterval(msgTimer);
+    clearTimeout(progressTimer);
+
+    if (success) {
+      setProgress(100);
+      setTimeout(() => {
+        if (overlayEl) overlayEl.classList.remove("visible");
+      }, 350);
+    } else {
+      if (overlayEl) overlayEl.classList.remove("visible");
+    }
+  };
+
   // ===== LAZY SCRIPT/STYLE LOADING =====
   const loadScript = (src) =>
     new Promise((resolve, reject) => {
@@ -37,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       l.rel = "stylesheet";
       l.href = href;
       l.onload = resolve;
-      l.onerror = resolve; // map still works without css in worst case
+      l.onerror = resolve;
       document.head.appendChild(l);
     });
 
@@ -62,10 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ===== MAP =====
   const streetStyle = "https://tiles.openfreemap.org/styles/liberty";
-  // ===== HYBRID SATELLITE STYLE =====
-  // Fetch the Liberty street style once and rebuild it as: Esri imagery on
-  // the bottom, then ONLY Liberty's boundary lines and text labels on top.
-  // Same fonts/names as the street view, zero extra cost.
   let hybridStylePromise = null;
   const getHybridStyle = () => {
     if (hybridStylePromise) return hybridStylePromise;
@@ -82,9 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
           maxzoom: 19,
         };
         const overlays = style.layers.filter(
-          (l) =>
-            l.type === "symbol" || // all text labels + icons
-            /boundary|admin/.test(l.id), // country/region boundary lines
+          (l) => l.type === "symbol" || /boundary|admin/.test(l.id),
         );
         style.layers = [
           { id: "satellite-layer", type: "raster", source: "esri-satellite" },
@@ -93,8 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return style;
       })
       .catch(() => {
-        hybridStylePromise = null; // allow retry next toggle
-        // Fallback: plain imagery, no labels — better than a broken toggle
+        hybridStylePromise = null;
         return {
           version: 8,
           sources: {
@@ -118,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const initMap = () => {
     if (map) {
-      map.resize(); // container size can change between opens
+      map.resize();
       return;
     }
     map = new maplibregl.Map({
@@ -191,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      await loadLibs(); // exifr may still be loading on slow connections
+      await loadLibs();
       const exif = await exifr.parse(file, {
         tiff: true,
         exif: true,
@@ -309,21 +404,19 @@ document.addEventListener("DOMContentLoaded", () => {
     isSubmitting = on;
     submitBtn.disabled = on;
     submitBtn.style.opacity = on ? "0.7" : "";
-    submitBtn.textContent = on ? "Uploading spot..." : "Save spot";
+    submitBtn.textContent = on ? "Uploading..." : "Save spot";
   };
 
-  // Initial state (one unit row, timestamp, nonce)
+  // Initial state
   unitsContainer.appendChild(createUnitRow());
   setNowTimestamp();
   setNonce();
 
   // ===== BFCACHE RESTORE =====
-  // Pressing Back after a successful save can restore this page from the
-  // back-forward cache, frozen mid-submit: sheet open, form filled, and
-  // isSubmitting=true (which blocks closeSheet). Reset everything.
   window.addEventListener("pageshow", (e) => {
     if (!e.persisted) return;
     isSubmitting = false;
+    hideOverlay(false);
     resetForm();
     sheet.classList.remove("open");
     sheet.setAttribute("aria-hidden", "true");
@@ -343,13 +436,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadLibs()
       .then(() => initMap())
       .catch(() => {
-        // Map libs failed (offline?) — form still usable without location
         console.warn("Map libraries failed to load");
       });
   };
 
   const closeSheet = () => {
-    if (isSubmitting) return; // don't let the sheet vanish mid-upload
+    if (isSubmitting) return;
     sheet.classList.remove("open");
     sheet.setAttribute("aria-hidden", "true");
     backdrop.classList.remove("visible");
@@ -388,7 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return toast.warning("Please add at least one unit number");
 
     setSubmitting(true);
-    toast.info("Uploading your spot...");
+    showOverlay();
 
     try {
       const res = await fetch("/spots", {
@@ -399,26 +491,36 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (res.status === 401) {
-        toast.error("Your session has expired — taking you to login.");
-        setTimeout(() => (window.location.href = "/login"), 1500);
+        hideOverlay(false);
+        setSubmitting(false);
+        toast.error("Your session has expired — please log in again.");
+        setTimeout(() => (window.location.href = "/login"), 1800);
         return;
       }
 
       const data = await res.json().catch(() => null);
 
       if (res.ok && data?.success && data.spotId) {
-        // Flag for the show page to fire the success toast on arrival
+        hideOverlay(true);
         sessionStorage.setItem("spotCreated", "1");
-        window.location.href = `/spots/${data.spotId}`;
-        return; // keep button disabled while navigating
+        // Brief pause so the progress bar reaches 100% visually
+        setTimeout(() => {
+          window.location.href = `/spots/${data.spotId}`;
+        }, 400);
+        return;
       }
 
-      toast.error(data?.error || "Failed to save spot — please try again.");
+      // Server returned an error response
+      hideOverlay(false);
       setSubmitting(false);
+
+      const message = data?.error || "Failed to save spot — please try again.";
+      toast.error(message, 8000); // longer duration so it's readable
     } catch (err) {
       console.error("Spot submit error:", err);
-      toast.error("Network error — your spot was not saved. Please try again.");
+      hideOverlay(false);
       setSubmitting(false);
+      toast.error("Network error — check your connection and try again.", 8000);
     }
   });
 });

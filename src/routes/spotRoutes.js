@@ -27,7 +27,7 @@ const uploadPhoto = (req, res, next) => {
 
     const message =
       err.code === "LIMIT_FILE_SIZE"
-        ? "That photo is too large — the limit is 15MB."
+        ? "That photo is too large — the limit is 20MB."
         : err.message || "Could not upload that photo — please try again.";
 
     const isAjax = req.headers["x-requested-with"] === "fetch";
