@@ -12,6 +12,7 @@ export const getHotspots = async (bounds) => {
     .select(
       "spot_id, spot_latitude, spot_longitude, spot_timestamp, image_path, user_id",
     )
+    .eq("active", true) // <-- ADDED: Only fetch active spots for the map
     .not("spot_latitude", "is", null)
     .not("spot_longitude", "is", null);
 

@@ -50,17 +50,19 @@ export const getSpotById = async (spotId, userId) => {
     .select("*")
     .eq("spot_id", spotId)
     .eq("user_id", userId)
+    .eq("active", true) // <-- ADDED: Hide from profile if inactive
     .single();
 
   return { data, error };
 };
 
 export const getSpotByShareToken = async (token) => {
-  // 1. Fetch the spot normally (this is guaranteed to work)
+  // 1. Fetch the spot normally
   const { data: spot, error: spotError } = await supabase
     .from("spot")
     .select("*")
     .eq("spot_share_token", token)
+    .eq("active", true) // <-- ADDED: Hide shared link if inactive
     .single();
 
   if (spotError || !spot) {
@@ -68,7 +70,7 @@ export const getSpotByShareToken = async (token) => {
     return { data: null, error: spotError };
   }
 
-  // 2. Manually fetch the user data (removed avatar_path for now)
+  // 2. Manually fetch the user data
   const { data: userData, error: userError } = await supabase
     .from("user")
     .select("username, first_name, last_name")
@@ -79,7 +81,7 @@ export const getSpotByShareToken = async (token) => {
     console.error("User fetch error (might be RLS):", userError);
   }
 
-  // Attach the user data to the spot object so your EJS template can read it
+  // Attach the user data to the spot object
   spot.user = userData || null;
 
   return { data: spot, error: null };
@@ -97,6 +99,7 @@ export const getSpotsByUser = async (userId) => {
     `,
     )
     .eq("user_id", userId)
+    .eq("active", true) // <-- ADDED: Filter out inactive spots from user feed
     .order("spot_timestamp", { ascending: false });
 };
 
@@ -116,7 +119,7 @@ export const deleteStorageImage = async (imagePath) => {
 };
 
 export const deleteSpot = async (spotId, userId) => {
-  // Verify ownership
+  // Verify ownership (We DO NOT filter by active here, so the user can still permanently delete it if they want)
   const { data: spot, error: fetchError } = await supabase
     .from("spot")
     .select("spot_id, image_path, image_thumb_path")
