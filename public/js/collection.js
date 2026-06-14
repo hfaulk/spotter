@@ -132,7 +132,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const spotted = cls.units
       .map(
         (u) => `
-        <a href="${u.latest_spot_id ? `/spots/${esc(u.latest_spot_id)}` : `/units/${esc(u.unit_id)}`}" class="unit-tile">
+        <a href="${u.latest_spot_id ? `/spots/${esc(u.latest_spot_id)}` : `/units/${esc(u.unit_id)}`}" class="unit-tile" style="position: relative;">
+          ${
+            u.times_spotted > 1
+              ? `<span class="unit-tile-badge" style="position: absolute; top: 6px; right: 6px; background-color: #2563eb; color: #ffffff; font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 999px; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.25); pointer-events: none;">x${u.times_spotted}</span>`
+              : ""
+          }
           ${
             u.image
               ? `<img src="${esc(u.image)}" alt="${esc(u.unit_number)}" loading="lazy" />`
