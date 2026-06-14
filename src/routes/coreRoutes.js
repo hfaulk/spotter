@@ -3,6 +3,7 @@ import { requireAuth } from "../middleware/auth.js";
 import { mapLimiter } from "../middleware/rateLimiters.js";
 import { serveMap, getMapData } from "../controllers/mapController.js";
 import { showSharedSpot } from "../controllers/spotController.js";
+import { getWikiSummary } from "../controllers/unitController.js"; // Import the new controller
 
 const router = express.Router();
 
@@ -18,6 +19,9 @@ router.get("/dashboard", (req, res) => res.redirect("/profile"));
 // Map
 router.get("/map", serveMap);
 router.get("/api/map", mapLimiter, getMapData);
+
+// Wiki Proxy (Protected so only valid app users can trigger Wikipedia requests)
+router.get("/api/wiki/:classNum", requireAuth, getWikiSummary);
 
 // Public Shared Spots
 router.get("/s/:token", showSharedSpot);
