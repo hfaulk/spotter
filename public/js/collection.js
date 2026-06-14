@@ -52,23 +52,29 @@ document.addEventListener("DOMContentLoaded", () => {
     return wikiCache[classNum];
   };
 
-  // Hero image: the API thumb is ~320px and looks soft at hero size.
-  // Wikimedia rejects (400) any rendition request wider than the original,
-  // so only ask for a 640px rendition when the original is genuinely wider;
-  // otherwise just use the original image itself. No probing, no failed
-  // requests in the console.
+  // Hero image handler
   const setHeroImage = (heroEl, info) => {
-    if (!heroEl || !info?.thumb) return;
+    if (!heroEl) return;
 
-    let src = info.thumb;
-    if (info.originalWidth > 640 && /\/\d+px-/.test(info.thumb)) {
-      src = info.thumb.replace(/\/\d+px-/, "/640px-");
-    } else if (info.original) {
-      src = info.original;
+    // If no image exists, stop the shimmer immediately
+    if (!info?.thumb && !info?.original) {
+      heroEl.classList.remove("img-loading");
+      return;
     }
 
-    heroEl.style.backgroundImage = `url('${src}')`;
-    heroEl.classList.remove("class-sheet-hero-empty");
+    const src = info.original || info.thumb;
+    const safeSrc = src.replace(/'/g, "%27").replace(/"/g, "%22");
+
+    // Probe load the image first so we keep the shimmer until it's fully ready
+    const probe = new Image();
+    probe.onload = () => {
+      heroEl.style.backgroundImage = `url('${safeSrc}')`;
+      heroEl.classList.remove("class-sheet-hero-empty", "img-loading");
+    };
+    probe.onerror = () => {
+      heroEl.classList.remove("img-loading"); // Stop shimmering if it fails
+    };
+    probe.src = safeSrc;
   };
 
   // ===== CLASS CARD IMAGES (lazy — the grid is ~60 cards now) =====
@@ -175,8 +181,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `${cls.spotted} of ${cls.total} spotted`
         : `${cls.spotted} spotted`;
 
+    // Added the 'img-loading' class directly to the hero div so it shimmers instantly
     content.innerHTML = `
-      <div class="class-sheet-hero class-sheet-hero-empty" id="class-sheet-hero"></div>
+      <div class="class-sheet-hero class-sheet-hero-empty img-loading" id="class-sheet-hero"></div>
       <div class="class-sheet-body">
         <div class="class-sheet-header">
           <h2 class="class-sheet-title">${esc(title)}</h2>
@@ -199,7 +206,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fill the wiki hero + description once it arrives
     fetchWiki(cls.classNum).then((info) => {
-      if (!info) return;
+      if (!info) {
+        // Clear shimmer if the wiki fetch entirely fails
+        document
+          .getElementById("class-sheet-hero")
+          ?.classList.remove("img-loading");
+        return;
+      }
+
       const hero = document.getElementById("class-sheet-hero");
       const desc = document.getElementById("class-sheet-desc");
 
