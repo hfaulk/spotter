@@ -36,9 +36,9 @@
                 <div class="shared-author-avatar<% if (spot.user.avatar_path) { %> img-loading<% } %>">
                 <% if (spot.user.avatar_path) { %>
                     <img src="<%= process.env.R2_PUBLIC_URL %>/<%= spot.user.avatar_path %>"
-                        alt="<%= spot.user.first_name %>"
-                        onload="this.parentElement.classList.remove('img-loading')"
-                        onerror="this.parentElement.classList.remove('img-loading')"
+                         alt="<%= spot.user.first_name %>"
+                         onload="this.parentElement.classList.remove('img-loading')"
+                         onerror="this.parentElement.classList.remove('img-loading')"
                     />
                 <% } else { %>
                     <%= (spot.user.first_name ? spot.user.first_name.charAt(0).toUpperCase() : '') + (spot.user.last_name ? spot.user.last_name.charAt(0).toUpperCase() : '') || '?' %>
@@ -47,7 +47,7 @@
                 <div class="shared-author-info">
                   <span class="shared-author-name">Spotted by <%= spot.user.first_name %> <%= spot.user.last_name %></span>
                   <span class="shared-author-username">@<%= spot.user.username %></span>
-                </div>
+               </div>
               </a>
             <% } %>
 
@@ -106,6 +106,16 @@
       <div class="spot-card shared-cta">
         <p>Logged with <strong>Spotter</strong></p>
         <a href="/register" class="btn-primary">Start spotting</a>
+      </div>
+
+      <!-- Report Feature -->
+      <div style="text-align: center; margin-top: 32px; margin-bottom: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+        <button type="button" onclick="openReportModal('Shared Spot Token: <%= spot.spot_share_token %>', 'shared')"
+           style="background:none; border:none; padding:0; font-size: 0.85rem; color: #94a3b8; text-decoration: underline; cursor: pointer; transition: color 0.2s; font-family: inherit;"
+           onmouseover="this.style.color='#ef4444'"
+           onmouseout="this.style.color='#94a3b8'">
+          Report inappropriate content
+        </button>
       </div>
 
     </div>

@@ -94,6 +94,9 @@ const openSheet = (feature) => {
   } = feature.properties;
   const units = JSON.parse(recent_units || "[]");
 
+  // Grab the coordinates to send in the report modal
+  const [lon, lat] = feature.geometry.coordinates;
+
   const spotsLabel = `${spot_count} ${spot_count === 1 ? "spot" : "spots"}`;
   const spottersLabel = `${spotter_count} ${spotter_count === 1 ? "spotter" : "spotters"}`;
 
@@ -128,6 +131,14 @@ const openSheet = (feature) => {
   `
     : "";
 
+  const reportHtml = `
+    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; text-align: center;">
+      <button type="button" onclick="openReportModal('Map Coordinates: ${lat}, ${lon}', 'map')" style="background:none; border:none; padding:0; font-size: 0.75rem; color: #ef4444; cursor: pointer; font-family: inherit;">
+        ⚑ Report this area
+      </button>
+    </div>
+  `;
+
   document.getElementById("map-sheet-content").innerHTML = `
     ${
       preview_image
@@ -157,6 +168,7 @@ const openSheet = (feature) => {
       </div>
       ${unitsHtml}
       ${ctaHtml}
+      ${reportHtml}
     </div>
   `;
 

@@ -3,7 +3,8 @@ import { requireAuth } from "../middleware/auth.js";
 import { mapLimiter } from "../middleware/rateLimiters.js";
 import { serveMap, getMapData } from "../controllers/mapController.js";
 import { showSharedSpot } from "../controllers/spotController.js";
-import { getWikiSummary } from "../controllers/unitController.js"; // Import the new controller
+import { getWikiSummary } from "../controllers/unitController.js";
+import { submitReport } from "../controllers/reportController.js";
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.get("/privacy", (req, res) =>
 );
 
 // APIs & Health
+router.post("/api/report", requireAuth, submitReport);
 router.get("/api/session-check", requireAuth, (req, res) =>
   res.json({ ok: true }),
 );
