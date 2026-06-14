@@ -257,6 +257,11 @@ export const createSpotController = async (req, res) => {
     } catch (linkErr) {
       // Revert the whole operation if linking fails
       await deleteSpot(spot.spot_id, userId);
+
+      // FIX: Clean up the R2 images so they don't sit orphaned forever
+      if (imagePath) await deleteStorageImage(imagePath).catch(() => {});
+      if (thumbPath) await deleteStorageImage(thumbPath).catch(() => {});
+
       return fail("Failed to link units, please try again", 500);
     }
 
