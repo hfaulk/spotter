@@ -1,5 +1,6 @@
 import supabase from "../config/supabase.js";
 import { getUserById } from "../models/userModel.js";
+import * as Sentry from "@sentry/node"; // <-- 1. Import Sentry
 
 const cookieOptions = {
   httpOnly: true,
@@ -33,10 +34,13 @@ const wantsJson = (req) =>
   req.headers["x-requested-with"] === "fetch" ||
   req.headers.accept?.includes("application/json");
 
-const denyAuth = (req, res) =>
-  wantsJson(req)
+const denyAuth = (req, res) => {
+  // Clear the Sentry user context if they are denied
+  Sentry.setUser(null);
+  return wantsJson(req)
     ? res.status(401).json({ success: false, error: "Session expired" })
     : res.redirect("/login");
+};
 
 export const requireAuth = async (req, res, next) => {
   const token = req.cookies?.access_token;
@@ -51,6 +55,13 @@ export const requireAuth = async (req, res, next) => {
     const { data: profile } = await getUserById(user.id);
     res.locals.currentUser = profile;
     res.locals.authUser = user;
+
+    // 👇 2. Tell Sentry who is making the request
+    Sentry.setUser({
+      id: user.id,
+      username: profile?.username || "Unknown",
+    });
+
     return next();
   }
 
@@ -81,6 +92,13 @@ export const requireAuth = async (req, res, next) => {
   const { data: profile } = await getUserById(refreshData.user.id);
   res.locals.currentUser = profile;
   res.locals.authUser = refreshData.user;
+
+  // 👇 3. Tell Sentry who is making the request (on refreshed session)
+  Sentry.setUser({
+    id: refreshData.user.id,
+    username: profile?.username || "Unknown",
+  });
+
   next();
 };
 

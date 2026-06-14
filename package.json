@@ -15,11 +15,12 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "node server.js"
+    "start": "node --import ./instrument.js server.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1062.0",
     "@sentry/node": "^10.57.0",
+    "@sentry/profiling-node": "^10.57.0",
     "@supabase/supabase-js": "^2.105.1",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",

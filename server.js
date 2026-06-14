@@ -1,6 +1,6 @@
-import "dotenv/config.js"; // MUST be the absolute first line to load .env before other imports evaluate
-
 import express from "express";
+import * as Sentry from "@sentry/node";
+
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -15,10 +15,12 @@ import spotRoutes from "./src/routes/spotRoutes.js";
 import coreRoutes from "./src/routes/coreRoutes.js";
 
 // ===== ENVIRONMENT VARIABLE VALIDATION =====
+// (dotenv is already loaded via instrument.js before this file runs!)
 const REQUIRED_ENV = [
   "SUPABASE_URL",
   "SUPABASE_SECRET_KEY",
   "BASE_URL",
+  "SENTRY_DSN",
   "CLOUDFLARE_ACCOUNT_ID",
   "R2_ACCESS_KEY_ID",
   "R2_SECRET_ACCESS_KEY",
@@ -39,7 +41,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.set("trust proxy", 1);
-
 app.use(compression());
 
 // ===== SECURITY HEADERS =====
@@ -107,6 +108,10 @@ app.use("/", userRoutes);
 app.use("/", spotRoutes);
 app.use("/", coreRoutes);
 
+// ===== SENTRY ERROR HANDLER (v8) =====
+// MUST be right after all controllers/routes and before any custom error middleware
+Sentry.setupExpressErrorHandler(app);
+
 // ===== 404 HANDLER =====
 app.use((req, res) => {
   res.status(404).render("404");
@@ -142,14 +147,17 @@ process.on("SIGTERM", () => {
 });
 
 // Catch unhandled promise rejections
-process.on("unhandledRejection", (reason, promise) => {
+process.on("unhandledRejection", async (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  // Optional: send to Sentry or an error monitoring service here
+  Sentry.captureException(reason);
+  await Sentry.close(2000); // Give Sentry 2 seconds to send the error to the cloud
+  process.exit(1);
 });
 
 // Catch synchronous exceptions that slipped through
-process.on("uncaughtException", (err) => {
+process.on("uncaughtException", async (err) => {
   console.error("Uncaught Exception thrown:", err);
-  // It is best practice to eventually restart the server after this,
-  // but this stops the immediate abrupt crash.
+  Sentry.captureException(err);
+  await Sentry.close(2000); // Give Sentry 2 seconds to send the error to the cloud
+  process.exit(1);
 });
