@@ -1,6 +1,6 @@
 import express from "express";
 import { requireAuth } from "../middleware/auth.js";
-import { mapLimiter } from "../middleware/rateLimiters.js";
+import { mapLimiter, reportLimiter } from "../middleware/rateLimiters.js";
 import { serveMap, getMapData } from "../controllers/mapController.js";
 import { showSharedSpot } from "../controllers/spotController.js";
 import { getWikiSummary } from "../controllers/unitController.js";
