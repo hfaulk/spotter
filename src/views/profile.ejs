@@ -5,7 +5,6 @@
 
   <main class="app-content">
 
-    <!-- PROFILE HEADER -->
     <div class="profile-header">
       <div class="profile-avatar">
         <%= profile?.first_name?.[0]?.toUpperCase() || '?' %><%= profile?.last_name?.[0]?.toUpperCase() || '' %>
@@ -26,13 +25,11 @@
       </div>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
       <button class="tab active" data-tab="spots">Spots</button>
       <button class="tab" data-tab="units">Rolling Stock</button>
     </div>
 
-    <!-- SPOTS TAB -->
     <div class="tab-content" id="tab-spots">
       <% if (spots.length === 0) { %>
         <div class="empty-state">
@@ -69,7 +66,6 @@
       <% } %>
     </div>
 
-    <!-- UNITS TAB (Unit Collection §19) -->
     <div class="tab-content hidden" id="tab-units">
       <% if (classCollection.length === 0) { %>
         <div class="empty-state">
@@ -91,7 +87,6 @@
 
   </main>
 
-  <!-- CLASS DETAIL SHEET -->
   <div class="class-sheet" id="class-sheet">
     <div class="class-sheet-handle" id="class-sheet-handle"></div>
     <div class="class-sheet-content" id="class-sheet-content"></div>
@@ -102,6 +97,13 @@
 </div>
 
 <script>
+  // Force a fresh reload if the user navigates back to this page via the browser's back button (bfcache)
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+      window.location.reload();
+    }
+  });
+
   // Tabs — persisted via location.hash so tapping a unit and coming
   // back lands you on the Units tab, not reset to Spots.
   const activateTab = (name) => {

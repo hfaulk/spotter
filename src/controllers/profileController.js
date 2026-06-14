@@ -134,6 +134,11 @@ const buildClassCollection = (collection) => {
 export const serveProfile = async (req, res) => {
   const userId = req.user.id;
 
+  // Prevent the browser from caching this page so navigating "back" forces a fresh load
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   const { data: profile } = await getUserById(userId);
   const { data: spots } = await getSpotsByUser(userId);
   const { data: collection } = await getUserCollectionDetailed(userId);
