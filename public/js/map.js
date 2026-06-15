@@ -3,9 +3,6 @@ const isLoggedIn = window.SPOTTER_CONFIG?.isLoggedIn || false;
 // MapLibre Styles
 const streetStyle = "https://tiles.openfreemap.org/styles/liberty";
 // ===== HYBRID SATELLITE STYLE =====
-// Fetch the Liberty street style once and rebuild it as: Esri imagery on
-// the bottom, then ONLY Liberty's boundary lines and text labels on top.
-// Same fonts/names as the street view, zero extra cost.
 let hybridStylePromise = null;
 const getHybridStyle = () => {
   if (hybridStylePromise) return hybridStylePromise;
@@ -22,9 +19,7 @@ const getHybridStyle = () => {
         maxzoom: 19,
       };
       const overlays = style.layers.filter(
-        (l) =>
-          l.type === "symbol" || // all text labels + icons
-          /boundary|admin/.test(l.id), // country/region boundary lines
+        (l) => l.type === "symbol" || /boundary|admin/.test(l.id),
       );
       style.layers = [
         { id: "satellite-layer", type: "raster", source: "esri-satellite" },
@@ -33,8 +28,7 @@ const getHybridStyle = () => {
       return style;
     })
     .catch(() => {
-      hybridStylePromise = null; // allow retry next toggle
-      // Fallback: plain imagery, no labels — better than a broken toggle
+      hybridStylePromise = null;
       return {
         version: 8,
         sources: {
@@ -94,7 +88,6 @@ const openSheet = (feature) => {
   } = feature.properties;
   const units = JSON.parse(recent_units || "[]");
 
-  // Grab the coordinates to send in the report modal
   const [lon, lat] = feature.geometry.coordinates;
 
   const spotsLabel = `${spot_count} ${spot_count === 1 ? "spot" : "spots"}`;
@@ -230,31 +223,26 @@ backdrop.addEventListener("click", closeSheet);
 map.on("click", closeSheet);
 
 // ===== BOUNDING BOX DATA FETCHING =====
-let currentMarkers = []; // Array to track active markers
+let currentMarkers = [];
 
 const loadSpots = async () => {
   try {
-    // 1. Get the current visible bounds of the map
     const bounds = map.getBounds();
     const n = bounds.getNorth();
     const s = bounds.getSouth();
     const e = bounds.getEast();
     const w = bounds.getWest();
 
-    // 2. Fetch only the spots inside this box
     const res = await fetch(`/api/map?n=${n}&s=${s}&e=${e}&w=${w}`);
     const geojson = await res.json();
 
-    // 3. Delete all old markers from the map
     currentMarkers.forEach((marker) => marker.remove());
     currentMarkers = [];
 
-    // 4. Draw the new markers
     geojson.features.forEach((feature) => {
       const { is_hotspot, spot_count } = feature.properties;
       const [lon, lat] = feature.geometry.coordinates;
 
-      // Null safety check
       if (typeof lat !== "number" || typeof lon !== "number") return;
 
       const el = document.createElement("div");
@@ -274,24 +262,85 @@ const loadSpots = async () => {
         openSheet(feature);
       });
 
-      // Save the marker to our array so we can delete it next time
       currentMarkers.push(marker);
     });
   } catch (err) {
     console.error("Failed to load map data:", err);
-    // Note: We don't use toast.error here because it would spam the user if they pan while offline
   }
 };
 
-// Initial load
 map.on("load", loadSpots);
-// Re-fetch whenever the user stops panning or zooming
 map.on("moveend", loadSpots);
+
+// ===== USER LOCATION MARKER =====
+// Inject the pulse animation once into the page
+(function injectLocationStyles() {
+  if (document.getElementById("user-location-styles")) return;
+  const style = document.createElement("style");
+  style.id = "user-location-styles";
+  style.textContent = `
+    .user-location-marker {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .user-location-dot {
+      width: 14px;
+      height: 14px;
+      background: #2563eb;
+      border: 2.5px solid white;
+      border-radius: 50%;
+      box-shadow: 0 1px 6px rgba(37, 99, 235, 0.5);
+      position: relative;
+      z-index: 1;
+    }
+    .user-location-pulse {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: rgba(37, 99, 235, 0.18);
+      border-radius: 50%;
+      animation: user-location-pulse 2s ease-out infinite;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    @keyframes user-location-pulse {
+      0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+      70%  { transform: translate(-50%, -50%) scale(1);   opacity: 0.15; }
+      100% { transform: translate(-50%, -50%) scale(1);   opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+let userLocationMarker = null;
+
+const placeUserLocationMarker = (lon, lat) => {
+  // Remove previous marker if it exists
+  if (userLocationMarker) {
+    userLocationMarker.remove();
+    userLocationMarker = null;
+  }
+
+  const el = document.createElement("div");
+  el.className = "user-location-marker";
+  el.innerHTML = `
+    <div class="user-location-pulse"></div>
+    <div class="user-location-dot"></div>
+  `;
+
+  userLocationMarker = new maplibregl.Marker({ element: el, anchor: "center" })
+    .setLngLat([lon, lat])
+    .addTo(map);
+};
 
 // ===== GEOLOCATION =====
 document.getElementById("near-me-btn").addEventListener("click", () => {
   if (!navigator.geolocation) {
-    console.warn("Geolocation not supported");
     toast.error("Geolocation is not supported by your browser.");
     return;
   }
@@ -300,11 +349,13 @@ document.getElementById("near-me-btn").addEventListener("click", () => {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       try {
+        const { longitude, latitude } = pos.coords;
         map.flyTo({
-          center: [pos.coords.longitude, pos.coords.latitude],
+          center: [longitude, latitude],
           zoom: 12,
           duration: 1500,
         });
+        placeUserLocationMarker(longitude, latitude);
         toast.success("Found your location!");
       } catch (err) {
         console.error("Error flying to location:", err);
