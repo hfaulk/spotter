@@ -2,6 +2,8 @@ import multer from "multer";
 import exifr from "exifr";
 import heicConvert from "heic-convert";
 import sharp from "sharp";
+import FormData from "form-data";
+import axios from "axios";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import r2 from "../config/r2.js";
 import {
@@ -17,7 +19,7 @@ import {
   getUnitsBySpot,
 } from "../models/unitModel.js";
 
-// ===== VALIDATION HELPER (18.2) =====
+// ===== VALIDATION HELPER =====
 const validate = (rules, body) => {
   const errors = [];
   for (const [field, checks] of Object.entries(rules)) {
@@ -61,16 +63,11 @@ const fileFilter = (req, file, cb) => {
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 20 * 1024 * 1024 }, // Allowed up to 20MB initially, we compress later
+  limits: { fileSize: 20 * 1024 * 1024 }, // Allowed up to 20MB initially
 });
 
-// Cache for duplicate submission prevention (18.4)
-// Note: This in-memory Set will not persist across horizontal scaling or restarts.
-// Consider Redis or an external DB queue for multi-instance deployments.
 const recentNonces = new Set();
 
-// The global spot sheet submits via fetch and wants JSON back;
-// the /spots/new fallback page still uses classic form posts.
 const wantsJson = (req) =>
   req.headers["x-requested-with"] === "fetch" ||
   req.headers.accept?.includes("application/json");
@@ -87,7 +84,6 @@ export const createSpotController = async (req, res) => {
   let imagePath = null;
   let thumbPath = null;
 
-  // One place to report failures in whichever format the client expects
   const fail = (message, status = 400) =>
     isAjax
       ? res.status(status).json({ success: false, error: message })
@@ -97,18 +93,15 @@ export const createSpotController = async (req, res) => {
     const { spot_latitude, spot_longitude, spot_timestamp, submission_nonce } =
       req.body;
 
-    // Sanitize strings
     const spot_title = sanitize(req.body.spot_title);
     const spot_description = sanitize(req.body.spot_description);
 
-    // 18.4 Check for exact duplicate submission
     if (submission_nonce && recentNonces.has(submission_nonce)) {
       return isAjax
         ? res.json({ success: true, duplicate: true })
         : res.redirect("/profile");
     }
 
-    // 18.2 Server-side bounds validation
     const validationErrors = validate(
       {
         spot_title: { required: true, maxLength: 200 },
@@ -149,17 +142,18 @@ export const createSpotController = async (req, res) => {
           };
         }
       } catch {
-        // EXIF extraction failed — continue without it
+        // EXIF extraction failed — continue silently
       }
     }
 
-    // ===== FILE PROCESSING (18.7 & 3) =====
+    // ===== FILE PROCESSING =====
     if (req.file) {
       let fileBuffer = req.file.buffer;
       const isHeic =
         req.file.mimetype === "image/heic" ||
         req.file.mimetype === "image/heif";
 
+      // 1. HEIC Conversion
       if (isHeic) {
         try {
           const converted = await heicConvert({
@@ -174,32 +168,75 @@ export const createSpotController = async (req, res) => {
         }
       }
 
+      // 2. SIGHTENGINE NSFW API SCAN
+      if (process.env.SIGHTENGINE_USER && process.env.SIGHTENGINE_SECRET) {
+        try {
+          console.log("🔍 Sending image to Sightengine...");
+          const form = new FormData();
+          form.append("media", fileBuffer, { filename: "upload.jpg" });
+          form.append("models", "nudity-2.0");
+          form.append("api_user", process.env.SIGHTENGINE_USER);
+          form.append("api_secret", process.env.SIGHTENGINE_SECRET);
+
+          const response = await axios({
+            method: "post",
+            url: "https://api.sightengine.com/1.0/check.json",
+            data: form,
+            headers: form.getHeaders(),
+          });
+
+          console.log(
+            "📊 Sightengine Response:",
+            JSON.stringify(response.data.nudity, null, 2),
+          );
+
+          // Some accounts default to 'none', others to 'safe' depending on the region/tier
+          const safeScore =
+            response.data.nudity.none !== undefined
+              ? response.data.nudity.none
+              : response.data.nudity.safe;
+
+          console.log("🛡️ Calculated Safe Score:", safeScore);
+
+          // TESTING MODE: > 0.5
+          if (response.data.status === "success" && safeScore < 0.5) {
+            return fail(
+              "This photo was flagged by our safety filters. Please choose another.",
+            );
+          }
+        } catch (err) {
+          // Check if Sightengine rejected our keys
+          console.error(
+            "❌ Sightengine API error:",
+            err.response?.data || err.message,
+          );
+        }
+      } else {
+        console.log("⚠️ WARNING: Sightengine API keys are missing from .env!");
+      }
+
+      // 3. Compression & R2 Upload
       try {
-        // 18.7 Corrupt/tiny image check
         const meta = await sharp(fileBuffer).metadata();
         if (!meta.width || meta.width < 100)
           throw new Error("Image too small or corrupt");
 
-        // Section 3: WebP Compression & Thumbnails
         const ext = "webp";
         imagePath = `${userId}/${Date.now()}.${ext}`;
         thumbPath = `${userId}/${Date.now()}_thumb.jpeg`;
 
-        // Main display image: Max 2048px wide
         const mainBuffer = await sharp(fileBuffer)
-          .rotate() // Auto-rotate using EXIF orientation
+          .rotate()
           .resize({ width: 2048, withoutEnlargement: true })
           .webp({ quality: 85 })
           .toBuffer();
 
-        // Thumbnail image: Max 400px wide
         const thumbBuffer = await sharp(fileBuffer)
           .rotate()
           .resize({ width: 400, withoutEnlargement: true })
           .jpeg({ quality: 82 })
           .toBuffer();
 
-        // Upload both concurrently
         await Promise.all([
           r2.send(
             new PutObjectCommand({
@@ -250,7 +287,7 @@ export const createSpotController = async (req, res) => {
       return fail("Failed to save spot, please try again", 500);
     }
 
-    // ===== LINK UNITS (18.3 Transaction Cleanup) =====
+    // ===== LINK UNITS =====
     try {
       for (const unit of units) {
         const { data: unitData, error: unitError } =
@@ -259,17 +296,12 @@ export const createSpotController = async (req, res) => {
         await linkUnitToSpot(spot.spot_id, unitData.unit_id);
       }
     } catch (linkErr) {
-      // Revert the whole operation if linking fails
       await deleteSpot(spot.spot_id, userId);
-
-      // FIX: Clean up the R2 images so they don't sit orphaned forever
       if (imagePath) await deleteStorageImage(imagePath).catch(() => {});
       if (thumbPath) await deleteStorageImage(thumbPath).catch(() => {});
-
       return fail("Failed to link units, please try again", 500);
     }
 
-    // Cache nonce to prevent double execution
     if (submission_nonce) {
       recentNonces.add(submission_nonce);
       setTimeout(() => recentNonces.delete(submission_nonce), 30000);
@@ -280,10 +312,8 @@ export const createSpotController = async (req, res) => {
     }
     res.redirect(`/spots/${spot.spot_id}`);
   } catch (err) {
-    // 18.8 Orphaned R2 image cleanup
     if (imagePath) await deleteStorageImage(imagePath).catch(() => {});
     if (thumbPath) await deleteStorageImage(thumbPath).catch(() => {});
-
     console.error("createSpot error:", err);
     return fail("Something went wrong, please try again", 500);
   }

@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show it
     requestAnimationFrame(() => overlayEl.classList.add("visible"));
 
-    // Animate progress to ~85% over ~12s (never completes — we jump to 100 on success)
+    // Animate progress to ~85% over ~12s
     const STEPS = [
       { target: 15, delay: 400 },
       { target: 35, delay: 1800 },
@@ -382,19 +382,34 @@ document.addEventListener("DOMContentLoaded", () => {
       : Date.now().toString();
   };
 
+  const clearPhotoUI = () => {
+    const photoInput = document.getElementById("ss-photo");
+    if (photoInput) photoInput.value = "";
+
+    const preview = document.getElementById("ss-photo-preview");
+    if (preview) {
+      preview.style.display = "none";
+      preview.src = "";
+    }
+
+    const labelText = document.getElementById("ss-photo-label-text");
+    if (labelText) labelText.textContent = "Add a photo";
+
+    const exifPanel = document.getElementById("ss-exif-panel");
+    if (exifPanel) exifPanel.style.display = "none";
+
+    ["camera", "shutter", "aperture", "iso", "focal"].forEach((k) => {
+      const el = document.getElementById(`ss-exif-${k}`);
+      if (el) el.textContent = "—";
+    });
+  };
+
   const resetForm = () => {
     form.reset();
     unitsContainer.innerHTML = "";
     unitsContainer.appendChild(createUnitRow());
     clearLocation();
-    const preview = document.getElementById("ss-photo-preview");
-    preview.style.display = "none";
-    preview.src = "";
-    document.getElementById("ss-photo-label-text").textContent = "Add a photo";
-    document.getElementById("ss-exif-panel").style.display = "none";
-    ["camera", "shutter", "aperture", "iso", "focal"].forEach((k) => {
-      document.getElementById(`ss-exif-${k}`).textContent = "—";
-    });
+    clearPhotoUI();
     setNowTimestamp();
     setNonce();
     setSubmitting(false);
@@ -448,6 +463,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "";
     lastFocused?.focus?.();
     lastFocused = null;
+
+    // NEW: Silently reset the form *after* the CSS slide-down animation completes (300ms)
+    setTimeout(() => {
+      resetForm();
+    }, 300);
   };
 
   document.querySelectorAll(".js-open-spot-sheet").forEach((btn) => {
@@ -516,6 +536,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const message = data?.error || "Failed to save spot — please try again.";
       toast.error(message, 8000); // longer duration so it's readable
+
+      // AI Moderation Hook: clear the rejected photo but keep the text
+      if (
+        message.toLowerCase().includes("flagged") ||
+        message.toLowerCase().includes("safety filters")
+      ) {
+        clearPhotoUI();
+      }
     } catch (err) {
       console.error("Spot submit error:", err);
       hideOverlay(false);
