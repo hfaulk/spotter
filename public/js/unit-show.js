@@ -18,15 +18,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const classNum = unitClass.replace(/[^0-9]/g, "");
-  const wikiTitle = classNum ? `British_Rail_Class_${classNum}` : null;
-
-  if (!wikiTitle) {
+  // Backend proxy expects just the number, not the full title
+  if (!classNum) {
     stopShimmer();
     return;
   }
 
-  fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`)
-    .then((res) => res.json())
+  // Changed to use the backend proxy to prevent exposing client IP to Wikipedia and fix CSP
+  fetch(`/api/wiki/${classNum}`)
+    .then((res) => {
+      if (!res.ok) throw new Error("Wiki API error");
+      return res.json();
+    })
     .then((data) => {
       const imgSrc = data.originalimage?.source || data.thumbnail?.source;
 

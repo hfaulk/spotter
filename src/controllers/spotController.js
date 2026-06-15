@@ -36,6 +36,10 @@ const validate = (rules, body) => {
   return errors;
 };
 
+// Basic XSS mitigation to strip potential HTML tags
+const sanitize = (str) =>
+  typeof str === "string" ? str.replace(/[<>]/g, "") : str;
+
 // ===== MULTER CONFIG =====
 const storage = multer.memoryStorage();
 
@@ -61,6 +65,8 @@ export const upload = multer({
 });
 
 // Cache for duplicate submission prevention (18.4)
+// Note: This in-memory Set will not persist across horizontal scaling or restarts.
+// Consider Redis or an external DB queue for multi-instance deployments.
 const recentNonces = new Set();
 
 // The global spot sheet submits via fetch and wants JSON back;
@@ -88,14 +94,12 @@ export const createSpotController = async (req, res) => {
       : res.render("spots/new", { error: message });
 
   try {
-    const {
-      spot_title,
-      spot_description,
-      spot_latitude,
-      spot_longitude,
-      spot_timestamp,
-      submission_nonce,
-    } = req.body;
+    const { spot_latitude, spot_longitude, spot_timestamp, submission_nonce } =
+      req.body;
+
+    // Sanitize strings
+    const spot_title = sanitize(req.body.spot_title);
+    const spot_description = sanitize(req.body.spot_description);
 
     // 18.4 Check for exact duplicate submission
     if (submission_nonce && recentNonces.has(submission_nonce)) {
@@ -111,7 +115,7 @@ export const createSpotController = async (req, res) => {
         spot_latitude: { min: -90, max: 90 },
         spot_longitude: { min: -180, max: 180 },
       },
-      req.body,
+      { ...req.body, spot_title, spot_description },
     );
 
     if (validationErrors.length) {
@@ -141,7 +145,7 @@ export const createSpotController = async (req, res) => {
             image_aperture: raw.FNumber ? `f/${raw.FNumber}` : null,
             image_iso: raw.ISOSpeedRatings || raw.ISO || null,
             image_focal_length: raw.FocalLength ? `${raw.FocalLength}mm` : null,
-            image_camera: raw.Model || null,
+            image_camera: sanitize(raw.Model) || null,
           };
         }
       } catch {
@@ -345,12 +349,12 @@ const parseUnits = (body) => {
   const operators = [].concat(body["unit_operator"] || []);
 
   for (let i = 0; i < numbers.length; i++) {
-    const number = numbers[i]?.trim();
+    const number = sanitize(numbers[i]?.trim());
     if (!number) continue;
     units.push({
       unit_number: number,
-      unit_class: classes[i]?.trim() || null,
-      unit_operator: operators[i]?.trim() || null,
+      unit_class: sanitize(classes[i]?.trim()) || null,
+      unit_operator: sanitize(operators[i]?.trim()) || null,
     });
   }
 

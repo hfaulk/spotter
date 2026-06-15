@@ -5,6 +5,7 @@ export const findOrCreateUnit = async ({
   unit_class,
   unit_operator,
 }) => {
+  // 1. Try to select existing first
   const { data: existing } = await supabase
     .from("unit")
     .select("*")
@@ -13,6 +14,7 @@ export const findOrCreateUnit = async ({
 
   if (existing) return { data: existing, error: null };
 
+  // 2. Try to insert. If this races with another request, it will throw a unique constraint error
   const { data, error } = await supabase
     .from("unit")
     .insert({
@@ -22,6 +24,18 @@ export const findOrCreateUnit = async ({
     })
     .select()
     .single();
+
+  // 3. Handle Race Condition: Postgres code '23505' is a unique_violation
+  if (error && error.code === "23505") {
+    // We lost the race, another request inserted it. Fetch it instead.
+    const { data: raceExisting, error: raceError } = await supabase
+      .from("unit")
+      .select("*")
+      .eq("unit_number", unit_number)
+      .single();
+
+    return { data: raceExisting, error: raceError };
+  }
 
   return { data, error };
 };

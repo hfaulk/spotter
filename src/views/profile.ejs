@@ -97,9 +97,11 @@
 </div>
 
 <script>
-  // Force a fresh reload if the user navigates back to this page via the browser's back button (bfcache)
+  // Smart reload: Only force a fresh reload if the user navigates back to this page
+  // via the browser's back button (bfcache) AND they actually modified their spots.
   window.addEventListener("pageshow", (event) => {
-    if (event.persisted) {
+    if (event.persisted && sessionStorage.getItem("spotter_data_changed") === "true") {
+      sessionStorage.removeItem("spotter_data_changed");
       window.location.reload();
     }
   });

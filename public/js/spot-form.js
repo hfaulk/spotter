@@ -14,7 +14,7 @@ const satelliteStyle = {
       ],
       tileSize: 256,
       attribution: "Tiles © Esri",
-      maxzoom: 19, // Moved here to prevent zoom voids
+      maxzoom: 19,
     },
   },
   layers: [
@@ -35,7 +35,7 @@ const initMap = (lat = 52.5, lon = -1.5, zoom = 5) => {
     style: streetStyle,
     center: [lon, lat],
     zoom: zoom,
-    maxZoom: 19, // Caps physical zoom
+    maxZoom: 19,
   });
 
   map.on("click", (e) => {
@@ -221,44 +221,6 @@ if (formError && formError.textContent.trim()) {
   toast.error(formError.textContent.trim());
 }
 
-// ===== CLEAR FORM AFTER SUCCESSFUL SUBMISSION =====
-const resetFormState = () => {
-  toast.success("Spot created successfully!");
-
-  const form = document.querySelector(".spot-form");
-  if (form) form.reset();
-
-  unitsContainer.innerHTML = "";
-  unitsContainer.appendChild(createUnitRow());
-  clearLocation();
-
-  const photoPreview = document.getElementById("photo-preview");
-  if (photoPreview) photoPreview.style.display = "none";
-  const photoLabel = document.getElementById("photo-label-text");
-  if (photoLabel) photoLabel.textContent = "Add a photo";
-  const photoLabelUI = document.querySelector(".photo-label");
-  if (photoLabelUI) photoLabelUI.style.borderColor = "#e4e8f0";
-
-  const exifPanel = document.getElementById("exif-panel");
-  if (exifPanel) exifPanel.style.display = "none";
-  document.getElementById("exif-camera").textContent = "—";
-  document.getElementById("exif-shutter").textContent = "—";
-  document.getElementById("exif-aperture").textContent = "—";
-  document.getElementById("exif-iso").textContent = "—";
-  document.getElementById("exif-focal").textContent = "—";
-
-  if (dt) {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    dt.value = now.toISOString().slice(0, 16);
-  }
-};
-
-if (sessionStorage.getItem("spotFormSubmitted")) {
-  sessionStorage.removeItem("spotFormSubmitted");
-  resetFormState();
-}
-
 // ===== SUBMIT LISTENER =====
 const checkSession = async () => {
   try {
@@ -311,7 +273,8 @@ if (form) {
 
     // UI Lockout & Spinner
     if (form.checkValidity()) {
-      sessionStorage.setItem("spotFormSubmitted", "true");
+      // Set flag to force bfcache invalidation on Profile page
+      sessionStorage.setItem("spotter_data_changed", "true");
 
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn) {
