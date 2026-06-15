@@ -6,6 +6,10 @@ import FormData from "form-data";
 import axios from "axios";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import r2 from "../config/r2.js";
+import fsPromises from "fs/promises";
+import { createReadStream } from "fs";
+import os from "os";
+import path from "path";
 import {
   createSpot,
   getSpotById,
@@ -42,8 +46,16 @@ const validate = (rules, body) => {
 const sanitize = (str) =>
   typeof str === "string" ? str.replace(/[<>]/g, "") : str;
 
-// ===== MULTER CONFIG =====
-const storage = multer.memoryStorage();
+// ===== MULTER CONFIG (DISK STORAGE) =====
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, os.tmpdir()); // Use the native OS temp directory
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `spotter-${uniqueSuffix}${path.extname(file.originalname || "")}`);
+  },
+});
 
 const fileFilter = (req, file, cb) => {
   const allowed = [
@@ -63,7 +75,7 @@ const fileFilter = (req, file, cb) => {
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 20 * 1024 * 1024 }, // Allowed up to 20MB initially
+  limits: { fileSize: 20 * 1024 * 1024 }, // Allowed up to 20MB
 });
 
 const recentNonces = new Set();
@@ -83,6 +95,8 @@ export const createSpotController = async (req, res) => {
   const isAjax = wantsJson(req);
   let imagePath = null;
   let thumbPath = null;
+  let processingPath = req.file ? req.file.path : null;
+  let heicTempPath = null;
 
   const fail = (message, status = 400) =>
     isAjax
@@ -122,9 +136,9 @@ export const createSpotController = async (req, res) => {
 
     // ===== EXIF EXTRACTION =====
     let exifData = {};
-    if (req.file) {
+    if (processingPath) {
       try {
-        const raw = await exifr.parse(req.file.buffer, {
+        const raw = await exifr.parse(processingPath, {
           tiff: true,
           exif: true,
           gps: true,
@@ -147,33 +161,36 @@ export const createSpotController = async (req, res) => {
     }
 
     // ===== FILE PROCESSING =====
-    if (req.file) {
-      let fileBuffer = req.file.buffer;
+    if (processingPath) {
       const isHeic =
         req.file.mimetype === "image/heic" ||
         req.file.mimetype === "image/heif";
 
-      // 1. HEIC Conversion
+      // 1. HEIC Conversion (Needs buffer momentarily, then writes back to disk)
       if (isHeic) {
         try {
+          const rawBuffer = await fsPromises.readFile(processingPath);
           const converted = await heicConvert({
-            buffer: fileBuffer,
+            buffer: rawBuffer,
             format: "JPEG",
             quality: 0.9,
           });
-          fileBuffer = Buffer.from(converted);
+          heicTempPath = `${processingPath}.jpg`;
+          await fsPromises.writeFile(heicTempPath, converted);
+          processingPath = heicTempPath; // Point the rest of the app to the new JPEG
         } catch (err) {
           console.error("HEIC conversion error:", err);
           return fail("Could not process HEIC image, please try again");
         }
       }
 
-      // 2. SIGHTENGINE NSFW API SCAN
+      // 2. SIGHTENGINE NSFW API SCAN (Streaming from disk)
       if (process.env.SIGHTENGINE_USER && process.env.SIGHTENGINE_SECRET) {
         try {
-          console.log("🔍 Sending image to Sightengine...");
           const form = new FormData();
-          form.append("media", fileBuffer, { filename: "upload.jpg" });
+          form.append("media", createReadStream(processingPath), {
+            filename: "upload.jpg",
+          });
           form.append("models", "nudity-2.0");
           form.append("api_user", process.env.SIGHTENGINE_USER);
           form.append("api_secret", process.env.SIGHTENGINE_SECRET);
@@ -185,39 +202,24 @@ export const createSpotController = async (req, res) => {
             headers: form.getHeaders(),
           });
 
-          console.log(
-            "📊 Sightengine Response:",
-            JSON.stringify(response.data.nudity, null, 2),
-          );
-
-          // Some accounts default to 'none', others to 'safe' depending on the region/tier
           const safeScore =
             response.data.nudity.none !== undefined
               ? response.data.nudity.none
               : response.data.nudity.safe;
 
-          console.log("🛡️ Calculated Safe Score:", safeScore);
-
-          // TESTING MODE: > 0.5
           if (response.data.status === "success" && safeScore < 0.5) {
             return fail(
               "This photo was flagged by our safety filters. Please choose another.",
             );
           }
         } catch (err) {
-          // Check if Sightengine rejected our keys
-          console.error(
-            "❌ Sightengine API error:",
-            err.response?.data || err.message,
-          );
+          console.error("Sightengine API error:", err.message);
         }
-      } else {
-        console.log("⚠️ WARNING: Sightengine API keys are missing from .env!");
       }
 
-      // 3. Compression & R2 Upload
+      // 3. Compression & R2 Upload (Sharp reading directly from disk path)
       try {
-        const meta = await sharp(fileBuffer).metadata();
+        const meta = await sharp(processingPath).metadata();
         if (!meta.width || meta.width < 100)
           throw new Error("Image too small or corrupt");
 
@@ -225,13 +227,13 @@ export const createSpotController = async (req, res) => {
         imagePath = `${userId}/${Date.now()}.${ext}`;
         thumbPath = `${userId}/${Date.now()}_thumb.jpeg`;
 
-        const mainBuffer = await sharp(fileBuffer)
+        const mainBuffer = await sharp(processingPath)
           .rotate()
           .resize({ width: 2048, withoutEnlargement: true })
           .webp({ quality: 85 })
           .toBuffer();
 
-        const thumbBuffer = await sharp(fileBuffer)
+        const thumbBuffer = await sharp(processingPath)
           .rotate()
           .resize({ width: 400, withoutEnlargement: true })
           .jpeg({ quality: 82 })
@@ -316,6 +318,15 @@ export const createSpotController = async (req, res) => {
     if (thumbPath) await deleteStorageImage(thumbPath).catch(() => {});
     console.error("createSpot error:", err);
     return fail("Something went wrong, please try again", 500);
+  } finally {
+    // ===== DISK CLEANUP =====
+    // This runs unconditionally at the end to guarantee your hard drive stays clean
+    if (req.file && req.file.path) {
+      fsPromises.unlink(req.file.path).catch(() => {});
+    }
+    if (heicTempPath) {
+      fsPromises.unlink(heicTempPath).catch(() => {});
+    }
   }
 };
 
