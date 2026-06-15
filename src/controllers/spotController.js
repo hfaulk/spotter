@@ -381,10 +381,15 @@ const parseUnits = (body) => {
   for (let i = 0; i < numbers.length; i++) {
     const number = sanitize(numbers[i]?.trim());
     if (!number) continue;
+
+    // Clean up empty string submissions so they don't violate DB constraints
+    const unitClass = sanitize(classes[i]?.trim());
+    const unitOperator = sanitize(operators[i]?.trim());
+
     units.push({
       unit_number: number,
-      unit_class: sanitize(classes[i]?.trim()) || null,
-      unit_operator: sanitize(operators[i]?.trim()) || null,
+      unit_class: unitClass !== "" ? unitClass : null,
+      unit_operator: unitOperator !== "" ? unitOperator : null,
     });
   }
 
