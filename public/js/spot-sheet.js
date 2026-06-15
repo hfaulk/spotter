@@ -345,19 +345,26 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="unit-fields">
         <div class="field">
           <label>Unit number</label>
-          <input type="text" name="unit_number" placeholder="47805" required inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" name="unit_number" placeholder="47805" required inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" />
         </div>
         <div class="field">
-          <label>Class <span class="optional">(optional)</span></label>
-          <input type="text" name="unit_class" placeholder="CLASS 47" autocapitalize="characters" autocorrect="off" />
+          <label>Class</label>
+          <input type="text" name="unit_class" placeholder="Class 47" readonly />
         </div>
         <div class="field">
-          <label>Operator <span class="optional">(optional)</span></label>
-          <input type="text" name="unit_operator" placeholder="LNER" />
+          <label>Operator</label>
+          <div id="ss-operator-container">
+            <select name="unit_operator" id="ss-operator-select" disabled>
+              <option value="">Enter unit number first...</option>
+            </select>
+          </div>
         </div>
       </div>
       <button type="button" class="btn-remove-unit" aria-label="Remove unit">✕</button>
     `;
+
+    setupAutoFill(row);
+
     row.querySelector(".btn-remove-unit").addEventListener("click", () => {
       if (unitsContainer.querySelectorAll(".unit-row").length > 1) row.remove();
     });
@@ -552,3 +559,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+const setupAutoFill = (row) => {
+  const numberInput = row.querySelector("input[name='unit_number']");
+  const classInput = row.querySelector("input[name='unit_class']");
+  const opContainer = row.querySelector("#ss-operator-container");
+
+  numberInput.addEventListener("input", () => {
+    clearTimeout(numberInput.dataset.timer);
+    numberInput.dataset.timer = setTimeout(async () => {
+      const val = numberInput.value.trim();
+
+      // 1. Reset state if input is cleared or too short
+      if (val.length < 3) {
+        classInput.value = "";
+        classInput.readOnly = false;
+        opContainer.innerHTML = `
+          <select name="unit_operator" id="ss-operator-select" disabled>
+            <option value="">Enter unit number first...</option>
+          </select>`;
+        return;
+      }
+
+      const response = await fetch("/data/roster.json");
+      const roster = await response.json();
+      const classes = Object.keys(roster).sort((a, b) => b.length - a.length);
+
+      const matchKey = classes.find((key) =>
+        val.startsWith(key.replace("Class ", "")),
+      );
+
+      if (matchKey && roster[matchKey].operators?.length > 0) {
+        // MATCH FOUND: Set class (read-only) and populate dropdown
+        classInput.value = matchKey;
+        classInput.readOnly = true;
+
+        const options = roster[matchKey].operators
+          .map((op) => {
+            // Converts "rail_operations_group" to "RAIL OPERATIONS GROUP"
+            const label = op.toUpperCase().replace(/_/g, " ");
+            return `<option value="${op}">${label}</option>`;
+          })
+          .join("");
+
+        opContainer.innerHTML = `<select name="unit_operator" id="ss-operator-select" required>${options}</select>`;
+      } else {
+        // NO MATCH FOUND: Unlock class for manual entry and provide text input
+        classInput.readOnly = false;
+        opContainer.innerHTML = `<input type="text" name="unit_operator" placeholder="Enter operator" required />`;
+      }
+    }, 300);
+  });
+};
