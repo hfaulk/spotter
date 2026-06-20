@@ -19,9 +19,9 @@
  *   </div>
  */
 if (typeof window.SpotterSafeTriangle === "undefined") {
-  const HOVER_CAPABLE = window.matchMedia(
-    "(hover: hover) and (pointer: fine)",
-  ).matches;
+  const HOVER_CAPABLE =
+  window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+  !("ontouchstart" in window || navigator.maxTouchPoints > 0);
 
   const pointInRect = (x, y, rect) =>
     x >= rect.left &&
