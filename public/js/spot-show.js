@@ -62,6 +62,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ===== THREE DOTS MENU =====
+  const menuTrigger = document.getElementById("spot-menu-trigger");
+  const menuDropdown = document.getElementById("spot-menu-dropdown");
+
+  menuTrigger?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menuDropdown.classList.toggle("open");
+  });
+
+  document.addEventListener("click", () =>
+    menuDropdown?.classList.remove("open"),
+  );
+
   // ===== DELETE =====
   const deleteBtn = document.getElementById("delete-btn");
   deleteBtn?.addEventListener("click", () => {
