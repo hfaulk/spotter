@@ -389,16 +389,6 @@
     "base_spot_score": 0.8
   },
 
-  "Class 97": {
-    "operators": ["network_rail"],
-    "fleet_size": 10,
-    "lifecycle": "active",
-    "roles": ["engineering", "infrastructure"],
-    "deployment_regions": ["uk_wide"],
-    "network_coverage": "test_and_measurement",
-    "base_spot_score": 0.25
-  },
-
   "Class 99": {
     "operators": ["gbrf"],
     "fleet_size": 10,
