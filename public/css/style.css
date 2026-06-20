@@ -1475,6 +1475,19 @@ a.unit-chip:hover {
     display: none;
 }
 
+/* ===== SAFE TRIANGLE OVERLAY (hover menus) ===== */
+.safe-triangle-overlay {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: visible;
+}
+
+.safe-triangle-path {
+    pointer-events: auto;
+    fill: transparent;
+}
+
 /* ===== THREE DOTS MENU (mobile + desktop) ===== */
 .spot-menu {
     position: fixed;
