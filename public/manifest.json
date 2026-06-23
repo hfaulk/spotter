@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Spotter",
-  "short_name": "Spotter",
+  "name": "Lineside",
+  "short_name": "Lineside",
   "description": "Log and discover train spots across the UK",
   "start_url": "/map",
   "scope": "/",

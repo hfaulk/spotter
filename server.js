@@ -135,7 +135,7 @@ app.use((err, req, res, next) => {
 // ===== GRACEFUL SHUTDOWN =====
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () =>
-  console.log(`Spotter running on http://localhost:${PORT}`),
+  console.log(`Lineside running on http://localhost:${PORT}`),
 );
 
 process.on("SIGTERM", () => {

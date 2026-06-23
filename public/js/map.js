@@ -1,4 +1,7 @@
-const isLoggedIn = window.SPOTTER_CONFIG?.isLoggedIn || false;
+const isLoggedIn =
+  window.LINESIDE_CONFIG?.isLoggedIn ||
+  window.SPOTTER_CONFIG?.isLoggedIn ||
+  false;
 
 // MapLibre Styles
 const streetStyle = "https://tiles.openfreemap.org/styles/liberty";
@@ -118,7 +121,7 @@ const openSheet = (feature) => {
   const ctaHtml = !isLoggedIn
     ? `
     <div class="sheet-cta">
-      <p>Join Spotter to log your spots here</p>
+      <p>Join Lineside to log your spots here</p>
       <a href="/register" class="btn-primary" style="font-size:0.875rem;">Sign up free</a>
     </div>
   `

@@ -2,7 +2,8 @@
 // Unit Collection (§19): wiki images on the class cards + the class
 // detail overlay sheet (bottom sheet on mobile, side panel on desktop).
 document.addEventListener("DOMContentLoaded", () => {
-  const classes = window.SPOTTER_COLLECTION || [];
+  const classes =
+    window.LINESIDE_COLLECTION || window.SPOTTER_COLLECTION || [];
 
   const sheet = document.getElementById("class-sheet");
   const backdrop = document.getElementById("class-sheet-backdrop");

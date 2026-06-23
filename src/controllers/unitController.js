@@ -52,7 +52,7 @@ export const getWikiSummary = async (req, res) => {
       {
         headers: {
           // Wikimedia policy: <app name>/<version> (<contact info>)
-          "User-Agent": "Spotter/1.0 (https://github.com/hfaulk/spotter)",
+          "User-Agent": "Lineside/1.0 (https://github.com/hfaulk/spotter)",
           Accept: "application/json",
         },
       },

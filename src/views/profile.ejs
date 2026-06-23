@@ -100,8 +100,8 @@
   // Smart reload: Only force a fresh reload if the user navigates back to this page
   // via the browser's back button (bfcache) AND they actually modified their spots.
   window.addEventListener("pageshow", (event) => {
-    if (event.persisted && sessionStorage.getItem("spotter_data_changed") === "true") {
-      sessionStorage.removeItem("spotter_data_changed");
+    if (event.persisted && sessionStorage.getItem("lineside_data_changed") === "true") {
+      sessionStorage.removeItem("lineside_data_changed");
       window.location.reload();
     }
   });
@@ -129,9 +129,11 @@
 </script>
 
 <script>
-  window.SPOTTER_COLLECTION = <%- collectionJson %>;
+  window.LINESIDE_COLLECTION = <%- collectionJson %>;
+  // Backwards compat for cached collection.js after the rename
+  window.SPOTTER_COLLECTION = window.LINESIDE_COLLECTION;
 </script>
-<script src="/js/collection.js?v=12"></script>
+<script src="/js/collection.js?v=13"></script>
 
 </body>
 </html>

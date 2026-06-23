@@ -140,7 +140,7 @@ export const submitReport = async (req, res) => {
     // 6. Construct & Send Email
     const subjectPrefix = isAutoHidden
       ? "🚨 URGENT (AUTO-HIDDEN)"
-      : "🚨 Spotter Report";
+      : "🚨 Lineside Report";
     let statusMessage = "";
 
     if (targetSpotIds.length > 0) {
@@ -155,7 +155,7 @@ export const submitReport = async (req, res) => {
     }
 
     await resend.emails.send({
-      from: "Spotter Support <noreply@spotter.harryfaulkner.com>",
+      from: "Lineside Support <noreply@spotter.harryfaulkner.com>",
       to: "hfaulkner2006@gmail.com",
       subject: `${subjectPrefix}: ${type}`,
       html: `

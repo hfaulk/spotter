@@ -274,7 +274,7 @@ if (form) {
     // UI Lockout & Spinner
     if (form.checkValidity()) {
       // Set flag to force bfcache invalidation on Profile page
-      sessionStorage.setItem("spotter_data_changed", "true");
+      sessionStorage.setItem("lineside_data_changed", "true");
 
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn) {

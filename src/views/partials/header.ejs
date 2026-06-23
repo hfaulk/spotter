@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#191970" />
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Spotter" />
+  <meta name="apple-mobile-web-app-title" content="Lineside" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
   <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
@@ -20,9 +20,9 @@
   <script src="/js/main.js?v=1"></script>
 
   <% if (locals.spot) { %>
-    <title><%= spot.spot_title %> | Spotter</title>
+    <title><%= spot.spot_title %> | Lineside</title>
     <meta property="og:title" content="<%= spot.spot_title %>">
-    <meta property="og:description" content="Spotted with Spotter. <%= spot.spot_description ? spot.spot_description : 'Tap to see the location, units, and camera details.' %>">
+    <meta property="og:description" content="Spotted with Lineside. <%= spot.spot_description ? spot.spot_description : 'Tap to see the location, units, and camera details.' %>">
     <meta property="og:type" content="website">
 
     <% const ogImage = spot.image_thumb_path ? `${process.env.R2_PUBLIC_URL}/${spot.image_thumb_path}` : (locals.imageUrl ? imageUrl : null); %>
@@ -31,13 +31,13 @@
       <meta property="og:image" content="<%= ogImage %>">
       <meta name="twitter:card" content="summary_large_image">
       <meta name="twitter:title" content="<%= spot.spot_title %>">
-      <meta name="twitter:description" content="Spotted with Spotter">
+      <meta name="twitter:description" content="Spotted with Lineside">
       <meta name="twitter:image" content="<%= ogImage %>">
     <% } %>
 
   <% } else { %>
-    <title>Spotter</title>
-    <meta property="og:title" content="Spotter">
+    <title>Lineside</title>
+    <meta property="og:title" content="Lineside">
     <meta property="og:description" content="Discover, log, and share your best spotting locations.">
     <meta property="og:type" content="website">
   <% } %>

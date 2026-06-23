@@ -1,6 +1,6 @@
 # Toast Notification System
 
-A clean, modern toast notification system for Spotter that replaces browser alerts with beautiful, non-blocking notifications.
+A clean, modern toast notification system for Lineside that replaces browser alerts with beautiful, non-blocking notifications.
 
 ## Usage
 

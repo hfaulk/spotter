@@ -8,7 +8,7 @@
       <svg width="7" height="7" viewBox="0 0 7 7">
         <circle cx="3.5" cy="3.5" r="3.5" fill="white"/>
       </svg>
-      Spotter
+      Lineside
     </span>
   </header>
 
@@ -57,9 +57,11 @@
 <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 <script src="/js/toast.js"></script>
 <script>
-  window.SPOTTER_CONFIG = { isLoggedIn: <%= locals.authUser ? 'true' : 'false' %> }
+  window.LINESIDE_CONFIG = { isLoggedIn: <%= locals.authUser ? 'true' : 'false' %> };
+  // Backwards compat for cached map.js after the rename
+  window.SPOTTER_CONFIG = window.LINESIDE_CONFIG;
 </script>
-<script src="/js/map.js?v=5"></script>
+<script src="/js/map.js?v=6"></script>
 
 </body>
 </html>

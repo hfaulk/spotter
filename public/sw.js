@@ -1,4 +1,4 @@
-// Spotter service worker — deliberately minimal and safe.
+// Lineside service worker — deliberately minimal and safe.
 //
 // Strategy:
 //   - Static assets (CSS, JS, icons, data) → stale-while-revalidate
@@ -8,7 +8,7 @@
 //
 // If you ever need to force-refresh everyone's cache, bump CACHE_NAME.
 
-const CACHE_NAME = "spotter-static-v1";
+const CACHE_NAME = "lineside-static-v1";
 
 const PRECACHE = [
   "/css/style.css",

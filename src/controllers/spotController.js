@@ -53,7 +53,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `spotter-${uniqueSuffix}${path.extname(file.originalname || "")}`);
+    cb(null, `lineside-${uniqueSuffix}${path.extname(file.originalname || "")}`);
   },
 });
 
