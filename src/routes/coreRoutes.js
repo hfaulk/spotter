@@ -27,13 +27,17 @@ router.get("/api/wiki/:classNum", requireAuth, getWikiSummary);
 // Public Shared Spots
 router.get("/s/:token", showSharedSpot);
 
-// Privacy Policy (public)
+// Privacy Policy & Terms (public)
 router.get("/privacy", (req, res) =>
   res.render("privacy", { activePage: "privacy" }),
 );
+router.get("/tos", (req, res) => res.render("tos", { activePage: "tos" }));
 
 // APIs & Health
-router.post("/api/report", requireAuth, reportLimiter, submitReport);
+// NOTE: requireAuth intentionally removed — the reportController handles
+// both authenticated and anonymous submissions internally. The reportLimiter
+// (3 per hour per IP) is the guard against abuse.
+router.post("/api/report", reportLimiter, submitReport);
 router.get("/api/session-check", requireAuth, (req, res) =>
   res.json({ ok: true }),
 );
