@@ -13,6 +13,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import spotRoutes from "./src/routes/spotRoutes.js";
 import coreRoutes from "./src/routes/coreRoutes.js";
+import adminRoutes from "./src/routes/adminRoutes.js";
 
 // ===== ENVIRONMENT VARIABLE VALIDATION =====
 // (dotenv is already loaded via instrument.js before this file runs!)
@@ -27,6 +28,7 @@ const REQUIRED_ENV = [
   "R2_BUCKET_NAME",
   "R2_PUBLIC_URL",
   "RESEND_API_KEY",
+  "ADMIN_USER_ID",
 ];
 const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
 if (missingEnv.length) {
@@ -110,6 +112,7 @@ app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", spotRoutes);
 app.use("/", coreRoutes);
+app.use("/", adminRoutes);
 
 // ===== SENTRY ERROR HANDLER (v8) =====
 // MUST be right after all controllers/routes and before any custom error middleware

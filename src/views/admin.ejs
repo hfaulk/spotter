@@ -1,0 +1,173 @@
+<%- include('partials/header') %>
+<script src="/js/toast.js"></script>
+
+<div class="app-page">
+  <%- include('partials/topbar', { showBack: true }) %>
+
+  <main class="app-content">
+    <div class="settings-page">
+
+      <h1 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0 0 1.25rem 0;">Admin</h1>
+
+      <!-- ===== STATS ===== -->
+      <div class="settings-card" style="margin-bottom: 1rem;">
+        <h2 class="settings-heading">Overview</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem;">
+          <div class="stat">
+            <span class="stat-value"><%= stats.totalUsers %></span>
+            <span class="stat-label">Users</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value"><%= stats.totalSpots %></span>
+            <span class="stat-label">Spots</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value"><%= stats.spotsThisWeek %></span>
+            <span class="stat-label">This week</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" style="<%= stats.pendingReports > 0 ? 'color: darkred;' : '' %>">
+              <%= stats.pendingReports %>
+            </span>
+            <span class="stat-label">Reports</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTED SPOTS ===== -->
+      <div class="settings-card" style="margin-bottom: 1rem;">
+        <h2 class="settings-heading">Reported Spots</h2>
+
+        <% if (reportedSpots.length === 0) { %>
+          <p class="section-hint" style="margin-top: 0.75rem;">No reported spots — all clear.</p>
+        <% } else { %>
+          <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <% reportedSpots.forEach(spot => { %>
+              <div class="admin-report-row" id="report-row-<%= spot.spot_id %>" style="border: 1px solid #f0f2f8; border-radius: 8px; padding: 0.85rem; background: <%= spot.active ? '#ffffff' : '#fef2f2' %>;">
+
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;">
+                  <div style="min-width: 0;">
+                    <p style="margin: 0 0 0.2rem 0; font-size: 0.9rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      <%= spot.spot_title %>
+                    </p>
+                    <p class="section-hint" style="margin: 0 0 0.5rem 0;">
+                      by @<%= spot.username %> ·
+                      <%= new Date(spot.spot_timestamp).toLocaleDateString('en-GB') %> ·
+                      <span style="color: <%= spot.active ? '#64748b' : 'darkred' %>; font-weight: 600;">
+                        <%= spot.active ? 'Visible' : 'Hidden' %>
+                      </span>
+                    </p>
+                    <p class="section-hint" style="margin: 0 0 0.5rem 0; color: darkred;">
+                      <%= spot.reportCount %> <%= spot.reportCount === 1 ? 'report' : 'reports' %>
+                      <% if (spot.latestReportAt) { %> · latest <%= new Date(spot.latestReportAt).toLocaleDateString('en-GB') %><% } %>
+                    </p>
+                    <% if (spot.reasons.length > 0) { %>
+                      <div style="margin-top: 0.4rem;">
+                        <% spot.reasons.forEach((reason, i) => { %>
+                          <p class="section-hint" style="margin: 0 0 0.2rem 0; font-style: italic;">"<%= reason %>"</p>
+                        <% }) %>
+                      </div>
+                    <% } %>
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0;">
+                    <button
+                      class="btn-danger js-toggle-spot"
+                      data-spot-id="<%= spot.spot_id %>"
+                      data-active="<%= spot.active %>"
+                      style="font-size: 0.8rem; padding: 0.4rem 0.75rem; white-space: nowrap;"
+                    >
+                      <%= spot.active ? 'Hide spot' : 'Restore spot' %>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- ===== RECENT REGISTRATIONS ===== -->
+      <div class="settings-card">
+        <h2 class="settings-heading">Recent Registrations</h2>
+
+        <% if (recentUsers.length === 0) { %>
+          <p class="section-hint" style="margin-top: 0.75rem;">No users yet.</p>
+        <% } else { %>
+          <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0;">
+            <% recentUsers.forEach((user, i) => { %>
+              <div style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.6rem 0;
+                border-bottom: <%= i < recentUsers.length - 1 ? '1px solid #f0f2f8' : 'none' %>;
+              ">
+                <div>
+                  <p style="margin: 0; font-size: 0.875rem; font-weight: 500; color: #0f172a;">
+                    @<%= user.username || '(no username)' %>
+                  </p>
+                  <p class="section-hint" style="margin: 0;">
+                    <%= user.first_name || '' %> <%= user.last_name || '' %>
+                  </p>
+                </div>
+                <p class="section-hint" style="margin: 0; text-align: right;">
+                  <%= user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB') : '—' %>
+                </p>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </main>
+
+  <%- include('partials/bottomnav', { activePage: 'admin' }) %>
+</div>
+
+<script>
+  document.querySelectorAll('.js-toggle-spot').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const spotId = btn.dataset.spotId;
+      const isActive = btn.dataset.active === 'true';
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch(`/admin/spots/${spotId}/toggle-active`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        btn.dataset.active = String(data.active);
+        btn.textContent = data.active ? 'Hide spot' : 'Restore spot';
+
+        const row = document.getElementById(`report-row-${spotId}`);
+        if (row) {
+          row.style.background = data.active ? '#ffffff' : '#fef2f2';
+          const statusSpan = row.querySelector('span[style*="color"]');
+          if (statusSpan) {
+            statusSpan.textContent = data.active ? 'Visible' : 'Hidden';
+            statusSpan.style.color = data.active ? '#64748b' : 'darkred';
+          }
+        }
+
+        toast.success(data.active ? 'Spot restored' : 'Spot hidden');
+      } catch {
+        toast.error('Failed to update spot — please try again.');
+        btn.textContent = isActive ? 'Hide spot' : 'Restore spot';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
