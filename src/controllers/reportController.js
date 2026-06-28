@@ -155,7 +155,7 @@ export const submitReport = async (req, res) => {
     }
 
     await resend.emails.send({
-      from: "Lineside Support <noreply@spotter.harryfaulkner.com>",
+      from: "Lineside Support <hello@lineside.harryfaulkner.com>",
       to: "hfaulkner2006@gmail.com",
       subject: `${subjectPrefix}: ${type}`,
       html: `
