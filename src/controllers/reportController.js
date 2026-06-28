@@ -3,6 +3,16 @@ import supabase from "../config/supabase.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Escape characters that are meaningful in HTML so user-supplied strings
+// cannot inject markup into the admin notification email.
+const escHtml = (str) =>
+  String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 export const submitReport = async (req, res) => {
   try {
     // 1. Safely default all incoming data
@@ -68,7 +78,11 @@ export const submitReport = async (req, res) => {
             extraContext =
               `<p><strong>Nearby Spots Targeted:</strong></p><ul>` +
               spots
-                .map((s) => `<li>${s.spot_title} (ID: ${s.spot_id})</li>`)
+                // spot_title comes from the DB (user-entered), so escape it too
+                .map(
+                  (s) =>
+                    `<li>${escHtml(s.spot_title)} (ID: ${escHtml(s.spot_id)})</li>`,
+                )
                 .join("") +
               `</ul>`;
           }
@@ -138,6 +152,13 @@ export const submitReport = async (req, res) => {
     }
 
     // 6. Construct & Send Email
+    // All user-supplied values are escaped before being placed in the HTML body.
+    const safeUsername = escHtml(username);
+    const safeUserId = escHtml(userId || "Anonymous");
+    const safeType = escHtml(type);
+    const safeReference = escHtml(reference);
+    const safeReason = escHtml(reason);
+
     const subjectPrefix = isAutoHidden
       ? "🚨 URGENT (AUTO-HIDDEN)"
       : "🚨 Lineside Report";
@@ -157,17 +178,17 @@ export const submitReport = async (req, res) => {
     await resend.emails.send({
       from: "Lineside Reporting <reports@lineside.harryfaulkner.com>",
       to: "hfaulkner2006@gmail.com",
-      subject: `${subjectPrefix}: ${type}`,
+      subject: `${subjectPrefix}: ${safeType}`,
       html: `
         <h2 style="color: #0f172a;">New User Report</h2>
-        <p><strong>Reporter:</strong> ${username} (ID: ${userId || "Anonymous"})</p>
-        <p><strong>Type:</strong> ${type}</p>
-        <p><strong>Reference / ID:</strong> ${reference}</p>
+        <p><strong>Reporter:</strong> ${safeUsername} (ID: ${safeUserId})</p>
+        <p><strong>Type:</strong> ${safeType}</p>
+        <p><strong>Reference / ID:</strong> ${safeReference}</p>
         ${statusMessage}
         ${extraContext}
         <p><strong>User's Reason:</strong></p>
         <blockquote style="background: #f8fafc; padding: 16px; border-left: 4px solid #ef4444; border-radius: 4px; color: #334155;">
-            ${reason}
+            ${safeReason}
         </blockquote>
       `,
     });
