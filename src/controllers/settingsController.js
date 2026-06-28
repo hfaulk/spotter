@@ -1,6 +1,7 @@
 import supabase from "../config/supabase.js";
 import { getUserById, updateUser } from "../models/userModel.js";
 import { getSpotsByUser, deleteSpot } from "../models/spotModel.js";
+import { validateUsername, validateName } from "./onboardingController.js";
 
 export const serveSettings = async (req, res) => {
   const { data: profile } = await getUserById(req.user.id);
@@ -13,8 +14,29 @@ export const serveSettings = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const { first_name, last_name, username } = req.body;
+  const { first_name, last_name } = req.body;
+  const username = (req.body.username || "").trim();
   const userId = req.user.id;
+
+  const renderWithError = async (error) => {
+    const { data: profile } = await getUserById(userId);
+    return res.render("settings", {
+      profile,
+      error,
+      success: undefined,
+      activePage: "settings",
+    });
+  };
+
+  // Server-side validation (same rules as onboarding)
+  const usernameError = validateUsername(username);
+  if (usernameError) return renderWithError(usernameError);
+
+  const firstNameError = validateName(first_name, "First name");
+  if (firstNameError) return renderWithError(firstNameError);
+
+  const lastNameError = validateName(last_name, "Last name");
+  if (lastNameError) return renderWithError(lastNameError);
 
   const { data: existing } = await supabase
     .from("user")
@@ -23,20 +45,12 @@ export const updateProfile = async (req, res) => {
     .neq("user_id", userId)
     .single();
 
-  if (existing) {
-    const { data: profile } = await getUserById(userId);
-    return res.render("settings", {
-      profile,
-      error: "That username is already taken",
-      success: undefined,
-      activePage: "settings",
-    });
-  }
+  if (existing) return renderWithError("That username is already taken");
 
   const { error } = await updateUser(userId, {
-    first_name: first_name?.trim() || null,
-    last_name: last_name?.trim() || null,
-    username: username?.trim(),
+    first_name: first_name.trim(),
+    last_name: last_name.trim(),
+    username,
   });
 
   const { data: profile } = await getUserById(userId);
