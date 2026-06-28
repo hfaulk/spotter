@@ -3287,3 +3287,219 @@ input[readonly] {
     cursor: not-allowed;
     color: #666;
 }
+
+/* Card Container */
+.admin-card {
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Header Layout */
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Metadata Row */
+.spot-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.dot-divider {
+    color: #d1d5db;
+}
+
+.text-muted {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+/* Status Badge */
+.badge-visible {
+    background-color: #f3f4f6;
+    color: #374151;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Nested Reports List */
+.reports-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.report-item {
+    background-color: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 6px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.report-reason {
+    margin: 0 0 4px 0;
+    font-style: italic;
+    color: #111827;
+    font-size: 0.95rem;
+}
+
+/* Buttons */
+.btn-outline-danger {
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-danger:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.btn-text:hover {
+    color: #111827;
+}
+
+/* Stretch Admin Dashboard on Desktop */
+@media (min-width: 768px) {
+    .admin-page-override {
+        max-width: 1200px !important; /* Overrides the narrow settings-page constraint */
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Make the overview stats grid look even better when stretched */
+    .admin-page-override .settings-card .stat {
+        padding: 1.5rem;
+    }
+}
+
+/* Stretch Admin Dashboard on Desktop */
+@media (min-width: 768px) {
+    /* Release the strict width limit on the main wrapper */
+    .app-content.admin-content-override {
+        max-width: 1200px !important;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2rem; /* Optional: gives it a bit more breathing room */
+    }
+
+    /* Ensure the inner settings page also fills the new space */
+    .admin-page-override {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    /* Make the overview stats grid look even better when stretched */
+    .admin-page-override .settings-card .stat {
+        padding: 1.5rem;
+    }
+}
+
+/* Stretch Admin Dashboard on Desktop */
+@media (min-width: 768px) {
+    .app-content.admin-content-override {
+        max-width: 1200px !important;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .admin-page-override {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    /* OVERRIDE THE INDIVIDUAL CARDS */
+    .admin-page-override .settings-card {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    .admin-page-override .settings-card .stat {
+        padding: 1.5rem;
+    }
+}
+
+/* Ensure the content starts below the fixed topbar */
+.app-content {
+    margin-top: 60px; /* Adjust this to match your actual topbar height */
+}
+
+/* If the back button/topbar is part of the layout,
+   remove any top margin from the first element inside .settings-page */
+.settings-page > *:first-child {
+    margin-top: 0 !important;
+}
+
+/* 1. Ensure the body and html can expand beyond the viewport */
+html,
+body {
+    height: auto;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto; /* Enables native browser scrolling */
+}
+
+/* 2. Update the main application wrapper */
+.app-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Minimum height is screen size */
+    padding-bottom: 70px; /* Space for the bottom nav */
+}
+
+/* 3. Ensure content takes up available space but doesn't lock it */
+.app-content {
+    flex: 1; /* Pushes content down */
+    width: 100%;
+    margin-top: 60px; /* Adjust based on your topbar height */
+}
+
+/* 1. Reset potential inherited margins on the top content */
+.settings-page {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* 2. Ensure the content wrapper correctly clears the fixed topbar */
+/* Replace '60px' with the actual height of your topbar component */
+.app-content {
+    margin-top: 60px !important;
+    padding-top: 1rem !important;
+}
+
+/* 3. Remove default browser top margin from the first heading in settings */
+.settings-page h1:first-child,
+.settings-page .settings-card:first-child {
+    margin-top: 0 !important;
+}

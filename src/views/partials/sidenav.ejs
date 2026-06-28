@@ -31,6 +31,9 @@
       <div class="sidenav-avatar"><%= initials %></div>
       Profile
     </a>
+  </nav>
+
+  <div class="sidenav-footer">
     <% if (isAdmin) { %>
       <a href="/admin" class="sidenav-item" data-path="/admin">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -39,9 +42,6 @@
         Admin
       </a>
     <% } %>
-  </nav>
-
-  <div class="sidenav-footer">
     <a href="/settings" class="sidenav-item" data-path="/settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
