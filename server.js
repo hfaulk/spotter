@@ -77,6 +77,8 @@ app.use(
           "*.openfreemap.org",
           "*.arcgisonline.com",
           "en.wikipedia.org",
+          "*.ingest.sentry.io",
+          "*.ingest.de.sentry.io",
         ],
         workerSrc: ["'self'", "blob:"],
       },
