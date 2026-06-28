@@ -108,7 +108,14 @@ const openSheet = (feature) => {
           <div class="sheet-unit">
             <span class="sheet-unit-number">${u.unit_number}</span>
             ${u.unit_class ? `<span class="sheet-unit-meta">${u.unit_class}</span>` : ""}
-            ${u.unit_operator ? `<span class="sheet-unit-meta">${u.unit_operator}</span>` : ""}
+            ${
+              u.unit_operator
+                ? `<span class="sheet-unit-meta">${u.unit_operator
+                    .split("_")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}</span>`
+                : ""
+            }
           </div>
         `,
           )

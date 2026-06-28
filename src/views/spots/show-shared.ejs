@@ -63,7 +63,7 @@
               <div class="unit-chip">
                 <span class="unit-number"><%= unit.unit_number %></span>
                 <% if (unit.unit_class) { %><span class="unit-meta"><%= unit.unit_class %></span><% } %>
-                <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator %></span><% } %>
+                <% if (unit.unit_operator) { %><span class="unit-meta"><%= unit.unit_operator.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') %></span><% } %>
               </div>
             <% }) %>
           </div>
