@@ -45,41 +45,55 @@
             <% reportedSpots.forEach(spot => { %>
               <div class="admin-report-row" id="report-row-<%= spot.spot_id %>" style="border: 1px solid #f0f2f8; border-radius: 8px; padding: 0.85rem; background: <%= spot.active ? '#ffffff' : '#fef2f2' %>;">
 
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;">
+                <!-- Spot header -->
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem;">
                   <div style="min-width: 0;">
                     <p style="margin: 0 0 0.2rem 0; font-size: 0.9rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                       <%= spot.spot_title %>
                     </p>
-                    <p class="section-hint" style="margin: 0 0 0.5rem 0;">
+                    <p class="section-hint" style="margin: 0;">
                       by @<%= spot.username %> ·
                       <%= new Date(spot.spot_timestamp).toLocaleDateString('en-GB') %> ·
-                      <span style="color: <%= spot.active ? '#64748b' : 'darkred' %>; font-weight: 600;">
+                      <span data-status style="color: <%= spot.active ? '#64748b' : 'darkred' %>; font-weight: 600;">
                         <%= spot.active ? 'Visible' : 'Hidden' %>
                       </span>
                     </p>
-                    <p class="section-hint" style="margin: 0 0 0.5rem 0; color: darkred;">
-                      <%= spot.reportCount %> <%= spot.reportCount === 1 ? 'report' : 'reports' %>
-                      <% if (spot.latestReportAt) { %> · latest <%= new Date(spot.latestReportAt).toLocaleDateString('en-GB') %><% } %>
-                    </p>
-                    <% if (spot.reasons.length > 0) { %>
-                      <div style="margin-top: 0.4rem;">
-                        <% spot.reasons.forEach((reason, i) => { %>
-                          <p class="section-hint" style="margin: 0 0 0.2rem 0; font-style: italic;">"<%= reason %>"</p>
-                        <% }) %>
-                      </div>
-                    <% } %>
                   </div>
+                  <button
+                    class="btn-danger js-toggle-spot"
+                    data-spot-id="<%= spot.spot_id %>"
+                    data-active="<%= spot.active %>"
+                    style="font-size: 0.8rem; padding: 0.4rem 0.75rem; white-space: nowrap; flex-shrink: 0;"
+                  >
+                    <%= spot.active ? 'Hide spot' : 'Restore spot' %>
+                  </button>
+                </div>
 
-                  <div style="display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0;">
-                    <button
-                      class="btn-danger js-toggle-spot"
-                      data-spot-id="<%= spot.spot_id %>"
-                      data-active="<%= spot.active %>"
-                      style="font-size: 0.8rem; padding: 0.4rem 0.75rem; white-space: nowrap;"
-                    >
-                      <%= spot.active ? 'Hide spot' : 'Restore spot' %>
-                    </button>
-                  </div>
+                <!-- Individual reports -->
+                <div id="reports-list-<%= spot.spot_id %>" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <% spot.reports.forEach(report => { %>
+                    <div id="report-<%= report.report_id %>" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; background: #f8fafc; border-radius: 6px; padding: 0.6rem 0.75rem;">
+                      <div style="min-width: 0;">
+                        <p class="section-hint" style="margin: 0 0 0.2rem 0; font-style: italic; color: #334155;">
+                          "<%= report.reason %>"
+                        </p>
+                        <p class="section-hint" style="margin: 0;">
+                          <%= report.created_at ? new Date(report.created_at).toLocaleDateString('en-GB') : '—' %>
+                        </p>
+                      </div>
+                      <button
+                        class="js-dismiss-report"
+                        data-report-id="<%= report.report_id %>"
+                        data-spot-id="<%= spot.spot_id %>"
+                        style="flex-shrink: 0; background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 0.8rem; padding: 0.2rem 0.4rem; border-radius: 4px; transition: color 0.15s;"
+                        title="Dismiss this report"
+                        onmouseover="this.style.color='#64748b'"
+                        onmouseout="this.style.color='#94a3b8'"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  <% }) %>
                 </div>
 
               </div>
@@ -128,6 +142,7 @@
 </div>
 
 <script>
+  // ===== TOGGLE SPOT VISIBILITY =====
   document.querySelectorAll('.js-toggle-spot').forEach(btn => {
     btn.addEventListener('click', async () => {
       const spotId = btn.dataset.spotId;
@@ -151,7 +166,7 @@
         const row = document.getElementById(`report-row-${spotId}`);
         if (row) {
           row.style.background = data.active ? '#ffffff' : '#fef2f2';
-          const statusSpan = row.querySelector('span[style*="color"]');
+          const statusSpan = row.querySelector('[data-status]');
           if (statusSpan) {
             statusSpan.textContent = data.active ? 'Visible' : 'Hidden';
             statusSpan.style.color = data.active ? '#64748b' : 'darkred';
@@ -164,6 +179,40 @@
         btn.textContent = isActive ? 'Hide spot' : 'Restore spot';
       } finally {
         btn.disabled = false;
+      }
+    });
+  });
+
+  // ===== DISMISS INDIVIDUAL REPORT =====
+  document.querySelectorAll('.js-dismiss-report').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const reportId = btn.dataset.reportId;
+      const spotId = btn.dataset.spotId;
+
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      try {
+        const res = await fetch(`/admin/reports/${reportId}/dismiss`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) throw new Error();
+
+        const reportEl = document.getElementById(`report-${reportId}`);
+        reportEl?.remove();
+
+        const reportsList = document.getElementById(`reports-list-${spotId}`);
+        if (reportsList && reportsList.children.length === 0) {
+          document.getElementById(`report-row-${spotId}`)?.remove();
+        }
+
+        toast.success('Report dismissed');
+      } catch {
+        toast.error('Failed to dismiss report — please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Dismiss';
       }
     });
   });

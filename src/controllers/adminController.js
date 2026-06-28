@@ -42,21 +42,23 @@ export const serveAdmin = async (req, res) => {
     ]);
 
     // ===== REPORTED SPOTS QUEUE =====
-    // Fetch all report rows, grouped by spot, with the spot details attached.
-    // We do two queries and join in JS to avoid relying on a DB view.
+    // Fetch all report rows including report_id so individual reports can be dismissed.
     const { data: reportRows } = await supabase
       .from("spot_report")
-      .select("spot_id, reason, created_at")
+      .select("report_id, spot_id, reason, created_at")
       .order("created_at", { ascending: false });
 
-    // Aggregate: count reports per spot and collect reasons
+    // Group reports by spot_id, keeping each report as its own object
     const reportMap = {};
     for (const row of reportRows || []) {
       if (!reportMap[row.spot_id]) {
-        reportMap[row.spot_id] = { count: 0, reasons: [], latestAt: null };
+        reportMap[row.spot_id] = { reports: [], latestAt: null };
       }
-      reportMap[row.spot_id].count++;
-      if (row.reason) reportMap[row.spot_id].reasons.push(row.reason);
+      reportMap[row.spot_id].reports.push({
+        report_id: row.report_id,
+        reason: row.reason,
+        created_at: row.created_at,
+      });
       if (!reportMap[row.spot_id].latestAt)
         reportMap[row.spot_id].latestAt = row.created_at;
     }
@@ -85,12 +87,11 @@ export const serveAdmin = async (req, res) => {
         .map((spot) => ({
           ...spot,
           username: usernameMap[spot.user_id] || "Unknown",
-          reportCount: reportMap[spot.spot_id]?.count || 0,
-          reasons: reportMap[spot.spot_id]?.reasons || [],
+          reports: reportMap[spot.spot_id]?.reports || [],
           latestReportAt: reportMap[spot.spot_id]?.latestAt || null,
         }))
         // Most-reported first
-        .sort((a, b) => b.reportCount - a.reportCount);
+        .sort((a, b) => b.reports.length - a.reports.length);
     }
 
     // ===== RECENT REGISTRATIONS =====
@@ -122,7 +123,6 @@ export const serveAdmin = async (req, res) => {
 export const toggleSpotActive = async (req, res) => {
   const { spotId } = req.params;
 
-  // Fetch current state
   const { data: spot, error: fetchError } = await supabase
     .from("spot")
     .select("active")
@@ -145,4 +145,23 @@ export const toggleSpotActive = async (req, res) => {
   }
 
   res.json({ success: true, active: !spot.active });
+};
+
+// ===== DISMISS INDIVIDUAL REPORT =====
+// POST /admin/reports/:reportId/dismiss
+export const dismissReport = async (req, res) => {
+  const { reportId } = req.params;
+
+  const { error } = await supabase
+    .from("spot_report")
+    .delete()
+    .eq("report_id", reportId);
+
+  if (error) {
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to dismiss report" });
+  }
+
+  res.json({ success: true });
 };

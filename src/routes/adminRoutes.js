@@ -4,6 +4,7 @@ import {
   requireAdmin,
   serveAdmin,
   toggleSpotActive,
+  dismissReport,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ const protect = [requireAuth, requireAdmin];
 
 router.get("/admin", protect, serveAdmin);
 router.post("/admin/spots/:spotId/toggle-active", protect, toggleSpotActive);
+router.post("/admin/reports/:reportId/dismiss", protect, dismissReport);
 
 export default router;
