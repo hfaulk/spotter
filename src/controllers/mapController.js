@@ -14,7 +14,9 @@ export const serveMap = async (req, res) => {
         res.locals.currentUser = profile;
         res.locals.authUser = user;
       }
-    } catch {}
+    } catch (err) {
+      console.log(err);
+    }
   }
   res.render("map", { activePage: "map" });
 };
