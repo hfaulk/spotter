@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+<link href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet" />
 
 <div class="app-page map-app-page <%= locals.authUser ? '' : 'guest-map' %>">
 
@@ -54,14 +54,14 @@
 
 </div>
 
-<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
 <script src="/js/toast.js"></script>
 <script>
   window.LINESIDE_CONFIG = { isLoggedIn: <%= locals.authUser ? 'true' : 'false' %> };
   // Backwards compat for cached map.js after the rename
   window.SPOTTER_CONFIG = window.LINESIDE_CONFIG;
 </script>
-<script src="/js/map.js?v=8"></script>
+<script src="/js/map.js?v=9"></script>
 
 </body>
 </html>

@@ -150,8 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
       window.maplibregl
         ? Promise.resolve()
         : Promise.all([
-            loadCss("https://unpkg.com/maplibre-gl/dist/maplibre-gl.css"),
-            loadScript("https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"),
+            loadCss("https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css"),
+            loadScript("https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"),
           ]),
       window.exifr
         ? Promise.resolve()
