@@ -337,13 +337,20 @@ input[type="datetime-local"] {
     transform: translateX(-50%);
     width: 100%;
     max-width: 480px;
-    height: 56px;
+    /* 56px of real bar + the notch/status-bar inset, mirroring the
+       bottomnav's safe-area handling below. Now that the status bar is
+       black-translucent (see header.ejs), the page has to push its own
+       content down manually instead of relying on the OS to paint an
+       opaque bar for us. */
+    height: calc(56px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
     background: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     z-index: 100;
 }
 
@@ -3491,10 +3498,10 @@ body {
     padding-top: 0 !important;
 }
 
-/* 2. Ensure the content wrapper correctly clears the fixed topbar */
-/* Replace '60px' with the actual height of your topbar component */
+/* 2. Ensure the content wrapper correctly clears the fixed topbar,
+   including the notch/status-bar inset added above */
 .app-content {
-    margin-top: 60px !important;
+    margin-top: calc(60px + env(safe-area-inset-top, 0px)) !important;
     padding-top: 1rem !important;
 }
 

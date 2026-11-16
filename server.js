@@ -72,6 +72,8 @@ app.use(
           "*.arcgisonline.com",
           "upload.wikimedia.org",
           "en.wikipedia.org",
+	  "thumb.wikimedia.org",
+          "https://img.buymeacoffee.com",
         ],
         connectSrc: [
           "'self'",

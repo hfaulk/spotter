@@ -141,18 +141,6 @@
     "network_coverage": "none",
     "base_spot_score": 0.0
   },
-
-  "Class 43": {
-    "operators": ["gwr", "network_rail"],
-    "fleet_size": 197,
-    "active_fleet": 90,
-    "lifecycle": "limited",
-    "roles": ["high_speed_diesel", "hst_power_car"],
-    "deployment_regions": ["england", "wales", "scotland"],
-    "network_coverage": "intercity_national",
-    "base_spot_score": 0.8
-  },
-
   "Class 45": {
     "operators": ["heritage"],
     "fleet_size": 0,
